@@ -52,8 +52,8 @@
         {% render_field userForm.username class="form-control" placeholder="Username" %}
           <label for="password">Password</label>
         {% render_field userForm.password class="form-control" placeholder="Password" %} <br><br>
-        <label for="profile_pic">Profile Picture</label>
-          {% render_field teacherForm.profile_pic class="form-control" placeholder="Profile Picture" %}
+        {% comment %} <label for="profile_pic">Profile Picture</label>
+          {% render_field teacherForm.profile_pic class="form-control" placeholder="Profile Picture" %} {% endcomment %}
 <br><br>
     <input type="submit" value="Update" style="border-radius:0px;">
   </form>

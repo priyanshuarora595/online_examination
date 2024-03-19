@@ -10,6 +10,8 @@ class ContactusForm(forms.Form):
 class TeacherSalaryForm(forms.Form):
     salary=forms.IntegerField()
 
+class OrganizationFeesForm(forms.Form):
+    fees=forms.IntegerField()
 class CourseForm(forms.ModelForm):
     class Meta:
         model=models.Course

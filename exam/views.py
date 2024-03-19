@@ -10,8 +10,10 @@ from django.db.models import Q
 from django.core.mail import send_mail
 from teacher import models as TMODEL
 from student import models as SMODEL
+from organization import models as OMODEL
 from teacher import forms as TFORM
 from student import forms as SFORM
+from organization import forms as OFORM
 from django.contrib.auth.models import User
 
 
@@ -28,6 +30,9 @@ def is_teacher(user):
 def is_student(user):
     return user.groups.filter(name='STUDENT').exists()
 
+def is_organization(user):
+    return user.groups.filter(name='ORGANIZATION').exists()
+
 def afterlogin_view(request):
     if is_student(request.user):      
         return redirect('student/student-dashboard')
@@ -38,6 +43,13 @@ def afterlogin_view(request):
             return redirect('teacher/teacher-dashboard')
         else:
             return render(request,'teacher/teacher_wait_for_approval.html')
+        
+    elif is_organization(request.user):
+        accountapproval=OMODEL.Organization.objects.all().filter(user_id=request.user.id,status=True)
+        if accountapproval:
+            return redirect('organization/organization-dashboard')
+        else:
+            return render(request,'organization/organization_wait_for_approval.html')
     else:
         return redirect('admin-dashboard')
 
@@ -56,6 +68,7 @@ def admin_dashboard_view(request):
     'total_teacher':TMODEL.Teacher.objects.all().filter(status=True).count(),
     'total_course':models.Course.objects.all().count(),
     'total_question':models.Question.objects.all().count(),
+    'total_organizations':OMODEL.Organization.objects.all().filter(status=True).count(),
     }
     return render(request,'exam/admin_dashboard.html',context=dict)
 
@@ -73,17 +86,32 @@ def admin_view_teacher_view(request):
     teachers= TMODEL.Teacher.objects.all().filter(status=True)
     return render(request,'exam/admin_view_teacher.html',{'teachers':teachers})
 
+@login_required(login_url='adminlogin')
+def admin_organization_view(request):
+    dict={
+    'total_organization':OMODEL.Organization.objects.all().filter(status=True).count(),
+    'pending_organization':OMODEL.Organization.objects.all().filter(status=False).count(),
+    'fees':OMODEL.Organization.objects.all().filter(status=True).aggregate(Sum('fees'))['fees__sum'],
+    }
+    return render(request,'exam/admin_organization.html',context=dict)
+
+@login_required(login_url='adminlogin')
+def admin_view_organization_view(request):
+    organizations= OMODEL.Organization.objects.all().filter(status=True)
+    return render(request,'exam/admin_view_organization.html',{'organizations':organizations})
+
+
 
 @login_required(login_url='adminlogin')
 def update_teacher_view(request,pk):
     teacher=TMODEL.Teacher.objects.get(id=pk)
     user=TMODEL.User.objects.get(id=teacher.user_id)
     userForm=TFORM.TeacherUserForm(instance=user)
-    teacherForm=TFORM.TeacherForm(request.FILES,instance=teacher)
+    teacherForm=TFORM.TeacherForm(instance=teacher)
     mydict={'userForm':userForm,'teacherForm':teacherForm}
     if request.method=='POST':
         userForm=TFORM.TeacherUserForm(request.POST,instance=user)
-        teacherForm=TFORM.TeacherForm(request.POST,request.FILES,instance=teacher)
+        teacherForm=TFORM.TeacherForm(request.POST,instance=teacher)
         if userForm.is_valid() and teacherForm.is_valid():
             user=userForm.save()
             user.set_password(user.password)
@@ -91,8 +119,6 @@ def update_teacher_view(request,pk):
             teacherForm.save()
             return redirect('admin-view-teacher')
     return render(request,'exam/update_teacher.html',context=mydict)
-
-
 
 @login_required(login_url='adminlogin')
 def delete_teacher_view(request,pk):
@@ -102,6 +128,32 @@ def delete_teacher_view(request,pk):
     teacher.delete()
     return HttpResponseRedirect('/admin-view-teacher')
 
+@login_required(login_url='adminlogin')
+def update_organization_view(request,pk):
+    organization=OMODEL.Organization.objects.get(id=pk)
+    user=OMODEL.User.objects.get(id=organization.user_id)
+    userForm=OFORM.OrganizationUserForm(instance=user)
+    organizationForm=OFORM.OrganizationForm(instance=organization)
+    mydict={'userForm':userForm,'organizationForm':organizationForm}
+    if request.method=='POST':
+        userForm=OFORM.OrganizationUserForm(request.POST,instance=user)
+        organizationForm=OFORM.OrganizationForm(request.POST,instance=organization)
+        if userForm.is_valid() and organizationForm.is_valid():
+            user=userForm.save()
+            user.set_password(user.password)
+            user.save()
+            organizationForm.save()
+            return redirect('admin-view-organization')
+    return render(request,'exam/update_organization.html',context=mydict)
+
+@login_required(login_url='adminlogin')
+def delete_organization_view(request,pk):
+    organization=OMODEL.Organization.objects.get(id=pk)
+    user=User.objects.get(id=organization.user_id)
+    user.delete()
+    organization.delete()
+    return HttpResponseRedirect('/admin-view-organization')
+
 
 
 
@@ -109,6 +161,11 @@ def delete_teacher_view(request,pk):
 def admin_view_pending_teacher_view(request):
     teachers= TMODEL.Teacher.objects.all().filter(status=False)
     return render(request,'exam/admin_view_pending_teacher.html',{'teachers':teachers})
+
+@login_required(login_url='adminlogin')
+def admin_view_pending_organization_view(request):
+    organizations= OMODEL.Organization.objects.all().filter(status=False)
+    return render(request,'exam/admin_view_pending_organization.html',{'organizations':organizations})
 
 
 @login_required(login_url='adminlogin')
@@ -140,6 +197,34 @@ def admin_view_teacher_salary_view(request):
     return render(request,'exam/admin_view_teacher_salary.html',{'teachers':teachers})
 
 
+@login_required(login_url='adminlogin')
+def admin_view_organization_fees_view(request):
+    organizations= OMODEL.Organization.objects.all().filter(status=True)
+    return render(request,'exam/admin_view_organization_fees.html',{'organizations':organizations})
+
+
+@login_required(login_url='adminlogin')
+def approve_organization_view(request,pk):
+    OrganizationFees=forms.OrganizationFeesForm()
+    if request.method=='POST':
+        OrganizationFees=forms.OrganizationFeesForm(request.POST)
+        if OrganizationFees.is_valid():
+            organization=OMODEL.Organization.objects.get(id=pk)
+            organization.fees=OrganizationFees.cleaned_data['fees']
+            organization.status=True
+            organization.save()
+        else:
+            print("form is invalid")
+        return HttpResponseRedirect('/admin-view-pending-teacher')
+    return render(request,'exam/fees_form.html',{'OrganizationFees':OrganizationFees})
+
+@login_required(login_url='adminlogin')
+def reject_organization_view(request,pk):
+    teacher=TMODEL.Teacher.objects.get(id=pk)
+    user=User.objects.get(id=teacher.user_id)
+    user.delete()
+    teacher.delete()
+    return HttpResponseRedirect('/admin-view-pending-teacher')
 
 
 @login_required(login_url='adminlogin')
@@ -161,11 +246,11 @@ def update_student_view(request,pk):
     student=SMODEL.Student.objects.get(id=pk)
     user=SMODEL.User.objects.get(id=student.user_id)
     userForm=SFORM.StudentUserForm(instance=user)
-    studentForm=SFORM.StudentForm(request.FILES,instance=student)
+    studentForm=SFORM.StudentForm(instance=student)
     mydict={'userForm':userForm,'studentForm':studentForm}
     if request.method=='POST':
         userForm=SFORM.StudentUserForm(request.POST,instance=user)
-        studentForm=SFORM.StudentForm(request.POST,request.FILES,instance=student)
+        studentForm=SFORM.StudentForm(request.POST,instance=student)
         if userForm.is_valid() and studentForm.is_valid():
             user=userForm.save()
             user.set_password(user.password)

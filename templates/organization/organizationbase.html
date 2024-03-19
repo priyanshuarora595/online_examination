@@ -4,7 +4,7 @@
 
 <head>
   <meta charset="utf-8">
-  
+ 
 
   <style media="screen">
     a:link {
@@ -37,11 +37,9 @@
       color: #19B3D3;
     }
 
-
-
     .logout_btn {
       padding: 5px;
-      background: #ef5350;
+      background:#ef5350;
       text-decoration: none;
       float: right;
       margin-top: -30px;
@@ -55,7 +53,7 @@
     }
 
     .logout_btn:hover {
-      background:#ca4745;
+      background: #bb403e;
     }
 
     .sidebar {
@@ -80,7 +78,7 @@
     .sidebar h4 {
       color: #ccc;
       margin-top: 0;
-      margin-bottom: 20px;
+      
     }
 
     .sidebar a {
@@ -117,7 +115,7 @@
     }
 
     label #sidebar_btn:hover {
-      color: #5f5f5f;
+      color: #575757;
     }
 
     #check:checked~.sidebar {
@@ -170,7 +168,7 @@
       <h3>Online Exam</h3>
     </div>
     <div class="right_area">
-      <a href="/logout" class="logout_btn" style="border-radius:0px;"> Logout</a>
+      <a href="/logout" class="logout_btn">Logout</a>
     </div>
   </header>
   <!--header area end-->
@@ -178,20 +176,15 @@
   <div class="sidebar">
     <center>
 
-      <img src="{% static "image/admin.png" %}" class="profile_image" alt="">
-      <h4>Admin</h4>
+      <img src="{% static "image/teacher.png" %}" class="profile_image" alt="">
+      <h4>{{request.user.first_name}}</h4>
+      <h6 style="color: rgb(255, 255, 255);">( Organization )</h6>
 
     </center>
 
-    <a href="/admin-dashboard"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
-    <a href="/admin-teacher"><i class="fas fa-chalkboard-teacher"></i><span>Teacher Section</span></a>
-    <a href="/admin-organization"><i class="fas fa-chalkboard-teacher"></i><span>Organization Section</span></a>
-    <a href="/admin-student"><i class="fas fa-user-graduate"></i><span>Student Section</span></a>
-    <a href="/admin-course"><i class="fas fa-book"></i><span>Manage Courses</span></a>
-    <a href="/admin-question"><i class="fas fa-question-circle"></i><span>Manage Questions</span></a>
-    
-
-
+    <a href="/organization/organization-dashboard"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
+    <a href="/organization/organization-exam"><i class="fas fa-book"></i><span>Manage Courses</span></a>
+    <a href="/organization/organization-question"><i class="fas fa-question-circle"></i><span>Manage Questions</span></a>
   </div>
   <!--sidebar end-->
 

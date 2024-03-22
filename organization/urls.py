@@ -17,6 +17,11 @@ urlpatterns = [
         views.organization_dashboard_view,
         name="organization-dashboard",
     ),
+    path(
+        "organization-profile",
+        views.organization_profile_view,
+        name="organization-profile",
+    ),
 
 
     path('organization-teacher', views.organization_teacher_view,name='organization-teacher'),
@@ -33,13 +38,9 @@ urlpatterns = [
     
     path(
         "organization-exam",
-        views.organization_exams_view,
+        views.organization_exam_view,
         name="organization-exam",
     ),
-    path(
-        "organization-exams", views.organization_exams_view, name="organization-exams"
-    ),
-
     path(
         "organization-student",
         views.organization_students_view,

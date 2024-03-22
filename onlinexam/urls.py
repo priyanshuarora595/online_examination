@@ -9,6 +9,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('teacher/',include('teacher.urls')),
     path('student/',include('student.urls')),
+    path('organization/',include('organization.urls')),
     
 
 
@@ -22,6 +23,9 @@ urlpatterns = [
     path('adminclick', views.adminclick_view),
     path('adminlogin', LoginView.as_view(template_name='exam/adminlogin.html'),name='adminlogin'),
     path('admin-dashboard', views.admin_dashboard_view,name='admin-dashboard'),
+    path('invalid-user', views.invalid_user,name='invalid-user'),
+
+
     path('admin-teacher', views.admin_teacher_view,name='admin-teacher'),
     path('admin-view-teacher', views.admin_view_teacher_view,name='admin-view-teacher'),
     path('update-teacher/<int:pk>', views.update_teacher_view,name='update-teacher'),
@@ -30,6 +34,16 @@ urlpatterns = [
     path('admin-view-teacher-salary', views.admin_view_teacher_salary_view,name='admin-view-teacher-salary'),
     path('approve-teacher/<int:pk>', views.approve_teacher_view,name='approve-teacher'),
     path('reject-teacher/<int:pk>', views.reject_teacher_view,name='reject-teacher'),
+
+
+    path('admin-organization', views.admin_organization_view,name='admin-organization'),
+    path('admin-view-organization', views.admin_view_organization_view,name='admin-view-organization'),
+    path('update-organization/<int:pk>', views.update_organization_view,name='update-organization'),
+    path('delete-organization/<int:pk>', views.delete_organization_view,name='delete-organization'),
+    path('admin-view-pending-organization', views.admin_view_pending_organization_view,name='admin-view-pending-organization'),
+    path('admin-view-organization-fees', views.admin_view_organization_fees_view,name='admin-view-organization-fees'),
+    path('approve-organization/<int:pk>', views.approve_organization_view,name='approve-organization'),
+    path('reject-organization/<int:pk>', views.reject_organization_view,name='reject-organization'),
 
     path('admin-student', views.admin_student_view,name='admin-student'),
     path('admin-view-student', views.admin_view_student_view,name='admin-view-student'),

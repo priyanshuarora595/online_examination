@@ -41,14 +41,15 @@
         <div class="navbar-nav">
     
         </div>
-
         <div class="navbar-nav">
+        {% if not request.user.is_authenticated %}
           <a style="padding-left: 30px;" href="/" class="nav-item nav-link"> Home</a>
           <a href="/teacher/teacherclick" class="nav-item nav-link">Teacher</a>
           <a href="/student/studentclick" class="nav-item nav-link">Student</a>
+          <a href="/organization/organizationclick" class="nav-item nav-link">Organization</a>
           <a href="/adminclick" class="nav-item nav-link">Admin</a>
+          {% endif %}
           <a href="/contactus" class="nav-item nav-link">Contact</a>
-          
         </div>
 
 

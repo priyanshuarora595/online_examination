@@ -10,6 +10,8 @@ class ContactusForm(forms.Form):
 class TeacherSalaryForm(forms.Form):
     salary=forms.IntegerField()
 
+class OrganizationFeesForm(forms.Form):
+    fees=forms.IntegerField()
 class CourseForm(forms.ModelForm):
     class Meta:
         model=models.Course
@@ -26,3 +28,8 @@ class QuestionForm(forms.ModelForm):
         widgets = {
             'question': forms.Textarea(attrs={'rows': 3, 'cols': 50})
         }
+
+class UserUpdateForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ["first_name", "last_name", "username"]

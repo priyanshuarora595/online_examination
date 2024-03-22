@@ -19,7 +19,7 @@
 
 <br><br><br>
 <div class="container">
-  <h3 style="text-align: center;">Teacher Signup Form</h3>
+  <h3 style="text-align: center;">Organization Signup Form</h3>
 <form method="POST" autocomplete="off" enctype="multipart/form-data">
     {% csrf_token %}
     
@@ -37,11 +37,11 @@
       <div class="form-row">
         <div class="form-group col-md-6">
           <label for="mobile">Contact</label>
-          {% render_field teacherForm.mobile|attr:'required:true'  class="form-control" placeholder="Contact Number" %}
+          {% render_field organizationForm.mobile|attr:'required:true'  class="form-control" placeholder="Contact Number" %}
         </div>
         <div class="form-group col-md-6">
           <label for="address">Address</label>
-          {% render_field teacherForm.address|attr:'required:true'  class="form-control" placeholder="Address" %}
+          {% render_field organizationForm.address|attr:'required:true'  class="form-control" placeholder="Address" %}
         </div>
       </div>
 
@@ -60,9 +60,7 @@
         <!-- <div class="form-group col-md-12">
           <label for="profile_pic">Profile Picture</label>
           {% render_field teacherForm.profile_pic|attr:'required:true' class="form-control" placeholder="" %}
-        </div> --> -->
-        <label for="organization_name">Organization Name</label>
-        {% render_field teacherForm.organizationID class="form-control" placeholder="Example: XYZ College" %}
+        </div> -->
         
       </div>
 

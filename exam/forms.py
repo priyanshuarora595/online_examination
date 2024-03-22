@@ -1,33 +1,70 @@
+
 from django import forms
 from django.contrib.auth.models import User
-from . import models
+from exam import models as EMODEL
+
 
 class ContactusForm(forms.Form):
     Name = forms.CharField(max_length=30)
     Email = forms.EmailField()
-    Message = forms.CharField(max_length=500,widget=forms.Textarea(attrs={'rows': 3, 'cols': 30}))
+    Message = forms.CharField(
+        max_length=500, widget=forms.Textarea(attrs={"rows": 3, "cols": 30})
+    )
+
 
 class TeacherSalaryForm(forms.Form):
-    salary=forms.IntegerField()
+    salary = forms.IntegerField()
+
 
 class OrganizationFeesForm(forms.Form):
-    fees=forms.IntegerField()
+    fees = forms.IntegerField()
+
+
 class CourseForm(forms.ModelForm):
+    organizationID = forms.ModelChoiceField(
+        queryset=EMODEL.Organization.objects.all(),
+        empty_label="Organization Name",
+        to_field_name="id",
+        initial=None,
+    )
+
     class Meta:
-        model=models.Course
-        fields=['course_name','question_number','total_marks']
+        model = EMODEL.Course
+        fields = ["course_name"]
+
 
 class QuestionForm(forms.ModelForm):
-    
-    #this will show dropdown __str__ method course model is shown on html so override it
-    #to_field_name this will fetch corresponding value  user_id present in course model and return it
-    courseID=forms.ModelChoiceField(queryset=models.Course.objects.all(),empty_label="Course Name", to_field_name="id",initial=0)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        print(f"{kwargs = }")
+        if "initial" in kwargs.keys():
+            self.fields["courseID"]= forms.ModelChoiceField(
+            queryset=EMODEL.Course.objects.filter(organization=kwargs.get("initial").get("organization")),
+            empty_label="Organization Name",
+            to_field_name="id",
+            initial=None,
+    )
     class Meta:
-        model=models.Question
-        fields=['marks','question','question_image','option1','option2','option3','option4','option5','option6','answer']
-        widgets = {
-            'question': forms.Textarea(attrs={'rows': 3, 'cols': 50})
-        }
+        model = EMODEL.Question
+        fields = [
+            "marks",
+            "question",
+            "question_image",
+        ]
+        widgets = {"question": forms.Textarea(attrs={"rows": 3, "cols": 50})}
+
+
+class OptionForm(forms.ModelForm):
+    class Meta:
+        model = EMODEL.Option
+        fields = ["option"]
+
+
+# class AnswerForm(forms.ModelForm):
+#     class Meta:
+#         model = EMODEL.Answer
+#         fields = ['answer']
+
 
 class UserUpdateForm(forms.ModelForm):
     class Meta:

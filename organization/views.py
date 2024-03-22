@@ -10,6 +10,7 @@ from organization import models as OMODEL
 from teacher import forms as TFORM
 from student import forms as SFORM
 from organization import forms as OFORM
+from exam import forms as EFORM
 from django.contrib.auth.models import User
 from django.db.models import Sum
 
@@ -341,15 +342,48 @@ def organization_exam_view(request):
 @user_passes_test(is_organization)
 def organization_add_exam_view(request):
     courseForm = forms.CourseForm()
+    organization = OMODEL.Organization.objects.get(user=request.user)
     if request.method == "POST":
+        request.POST._mutable = True
+        request.POST["organizationID"] = organization.id
+        request.POST._mutable = False
         courseForm = forms.CourseForm(request.POST)
         if courseForm.is_valid():
-            courseForm.save()
+            course = courseForm.save(commit=False)
+            course.organization = organization
+            course.save()
         else:
             print("form is invalid")
         return redirect("organization-view-exam")
     return render(
-        request, "organization/organization_add_exam.html", {"courseForm": courseForm}
+        request,
+        "organization/organization_add_exam.html",
+        {"courseForm": courseForm, "organization_id": organization.id},
+    )
+
+
+@login_required(login_url="organizationlogin")
+@user_passes_test(is_organization)
+def organization_update_exam_view(request, pk):
+    course = EMODEL.Course.objects.get(id=pk)
+    courseForm = forms.CourseForm(instance=course)
+    organization = OMODEL.Organization.objects.get(user=request.user)
+    if request.method == "POST":
+        request.POST._mutable = True
+        request.POST["organizationID"] = organization.id
+        request.POST._mutable = False
+        courseForm = forms.CourseForm(request.POST, instance=course)
+        if courseForm.is_valid():
+            course = courseForm.save(commit=False)
+            course.organization = organization
+            course.save()
+        else:
+            print("form is invalid")
+        return redirect("organization-view-exam")
+    return render(
+        request,
+        "organization/update_exam.html",
+        {"courseForm": courseForm, "organization_id": organization.id},
     )
 
 
@@ -367,7 +401,7 @@ def organization_view_exam_view(request):
 def delete_exam_view(request, pk):
     course = EMODEL.Course.objects.get(id=pk)
     course.delete()
-    return HttpResponseRedirect("/organization-view-exam")
+    return redirect("organization-view-exam")
 
 
 @login_required(login_url="organizationlogin")
@@ -379,31 +413,61 @@ def organization_question_view(request):
 @login_required(login_url="organizationlogin")
 @user_passes_test(is_organization)
 def organization_add_question_view(request):
-    questionForm = forms.QuestionForm()
+    organization = OMODEL.Organization.objects.get(user=request.user)
+    # questionForm = EFORM.QuestionForm(organization=organization)
+    # questionForm = EFORM.QuestionForm(kwargs={"organization": organization})
+    # print(questionForm.data)
+    og = {"organization": organization}
+    questionForm = EFORM.QuestionForm(initial=og)
+    # print(questionForm)
+    # questionForm.data.update(og)
+    # print(questionForm.data)
+    # questionForm = EFORM.QuestionForm(organization=organization)
+    optionForm = EFORM.OptionForm()
     if request.method == "POST":
-        questionForm = forms.QuestionForm(request.POST, request.FILES)
-        if questionForm.is_valid():
-            question = questionForm.save(commit=False)
-            course = EMODEL.Course.objects.get(id=request.POST.get("courseID"))
-            question.course = course
-            course.question_number += 1
-            course.total_marks += int(request.POST.get("marks"))
-            course.save()
-            question.save()
-        else:
-            print("form is invalid")
-        return HttpResponseRedirect("/organization-add-question")
+        print("post request=========")
+        print(request.POST)
+        questionForm = EFORM.QuestionForm(request.POST, request.FILES)
+        print(questionForm)
+        print(f"{questionForm.is_valid() = }")
+        print(f"{questionForm.errors = }")
+        question = questionForm.save(commit=False)
+        course = EMODEL.Course.objects.get(id=request.POST.get("courseID"))
+        question.course = course
+        course.question_number += 1
+        course.total_marks += int(request.POST.get("marks"))
+        course.save()
+        question.save()
+        print(f"{question.id = }")
+        options_list = request.POST.getlist("option")
+        answer_pos = int(request.POST.get("answer").split(" ")[1])-1
+        for option in options_list:
+            option_obj = EMODEL.Option.objects.create(option=option,question=question)
+            option_obj.save()
+            if option == options_list[answer_pos]:
+                answer_obj = EMODEL.Answer.objects.create(question=question,answer=option_obj)
+                answer_obj.save()
+        # answer = int(request.POST.get("answer").split(" ")[1])
+        # answer_obj = EMODEL.Answer.objects.create(question=question,answer=options_list[answer])
+        # opform = forms.OptionForm(data={'option': option}).save(commit=False)
+        # opform.question = question
+        # opform.save()
+
+        # optionForm = EFORM.OptionForm(request.POST)
+        # print(f"{optionForm.is_valid()}")
+        return redirect("organization-add-question")
     return render(
         request,
         "organization/organization_add_question.html",
-        {"questionForm": questionForm},
+        {"questionForm": questionForm, "optionForm": optionForm},
     )
 
 
 @login_required(login_url="organizationlogin")
 @user_passes_test(is_organization)
 def organization_view_question_view(request):
-    courses = EMODEL.Course.objects.all()
+    organization = OMODEL.Organization.objects.get(user=request.user)
+    courses = EMODEL.Course.objects.filter(organization=organization.id)
     return render(
         request, "organization/organization_view_question.html", {"courses": courses}
     )
@@ -426,5 +490,3 @@ def delete_question_view(request, pk):
     course.total_marks -= question.marks
     course.save()
     return HttpResponseRedirect("/organization-view-question")
-
-

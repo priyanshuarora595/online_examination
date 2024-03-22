@@ -30,7 +30,6 @@ def teacher_signup_view(request):
     teacherForm = forms.TeacherForm()
     mydict = {"userForm": userForm, "teacherForm": teacherForm}
     if request.method == "POST":
-        print(request.POST)
         userForm = forms.TeacherUserForm(request.POST)
         teacherForm = forms.TeacherForm(request.POST, request.FILES)
         if userForm.is_valid() and teacherForm.is_valid():

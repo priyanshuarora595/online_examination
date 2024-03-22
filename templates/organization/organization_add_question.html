@@ -18,7 +18,7 @@
   </style>
 </head>
 <h2 style="text-align:center;">Add Question</h2>
-<form method="POST" autocomplete="off" style="margin:100px;margin-top: 0px;" enctype="multipart/form-data">
+<form method="POST" id="add_question_form" autocomplete="off" style="margin:100px;margin-top: 0px;" enctype="multipart/form-data">
     {%csrf_token%}
     <div class="form-group">
         <label for="question">Course</label>
@@ -34,33 +34,88 @@
       <label for="question_number">Marks</label>
       {% render_field questionForm.marks|attr:'required:true' class="form-control" placeholder="Example: 5" %}
         <br>
+
+      <div id="options">
+        <div id="option_1">
       <label for="option1">Option 1</label>
-      {% render_field questionForm.option1|attr:'required:true' class="form-control" placeholder="Example: Quick Design" %}
+      {% render_field optionForm.option|attr:'required:true' class="form-control" placeholder="Example: Quick Design" %}
         <br>
+        </div>
+
+      <div id="option_2">
       <label for="option2">Option 2</label>
-      {% render_field questionForm.option2|attr:'required:true' class="form-control" placeholder="Example: Coding" %}
+      {% render_field optionForm.option|attr:'required:true' class="form-control" placeholder="Example: Coding" %}
         <br>
-      <label for="option3">Option 3</label>
-      {% render_field questionForm.option3|attr:'required:true' class="form-control" placeholder="Example: Prototype Refinement" %}
-        <br>
-      <label for="option4">Option 4</label>
-      {% render_field questionForm.option4|attr:'required:true' class="form-control" placeholder="Example: Engineer Product" %}
-        <br>
-
-      <label for="option4">Option 5</label>
-      {% render_field questionForm.option5|attr:'required:true' class="form-control" placeholder="Example: Engineer Product" %}
-        <br>
-
-      <label for="option4">Option 6</label>
-      {% render_field questionForm.option6|attr:'required:true' class="form-control" placeholder="Example: Engineer Product" %}
-        <br>
+      </div>
+      </div>
         
-      <label for="answer">Correct Answer</label>
-      {% render_field questionForm.answer|attr:'required:true' class="form-control" %}
+      <label for="answer" onload="createDropdown()">Correct Answer</label>
+      <select id='dropdown' name="answer">
+        <option>Select an option</option>
+      </select>
+
+
+      {% comment %} {% render_field questionForm.answer|attr:'required:true' class="form-control" %} {% endcomment %}
     </div>
     
-
+    <button type ="button" class="btn btn-primary" style="border-radius:0px;"onclick="addCodeToForm()">Add Option</button>
     <button type="submit" class="btn btn-success" style="border-radius:0px;">Submit Question</button>
   </form>
+
+  
+
+  <script>
+    option_counter = 3;
+    function addCodeToForm() {
+        var form = document.getElementById("options");
+    
+        // Create a new input element
+        var elem = `<div id="option_${option_counter}"><label for="option_${option_counter}" id="label_${option_counter}">Option ${option_counter}</label>
+        {% render_field optionForm.option|attr:'required:true' class="form-control" placeholder="Example: Coding" id="option_${option_counter}" %}
+        <button id = "delete_btn_${option_counter}" onclick="deleteCodeFromForm(${option_counter})">Delete Option</button>
+        <br/><br/>
+      </div>`
+
+        option_counter+=1
+    
+        // Append the new input element to the form
+        form.innerHTML += elem;
+        createDropdown()
+    }
+    
+    function deleteCodeFromForm(option_id) {
+        var elem  = document.getElementById(`option_${option_id}`);
+        elem.remove();
+        option_counter-=1;
+        createDropdown();
+    }
+
+    function createDropdown() {
+      var optionsDiv = document.getElementById("options");
+      var dropdown = document.getElementById("dropdown");
+  
+      // Clear existing options
+      dropdown.innerHTML = "<option>Select an option</option>";
+  
+      // Iterate through child elements of options div and add them to dropdown
+      for (var i = 0; i < optionsDiv.children.length; i++) {
+          var optionDiv = optionsDiv.children[i];
+          //console.log(optionDiv.nodeName);
+          if (optionDiv.nodeName == "DIV")
+          {
+            //console.log(optionDiv.children[0].innerHTML);
+            var optionText = optionDiv.children[0].innerHTML; // Get the text content of the div
+            // Create a new option element
+            var option = document.createElement("option");
+            option.textContent = optionText;
+            // Append the option to the dropdown
+            dropdown.appendChild(option);
+          }
+  
+  
+      }
+    }
+    createDropdown();
+    </script>
 <br><br><br>
 {% endblock content %}

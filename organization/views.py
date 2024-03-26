@@ -334,13 +334,13 @@ def organization_check_marks_view(request, pk):
 
 @login_required(login_url="organizationlogin")
 @user_passes_test(is_organization)
-def organization_exam_view(request):
-    return render(request, "organization/organization_exam.html")
+def organization_course_view(request):
+    return render(request, "organization/organization_course.html")
 
 
 @login_required(login_url="organizationlogin")
 @user_passes_test(is_organization)
-def organization_add_exam_view(request):
+def organization_add_course_view(request):
     courseForm = forms.CourseForm()
     organization = OMODEL.Organization.objects.get(user=request.user)
     if request.method == "POST":
@@ -357,14 +357,14 @@ def organization_add_exam_view(request):
         return redirect("organization-view-exam")
     return render(
         request,
-        "organization/organization_add_exam.html",
+        "organization/organization_add_course.html",
         {"courseForm": courseForm, "organization_id": organization.id},
     )
 
 
 @login_required(login_url="organizationlogin")
 @user_passes_test(is_organization)
-def organization_update_exam_view(request, pk):
+def organization_update_course_view(request, pk):
     course = EMODEL.Course.objects.get(id=pk)
     courseForm = forms.CourseForm(instance=course)
     organization = OMODEL.Organization.objects.get(user=request.user)
@@ -379,29 +379,29 @@ def organization_update_exam_view(request, pk):
             course.save()
         else:
             print("form is invalid")
-        return redirect("organization-view-exam")
+        return redirect("organization-view-course")
     return render(
         request,
-        "organization/update_exam.html",
+        "organization/update_course.html",
         {"courseForm": courseForm, "organization_id": organization.id},
     )
 
 
 @login_required(login_url="organizationlogin")
 @user_passes_test(is_organization)
-def organization_view_exam_view(request):
+def organization_view_course_view(request):
     courses = EMODEL.Course.objects.all()
     return render(
-        request, "organization/organization_view_exam.html", {"courses": courses}
+        request, "organization/organization_view_course.html", {"courses": courses}
     )
 
 
 @login_required(login_url="organizationlogin")
 @user_passes_test(is_organization)
-def delete_exam_view(request, pk):
+def delete_course_view(request, pk):
     course = EMODEL.Course.objects.get(id=pk)
     course.delete()
-    return redirect("organization-view-exam")
+    return redirect("organization-view-course")
 
 
 @login_required(login_url="organizationlogin")

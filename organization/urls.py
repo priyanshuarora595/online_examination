@@ -37,9 +37,9 @@ urlpatterns = [
     
     
     path(
-        "organization-exam",
-        views.organization_exam_view,
-        name="organization-exam",
+        "organization-course",
+        views.organization_course_view,
+        name="organization-course",
     ),
     path(
         "organization-student",
@@ -59,11 +59,11 @@ urlpatterns = [
     path('delete-student/<int:pk>', views.delete_student_view,name='organization-delete-student'),
 
 
-    path('organization-exam', views.organization_exam_view,name='organization-exam'),
-    path('organization-add-exam', views.organization_add_exam_view,name='organization-add-exam'),
-    path('organization-view-exam', views.organization_view_exam_view,name='organization-view-exam'),
-    path('update-exam/<int:pk>', views.organization_update_exam_view,name='organization-update-exam'),
-    path('delete-exam/<int:pk>', views.delete_exam_view,name='organization-delete-exam'),
+    path('organization-course', views.organization_course_view,name='organization-course'),
+    path('organization-add-course', views.organization_add_course_view,name='organization-add-course'),
+    path('organization-view-course', views.organization_view_course_view,name='organization-view-course'),
+    path('update-course/<int:pk>', views.organization_update_course_view,name='organization-update-course'),
+    path('delete-course/<int:pk>', views.delete_course_view,name='organization-delete-course'),
 
 
     path('organization-question', views.organization_question_view,name='organization-question'),

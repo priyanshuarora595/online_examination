@@ -351,6 +351,7 @@ def organization_add_course_view(request):
         if courseForm.is_valid():
             course = courseForm.save(commit=False)
             course.organization = organization
+            course.created_by = request.user
             course.save()
         else:
             print("form is invalid")
@@ -416,7 +417,6 @@ def organization_add_question_view(request):
     organization = OMODEL.Organization.objects.get(user=request.user)
     og = {"organization": organization}
     questionForm = EFORM.QuestionForm(initial=og)
-
     optionForm = EFORM.OptionForm()
     if request.method == "POST":
         questionForm = EFORM.QuestionForm(request.POST, request.FILES)

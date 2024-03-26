@@ -91,6 +91,7 @@ def admin_dashboard_view(request):
 
 
 @login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def admin_teacher_view(request):
     dict = {
         "total_teacher": TMODEL.Teacher.objects.all().filter(status=True).count(),
@@ -103,12 +104,14 @@ def admin_teacher_view(request):
 
 
 @login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def admin_view_teacher_view(request):
     teachers = TMODEL.Teacher.objects.all().filter(status=True)
     return render(request, "exam/admin_view_teacher.html", {"teachers": teachers})
 
 
 @login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def admin_organization_view(request):
     dict = {
         "total_organization": OMODEL.Organization.objects.all()
@@ -125,6 +128,7 @@ def admin_organization_view(request):
 
 
 @login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def admin_view_organization_view(request):
     organizations = OMODEL.Organization.objects.all().filter(status=True)
     return render(
@@ -133,6 +137,7 @@ def admin_view_organization_view(request):
 
 
 @login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def update_teacher_view(request, pk):
     teacher = TMODEL.Teacher.objects.get(id=pk)
     user = TMODEL.User.objects.get(id=teacher.user_id)
@@ -147,13 +152,16 @@ def update_teacher_view(request, pk):
             user = userForm.save()
             user.save()
             teacher = teacherForm.save(commit=False)
-            teacher.organization = OMODEL.Organization.objects.get(id=request.POST.get("organizationID"))
+            teacher.organization = OMODEL.Organization.objects.get(
+                id=request.POST.get("organizationID")
+            )
             teacher.save()
             return redirect("admin-view-teacher")
     return render(request, "exam/update_teacher.html", context=mydict)
 
 
 @login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def delete_teacher_view(request, pk):
     teacher = TMODEL.Teacher.objects.get(id=pk)
     user = User.objects.get(id=teacher.user_id)
@@ -163,6 +171,7 @@ def delete_teacher_view(request, pk):
 
 
 @login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def update_organization_view(request, pk):
     organization = OMODEL.Organization.objects.get(id=pk)
     user = OMODEL.User.objects.get(id=organization.user_id)
@@ -182,6 +191,7 @@ def update_organization_view(request, pk):
 
 
 @login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def delete_organization_view(request, pk):
     organization = OMODEL.Organization.objects.get(id=pk)
     user = User.objects.get(id=organization.user_id)
@@ -191,6 +201,7 @@ def delete_organization_view(request, pk):
 
 
 @login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def admin_view_pending_teacher_view(request):
     teachers = TMODEL.Teacher.objects.all().filter(status=False)
     return render(
@@ -199,6 +210,7 @@ def admin_view_pending_teacher_view(request):
 
 
 @login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def admin_view_pending_organization_view(request):
     organizations = OMODEL.Organization.objects.all().filter(status=False)
     return render(
@@ -209,6 +221,7 @@ def admin_view_pending_organization_view(request):
 
 
 @login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def approve_teacher_view(request, pk):
     teacherSalary = EFORM.TeacherSalaryForm()
     if request.method == "POST":
@@ -225,6 +238,7 @@ def approve_teacher_view(request, pk):
 
 
 @login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def reject_teacher_view(request, pk):
     teacher = TMODEL.Teacher.objects.get(id=pk)
     user = User.objects.get(id=teacher.user_id)
@@ -234,6 +248,7 @@ def reject_teacher_view(request, pk):
 
 
 @login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def admin_view_teacher_salary_view(request):
     teachers = TMODEL.Teacher.objects.all().filter(status=True)
     return render(
@@ -242,6 +257,7 @@ def admin_view_teacher_salary_view(request):
 
 
 @login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def admin_view_organization_fees_view(request):
     organizations = OMODEL.Organization.objects.all().filter(status=True)
     return render(
@@ -252,6 +268,7 @@ def admin_view_organization_fees_view(request):
 
 
 @login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def approve_organization_view(request, pk):
     OrganizationFees = EFORM.OrganizationFeesForm()
     if request.method == "POST":
@@ -270,6 +287,7 @@ def approve_organization_view(request, pk):
 
 
 @login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def reject_organization_view(request, pk):
     teacher = TMODEL.Teacher.objects.get(id=pk)
     user = User.objects.get(id=teacher.user_id)
@@ -279,6 +297,7 @@ def reject_organization_view(request, pk):
 
 
 @login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def admin_student_view(request):
     dict = {
         "total_student": SMODEL.Student.objects.all().count(),
@@ -287,12 +306,14 @@ def admin_student_view(request):
 
 
 @login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def admin_view_student_view(request):
     students = SMODEL.Student.objects.all()
     return render(request, "exam/admin_view_student.html", {"students": students})
 
 
 @login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def update_student_view(request, pk):
     student = SMODEL.Student.objects.get(id=pk)
     user = SMODEL.User.objects.get(id=student.user_id)
@@ -306,13 +327,16 @@ def update_student_view(request, pk):
             user = userForm.save()
             user.save()
             student = studentForm.save(commit=False)
-            student.organization = OMODEL.Organization.objects.get(id=request.POST.get("organizationID"))
+            student.organization = OMODEL.Organization.objects.get(
+                id=request.POST.get("organizationID")
+            )
             student.save()
             return redirect("admin-view-student")
     return render(request, "exam/update_student.html", context=mydict)
 
 
 @login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def delete_student_view(request, pk):
     student = SMODEL.Student.objects.get(id=pk)
     user = User.objects.get(id=student.user_id)
@@ -322,25 +346,25 @@ def delete_student_view(request, pk):
 
 
 @login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def admin_course_view(request):
     return render(request, "exam/admin_course.html")
 
 
 @login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def admin_add_course_view(request):
     courseForm = EFORM.CourseForm()
     if request.method == "POST":
-        # print("post request =======>")
-        # print(request.POST)
         organization = OMODEL.Organization.objects.get(
             id=request.POST.get("organizationID")
         )
         courseForm = EFORM.CourseForm(request.POST)
-        # courseForm = courseForm("organization", organization)
         print(f"{courseForm.errors = }")
         if courseForm.is_valid():
             course = courseForm.save(commit=False)
             course.organization = organization
+            course.created_by = request.user
             courseForm.save()
         else:
             print("form is invalid")
@@ -350,12 +374,14 @@ def admin_add_course_view(request):
 
 
 @login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def admin_view_course_view(request):
     courses = EMODEL.Course.objects.all()
     return render(request, "exam/admin_view_course.html", {"courses": courses})
 
 
 @login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def delete_course_view(request, pk):
     course = EMODEL.Course.objects.get(id=pk)
     course.delete()
@@ -371,9 +397,6 @@ def update_course_view(request, pk):
         organization = OMODEL.Organization.objects.get(
             id=request.POST["organizationID"]
         )
-        # request.POST._mutable = True
-        # request.POST["organizationID"] = organization.id
-        # request.POST._mutable = False
         courseForm = EFORM.CourseForm(request.POST, instance=course)
         if courseForm.is_valid():
             course = courseForm.save(commit=False)

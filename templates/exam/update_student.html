@@ -47,11 +47,14 @@
           {% render_field studentForm.mobile class="form-control" placeholder="Mobile" %}
             <label for="address">Address</label>
           {% render_field studentForm.address class="form-control" placeholder="Address" %}
+            <label for="address">Organization</label>
+          {% render_field studentForm.organizationID class="form-control" placeholder="Address" %}
           
         <label for="username">Username</label>
         {% render_field userForm.username class="form-control" placeholder="Username" %}
-          <label for="password">Password</label>
-        {% render_field userForm.password class="form-control" placeholder="Password" %} <br><br>
+        <br><br>
+          {% comment %} <label for="password">Password</label>
+        {% render_field userForm.password class="form-control" placeholder="Password" %} <br><br> {% endcomment %}
         {% comment %} <label for="profile_pic">Profile Picture</label>
           {% render_field studentForm.profile_pic class="form-control" placeholder="Profile Picture" %} {% endcomment %}
 <br><br>

@@ -46,8 +46,8 @@
         <td>{{t.total_marks}}</td>
         <td>{{t.access_code}}</td>
         
-        <td><a class="btn btn-primary btn-xs" style="border-radius: 0%;" href="{% url 'update-course' t.id  %}"><span class="glyphicon glyphicon-edit"></span></a></td>
-        <td><a class="btn btn-danger btn-xs" style="border-radius: 0%;" href="{% url 'delete-course' t.id  %}"><span class="glyphicon glyphicon-trash"></span></a></td>
+        <td><a class="btn btn-primary btn-xs" style="border-radius: 0%;" href="{% url 'update-course' t.id  %}"><span class="glyphicon glyphicon-edit"></span></a>
+        <a class="btn btn-danger btn-xs" style="border-radius: 0%;" href="{% url 'delete-course' t.id  %}"><span class="glyphicon glyphicon-trash"></span></a></td>
       </tr>
       {% endfor %}
     </table>

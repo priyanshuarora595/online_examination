@@ -1,4 +1,3 @@
-
 from django import forms
 from django.contrib.auth.models import User
 from exam import models as EMODEL
@@ -21,6 +20,17 @@ class OrganizationFeesForm(forms.Form):
 
 
 class CourseForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if "instance" in kwargs.keys():
+            self.fields["organizationID"] = forms.ModelChoiceField(
+                queryset=EMODEL.Organization.objects.all(),
+                empty_label="Organization Name",
+                to_field_name="id",
+                initial=kwargs.get("instance").organization,
+            )
+
+
     organizationID = forms.ModelChoiceField(
         queryset=EMODEL.Organization.objects.all(),
         empty_label="Organization Name",
@@ -38,12 +48,23 @@ class QuestionForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         print(f"{kwargs = }")
         if "initial" in kwargs.keys():
-            self.fields["courseID"]= forms.ModelChoiceField(
-            queryset=EMODEL.Course.objects.filter(organization=kwargs.get("initial").get("organization")),
-            empty_label="Organization Name",
-            to_field_name="id",
-            initial=None,
-    )
+            self.fields["courseID"] = forms.ModelChoiceField(
+                queryset=EMODEL.Course.objects.filter(
+                    organization=kwargs.get("initial").get("organization")
+                ),
+                empty_label="Organization Name",
+                to_field_name="id",
+                initial=None,
+            )
+
+        else:
+            self.fields["courseID"] = forms.ModelChoiceField(
+                queryset=EMODEL.Course.objects.all(),
+                empty_label="Organization Name",
+                to_field_name="id",
+                initial=None,
+            )
+
     class Meta:
         model = EMODEL.Question
         fields = [

@@ -390,7 +390,7 @@ def organization_update_course_view(request, pk):
 @login_required(login_url="organizationlogin")
 @user_passes_test(is_organization)
 def organization_view_course_view(request):
-    courses = EMODEL.Course.objects.all()
+    courses = EMODEL.Course.objects.filter(organization__user=request.user)
     return render(
         request, "organization/organization_view_course.html", {"courses": courses}
     )
@@ -414,23 +414,13 @@ def organization_question_view(request):
 @user_passes_test(is_organization)
 def organization_add_question_view(request):
     organization = OMODEL.Organization.objects.get(user=request.user)
-    # questionForm = EFORM.QuestionForm(organization=organization)
-    # questionForm = EFORM.QuestionForm(kwargs={"organization": organization})
-    # print(questionForm.data)
     og = {"organization": organization}
     questionForm = EFORM.QuestionForm(initial=og)
-    # print(questionForm)
-    # questionForm.data.update(og)
-    # print(questionForm.data)
-    # questionForm = EFORM.QuestionForm(organization=organization)
+
     optionForm = EFORM.OptionForm()
     if request.method == "POST":
-        print("post request=========")
-        print(request.POST)
         questionForm = EFORM.QuestionForm(request.POST, request.FILES)
-        print(questionForm)
-        print(f"{questionForm.is_valid() = }")
-        print(f"{questionForm.errors = }")
+
         question = questionForm.save(commit=False)
         course = EMODEL.Course.objects.get(id=request.POST.get("courseID"))
         question.course = course
@@ -438,7 +428,7 @@ def organization_add_question_view(request):
         course.total_marks += int(request.POST.get("marks"))
         course.save()
         question.save()
-        print(f"{question.id = }")
+
         options_list = request.POST.getlist("option")
         answer_pos = int(request.POST.get("answer").split(" ")[1])-1
         for option in options_list:
@@ -447,14 +437,7 @@ def organization_add_question_view(request):
             if option == options_list[answer_pos]:
                 answer_obj = EMODEL.Answer.objects.create(question=question,answer=option_obj)
                 answer_obj.save()
-        # answer = int(request.POST.get("answer").split(" ")[1])
-        # answer_obj = EMODEL.Answer.objects.create(question=question,answer=options_list[answer])
-        # opform = forms.OptionForm(data={'option': option}).save(commit=False)
-        # opform.question = question
-        # opform.save()
 
-        # optionForm = EFORM.OptionForm(request.POST)
-        # print(f"{optionForm.is_valid()}")
         return redirect("organization-add-question")
     return render(
         request,

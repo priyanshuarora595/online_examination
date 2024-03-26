@@ -12,6 +12,15 @@ class StudentUserForm(forms.ModelForm):
         }
 
 class StudentForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if "instance" in kwargs.keys():
+            self.fields["organizationID"] = forms.ModelChoiceField(
+                queryset=EMODEL.Organization.objects.all(),
+                empty_label="Organization Name",
+                to_field_name="id",
+                initial=kwargs.get("instance").organization,
+            )
     organizationID = forms.ModelChoiceField(
         queryset=EMODEL.Organization.objects.all(),
         empty_label="Organization Name",

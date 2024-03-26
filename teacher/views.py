@@ -1,14 +1,13 @@
-from django.shortcuts import render, redirect, reverse
-from . import forms, models
+from django.shortcuts import render, redirect
+from . import forms
 from django.db.models import Sum
 from django.contrib.auth.models import Group
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.conf import settings
-from datetime import date, timedelta
-from exam import models as QMODEL
+from exam import models as EMODEL
 from student import models as SMODEL
 from organization import models as OMODEL
+from teacher import models as TMODEL
 from exam import forms as QFORM
 
 
@@ -51,10 +50,12 @@ def teacher_signup_view(request):
 @login_required(login_url="teacherlogin")
 @user_passes_test(is_teacher)
 def teacher_dashboard_view(request):
+    organization = TMODEL.Teacher.objects.get(user=request.user.id).organization
     dict = {
-        "total_course": QMODEL.Course.objects.all().count(),
-        "total_question": QMODEL.Question.objects.all().count(),
-        "total_student": SMODEL.Student.objects.all().count(),
+        "total_course": EMODEL.Course.objects.filter(organization=organization).count(),
+        "total_student": SMODEL.Student.objects.filter(
+            organization=organization
+        ).count(),
     }
     return render(request, "teacher/teacher_dashboard.html", context=dict)
 
@@ -82,19 +83,20 @@ def teacher_add_exam_view(request):
 @login_required(login_url="teacherlogin")
 @user_passes_test(is_teacher)
 def teacher_view_exam_view(request):
-    courses = QMODEL.Course.objects.all()
+    courses = EMODEL.Course.objects.all()
     return render(request, "teacher/teacher_view_exam.html", {"courses": courses})
 
 
 @login_required(login_url="teacherlogin")
 @user_passes_test(is_teacher)
 def delete_exam_view(request, pk):
-    course = QMODEL.Course.objects.get(id=pk)
+    course = EMODEL.Course.objects.get(id=pk)
     course.delete()
     return HttpResponseRedirect("/teacher/teacher-view-exam")
 
 
-@login_required(login_url="adminlogin")
+@login_required(login_url="teacherlogin")
+@user_passes_test(is_teacher)
 def teacher_question_view(request):
     return render(request, "teacher/teacher_question.html")
 
@@ -107,7 +109,7 @@ def teacher_add_question_view(request):
         questionForm = QFORM.QuestionForm(request.POST, request.FILES)
         if questionForm.is_valid():
             question = questionForm.save(commit=False)
-            course = QMODEL.Course.objects.get(id=request.POST.get("courseID"))
+            course = EMODEL.Course.objects.get(id=request.POST.get("courseID"))
             question.course = course
             course.question_number += 1
             course.total_marks += int(request.POST.get("marks"))
@@ -124,14 +126,14 @@ def teacher_add_question_view(request):
 @login_required(login_url="teacherlogin")
 @user_passes_test(is_teacher)
 def teacher_view_question_view(request):
-    courses = QMODEL.Course.objects.all()
+    courses = EMODEL.Course.objects.all()
     return render(request, "teacher/teacher_view_question.html", {"courses": courses})
 
 
 @login_required(login_url="teacherlogin")
 @user_passes_test(is_teacher)
 def see_question_view(request, pk):
-    questions = QMODEL.Question.objects.all().filter(course_id=pk)
+    questions = EMODEL.Question.objects.all().filter(course_id=pk)
     return render(request, "teacher/see_question.html", {"questions": questions})
 
 
@@ -139,9 +141,9 @@ def see_question_view(request, pk):
 @user_passes_test(is_teacher)
 def remove_question_view(request, pk):
 
-    question = QMODEL.Question.objects.get(id=pk)
+    question = EMODEL.Question.objects.get(id=pk)
     question.delete()
-    course = QMODEL.Course.objects.all().filter(course_name=question.course)[0]
+    course = EMODEL.Course.objects.all().filter(course_name=question.course)[0]
     course.question_number -= 1
     course.total_marks -= question.marks
     course.save()

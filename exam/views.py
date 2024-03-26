@@ -1,19 +1,17 @@
-from django.shortcuts import render, redirect, reverse
-from . import forms, models
+from django.shortcuts import render, redirect
 from django.db.models import Sum
-from django.contrib.auth.models import Group
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.conf import settings
-from datetime import date, timedelta
-from django.db.models import Q
 from django.core.mail import send_mail
 from teacher import models as TMODEL
 from student import models as SMODEL
 from organization import models as OMODEL
+from exam import models as EMODEL
 from teacher import forms as TFORM
 from student import forms as SFORM
 from organization import forms as OFORM
+from exam import forms as EFORM
 from django.contrib.auth.models import User
 
 
@@ -83,8 +81,8 @@ def admin_dashboard_view(request):
     dict = {
         "total_student": SMODEL.Student.objects.all().count(),
         "total_teacher": TMODEL.Teacher.objects.all().filter(status=True).count(),
-        "total_course": models.Course.objects.all().count(),
-        "total_question": models.Question.objects.all().count(),
+        "total_course": EMODEL.Course.objects.all().count(),
+        "total_question": EMODEL.Question.objects.all().count(),
         "total_organizations": OMODEL.Organization.objects.all()
         .filter(status=True)
         .count(),
@@ -138,17 +136,19 @@ def admin_view_organization_view(request):
 def update_teacher_view(request, pk):
     teacher = TMODEL.Teacher.objects.get(id=pk)
     user = TMODEL.User.objects.get(id=teacher.user_id)
-    userForm = TFORM.TeacherUserForm(instance=user)
+    userForm = EFORM.UserUpdateForm(instance=user)
     teacherForm = TFORM.TeacherForm(instance=teacher)
     mydict = {"userForm": userForm, "teacherForm": teacherForm}
     if request.method == "POST":
-        userForm = TFORM.TeacherUserForm(request.POST, instance=user)
+        userForm = EFORM.UserUpdateForm(request.POST, instance=user)
         teacherForm = TFORM.TeacherForm(request.POST, instance=teacher)
+
         if userForm.is_valid() and teacherForm.is_valid():
             user = userForm.save()
-            user.set_password(user.password)
             user.save()
-            teacherForm.save()
+            teacher = teacherForm.save(commit=False)
+            teacher.organization = OMODEL.Organization.objects.get(id=request.POST.get("organizationID"))
+            teacher.save()
             return redirect("admin-view-teacher")
     return render(request, "exam/update_teacher.html", context=mydict)
 
@@ -169,12 +169,12 @@ def update_organization_view(request, pk):
     userForm = OFORM.OrganizationUserForm(instance=user)
     organizationForm = OFORM.OrganizationForm(instance=organization)
     mydict = {"userForm": userForm, "organizationForm": organizationForm}
+
     if request.method == "POST":
-        userForm = OFORM.OrganizationUserForm(request.POST, instance=user)
+        userForm = EFORM.UserUpdateForm(request.POST, instance=user)
         organizationForm = OFORM.OrganizationForm(request.POST, instance=organization)
         if userForm.is_valid() and organizationForm.is_valid():
             user = userForm.save()
-            user.set_password(user.password)
             user.save()
             organizationForm.save()
             return redirect("admin-view-organization")
@@ -210,9 +210,9 @@ def admin_view_pending_organization_view(request):
 
 @login_required(login_url="adminlogin")
 def approve_teacher_view(request, pk):
-    teacherSalary = forms.TeacherSalaryForm()
+    teacherSalary = EFORM.TeacherSalaryForm()
     if request.method == "POST":
-        teacherSalary = forms.TeacherSalaryForm(request.POST)
+        teacherSalary = EFORM.TeacherSalaryForm(request.POST)
         if teacherSalary.is_valid():
             teacher = TMODEL.Teacher.objects.get(id=pk)
             teacher.salary = teacherSalary.cleaned_data["salary"]
@@ -253,9 +253,9 @@ def admin_view_organization_fees_view(request):
 
 @login_required(login_url="adminlogin")
 def approve_organization_view(request, pk):
-    OrganizationFees = forms.OrganizationFeesForm()
+    OrganizationFees = EFORM.OrganizationFeesForm()
     if request.method == "POST":
-        OrganizationFees = forms.OrganizationFeesForm(request.POST)
+        OrganizationFees = EFORM.OrganizationFeesForm(request.POST)
         if OrganizationFees.is_valid():
             organization = OMODEL.Organization.objects.get(id=pk)
             organization.fees = OrganizationFees.cleaned_data["fees"]
@@ -296,17 +296,18 @@ def admin_view_student_view(request):
 def update_student_view(request, pk):
     student = SMODEL.Student.objects.get(id=pk)
     user = SMODEL.User.objects.get(id=student.user_id)
-    userForm = SFORM.StudentUserForm(instance=user)
+    userForm = EFORM.UserUpdateForm(instance=user)
     studentForm = SFORM.StudentForm(instance=student)
     mydict = {"userForm": userForm, "studentForm": studentForm}
     if request.method == "POST":
-        userForm = SFORM.StudentUserForm(request.POST, instance=user)
+        userForm = EFORM.UserUpdateForm(request.POST, instance=user)
         studentForm = SFORM.StudentForm(request.POST, instance=student)
         if userForm.is_valid() and studentForm.is_valid():
             user = userForm.save()
-            user.set_password(user.password)
             user.save()
-            studentForm.save()
+            student = studentForm.save(commit=False)
+            student.organization = OMODEL.Organization.objects.get(id=request.POST.get("organizationID"))
+            student.save()
             return redirect("admin-view-student")
     return render(request, "exam/update_student.html", context=mydict)
 
@@ -327,28 +328,65 @@ def admin_course_view(request):
 
 @login_required(login_url="adminlogin")
 def admin_add_course_view(request):
-    courseForm = forms.CourseForm()
+    courseForm = EFORM.CourseForm()
     if request.method == "POST":
-        courseForm = forms.CourseForm(request.POST)
+        # print("post request =======>")
+        # print(request.POST)
+        organization = OMODEL.Organization.objects.get(
+            id=request.POST.get("organizationID")
+        )
+        courseForm = EFORM.CourseForm(request.POST)
+        # courseForm = courseForm("organization", organization)
+        print(f"{courseForm.errors = }")
         if courseForm.is_valid():
+            course = courseForm.save(commit=False)
+            course.organization = organization
             courseForm.save()
         else:
             print("form is invalid")
+            print(f"{courseForm.errors = }")
         return HttpResponseRedirect("/admin-view-course")
     return render(request, "exam/admin_add_course.html", {"courseForm": courseForm})
 
 
 @login_required(login_url="adminlogin")
 def admin_view_course_view(request):
-    courses = models.Course.objects.all()
+    courses = EMODEL.Course.objects.all()
     return render(request, "exam/admin_view_course.html", {"courses": courses})
 
 
 @login_required(login_url="adminlogin")
 def delete_course_view(request, pk):
-    course = models.Course.objects.get(id=pk)
+    course = EMODEL.Course.objects.get(id=pk)
     course.delete()
     return HttpResponseRedirect("/admin-view-course")
+
+
+@login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
+def update_course_view(request, pk):
+    course = EMODEL.Course.objects.get(id=pk)
+    courseForm = EFORM.CourseForm(instance=course)
+    if request.method == "POST":
+        organization = OMODEL.Organization.objects.get(
+            id=request.POST["organizationID"]
+        )
+        # request.POST._mutable = True
+        # request.POST["organizationID"] = organization.id
+        # request.POST._mutable = False
+        courseForm = EFORM.CourseForm(request.POST, instance=course)
+        if courseForm.is_valid():
+            course = courseForm.save(commit=False)
+            course.organization = organization
+            course.save()
+        else:
+            print("form is invalid")
+        return redirect("admin-view-course")
+    return render(
+        request,
+        "exam/update_course.html",
+        {"courseForm": courseForm},
+    )
 
 
 @login_required(login_url="adminlogin")
@@ -358,42 +396,54 @@ def admin_question_view(request):
 
 @login_required(login_url="adminlogin")
 def admin_add_question_view(request):
-    questionForm = forms.QuestionForm()
+    questionForm = EFORM.QuestionForm()
+    optionForm = EFORM.OptionForm()
     if request.method == "POST":
-        questionForm = forms.QuestionForm(request.POST, request.FILES)
-        if questionForm.is_valid():
-            question = questionForm.save(commit=False)
-            course = models.Course.objects.get(id=request.POST.get("courseID"))
-            question.course = course
-            course.question_number += 1
-            course.total_marks += int(request.POST.get("marks"))
-            course.save()
-            question.save()
-        else:
-            print("form is invalid")
-        return HttpResponseRedirect("/admin-add-question")
+        questionForm = EFORM.QuestionForm(request.POST, request.FILES)
+        question = questionForm.save(commit=False)
+        course = EMODEL.Course.objects.get(id=request.POST.get("courseID"))
+        question.course = course
+        course.question_number += 1
+        course.total_marks += int(request.POST.get("marks"))
+        course.save()
+        question.save()
+
+        options_list = request.POST.getlist("option")
+        answer_pos = int(request.POST.get("answer").split(" ")[1]) - 1
+        for option in options_list:
+            option_obj = EMODEL.Option.objects.create(option=option, question=question)
+            option_obj.save()
+            if option == options_list[answer_pos]:
+                answer_obj = EMODEL.Answer.objects.create(
+                    question=question, answer=option_obj
+                )
+                answer_obj.save()
+
+        return redirect("admin-add-question")
     return render(
-        request, "exam/admin_add_question.html", {"questionForm": questionForm}
+        request,
+        "exam/admin_add_question.html",
+        {"questionForm": questionForm, "optionForm": optionForm},
     )
 
 
 @login_required(login_url="adminlogin")
 def admin_view_question_view(request):
-    courses = models.Course.objects.all()
+    courses = EMODEL.Course.objects.all()
     return render(request, "exam/admin_view_question.html", {"courses": courses})
 
 
 @login_required(login_url="adminlogin")
 def view_question_view(request, pk):
-    questions = models.Question.objects.all().filter(course_id=pk)
+    questions = EMODEL.Question.objects.all().filter(course_id=pk)
     return render(request, "exam/view_question.html", {"questions": questions})
 
 
 @login_required(login_url="adminlogin")
 def delete_question_view(request, pk):
-    question = models.Question.objects.get(id=pk)
+    question = EMODEL.Question.objects.get(id=pk)
     question.delete()
-    course = models.Course.objects.all().filter(course_name=question.course)[0]
+    course = EMODEL.Course.objects.all().filter(course_name=question.course)[0]
     course.question_number -= 1
     course.total_marks -= question.marks
     course.save()
@@ -408,7 +458,7 @@ def admin_view_student_marks_view(request):
 
 @login_required(login_url="adminlogin")
 def admin_view_marks_view(request, pk):
-    courses = models.Course.objects.all()
+    courses = EMODEL.Course.objects.all()
     response = render(request, "exam/admin_view_marks.html", {"courses": courses})
     response.set_cookie("student_id", str(pk))
     return response
@@ -416,10 +466,10 @@ def admin_view_marks_view(request, pk):
 
 @login_required(login_url="adminlogin")
 def admin_check_marks_view(request, pk):
-    course = models.Course.objects.get(id=pk)
+    course = EMODEL.Course.objects.get(id=pk)
     student_id = request.COOKIES.get("student_id")
     student = SMODEL.Student.objects.get(user_id=student_id)
-    results = models.Result.objects.all().filter(exam=course).filter(student=student)
+    results = EMODEL.Result.objects.all().filter(exam=course).filter(student=student)
 
     return render(request, "exam/admin_check_marks.html", {"results": results})
 
@@ -429,9 +479,9 @@ def aboutus_view(request):
 
 
 def contactus_view(request):
-    sub = forms.ContactusForm()
+    sub = EFORM.ContactusForm()
     if request.method == "POST":
-        sub = forms.ContactusForm(request.POST)
+        sub = EFORM.ContactusForm(request.POST)
         if sub.is_valid():
             email = sub.cleaned_data["Email"]
             name = sub.cleaned_data["Name"]

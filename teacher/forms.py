@@ -10,18 +10,19 @@ class TeacherUserForm(forms.ModelForm):
         fields = ["first_name", "last_name", "username", "password"]
         widgets = {"password": forms.PasswordInput()}
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if len(args)>0:
-            query_dict = args[0]
-            if "organizationID" in query_dict.keys():
-                del self.fields['password']
-
-        # if "organizationID" in args[0].keys():
-        #     del self.fields['password']
 
 
 class TeacherForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if "instance" in kwargs.keys():
+            self.fields["organizationID"] = forms.ModelChoiceField(
+                queryset=EMODEL.Organization.objects.all(),
+                empty_label="Organization Name",
+                to_field_name="id",
+                initial=kwargs.get("instance").organization,
+            )
+            
     organizationID = forms.ModelChoiceField(
         queryset=EMODEL.Organization.objects.all(),
         empty_label="Organization Name",

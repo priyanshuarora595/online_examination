@@ -30,7 +30,6 @@ class CourseForm(forms.ModelForm):
                 initial=kwargs.get("instance").organization,
             )
 
-
     organizationID = forms.ModelChoiceField(
         queryset=EMODEL.Organization.objects.all(),
         empty_label="Organization Name",
@@ -52,7 +51,7 @@ class QuestionForm(forms.ModelForm):
                 queryset=EMODEL.Course.objects.filter(
                     organization=kwargs.get("initial").get("organization")
                 ),
-                empty_label="Organization Name",
+                empty_label="Course Name",
                 to_field_name="id",
                 initial=None,
             )
@@ -60,7 +59,7 @@ class QuestionForm(forms.ModelForm):
         else:
             self.fields["courseID"] = forms.ModelChoiceField(
                 queryset=EMODEL.Course.objects.all(),
-                empty_label="Organization Name",
+                empty_label="Course Name",
                 to_field_name="id",
                 initial=None,
             )

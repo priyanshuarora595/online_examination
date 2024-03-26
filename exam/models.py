@@ -3,15 +3,18 @@ from django.utils import timezone
 from student.models import Student
 from organization.models import Organization
 
+from django.contrib.auth.models import User
+
 import uuid
 
 
 class Course(models.Model):
     course_name = models.CharField(max_length=50)
-    question_number = models.PositiveIntegerField(default = 0)
-    total_marks = models.PositiveIntegerField(default = 0)
+    question_number = models.PositiveIntegerField(default=0)
+    total_marks = models.PositiveIntegerField(default=0)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
     access_code = models.UUIDField(default=uuid.uuid4)
+    created_by = models.ForeignKey(User,on_delete=models.CASCADE)
 
     def __str__(self):
         return self.course_name
@@ -55,9 +58,11 @@ class Option(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     option = models.CharField(max_length=200)
 
+
 class Answer(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     answer = models.ForeignKey(Option, on_delete=models.CASCADE)
+
 
 class Result(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)

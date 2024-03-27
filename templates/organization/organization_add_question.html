@@ -36,17 +36,7 @@
         <br>
 
       <div id="options">
-        <div id="option_1">
-      <label for="option1">Option 1</label>
-      {% render_field optionForm.option|attr:'required:true' class="form-control" placeholder="Example: Quick Design" %}
-        <br>
-        </div>
-
-      <div id="option_2">
-      <label for="option2">Option 2</label>
-      {% render_field optionForm.option|attr:'required:true' class="form-control" placeholder="Example: Coding" %}
-        <br>
-      </div>
+        <h4> Options</h4>
       </div>
         
       <label for="answer" onload="createDropdown()">Correct Answer</label>
@@ -65,28 +55,24 @@
   
 
   <script>
-    option_counter = 3;
     function addCodeToForm() {
         var form = document.getElementById("options");
     
         // Create a new input element
-        var elem = `<div id="option_${option_counter}"><label for="option_${option_counter}" id="label_${option_counter}">Option ${option_counter}</label>
-        {% render_field optionForm.option|attr:'required:true' class="form-control" placeholder="Example: Coding" id="option_${option_counter}" %}
-        <button id = "delete_btn_${option_counter}" onclick="deleteCodeFromForm(${option_counter})">Delete Option</button>
+        var elem = `<div ><label >Option</label>
+        {% render_field optionForm.option|attr:'required:true' class="form-control" placeholder="Example: Coding" oninput="createDropdown()"  %}
+        <button  onclick="deleteCodeFromForm(this)">Delete Option</button>
         <br/><br/>
       </div>`
-
-        option_counter+=1
     
         // Append the new input element to the form
         form.innerHTML += elem;
         createDropdown()
     }
     
-    function deleteCodeFromForm(option_id) {
-        var elem  = document.getElementById(`option_${option_id}`);
-        elem.remove();
-        option_counter-=1;
+    function deleteCodeFromForm(elem) {
+        obj = elem.parentElement
+        obj.remove();
         createDropdown();
     }
 
@@ -104,16 +90,17 @@
           if (optionDiv.nodeName == "DIV")
           {
             //console.log(optionDiv.children[0].innerHTML);
-            var optionText = optionDiv.children[0].innerHTML; // Get the text content of the div
+            //var optionText = optionDiv.children[0].innerHTML; // Get the text content of the div
             // Create a new option element
             var option = document.createElement("option");
-            option.textContent = optionText;
+            //option.textContent = optionText;
+            option.textContent = optionDiv.children[1].value;
+            console.log(option);
             // Append the option to the dropdown
             dropdown.appendChild(option);
           }
-  
-  
       }
+      
     }
     createDropdown();
     </script>

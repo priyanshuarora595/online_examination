@@ -47,8 +47,8 @@
         <td>{{t.mobile}}</td>
         <td>{{t.address}}</td>
         
-        <td><a class="btn btn-success btn-xs" style="border-radius: 0%;" href="{% url 'update-student' t.id  %}"><span class="glyphicon glyphicon-edit"></span></a>
-        <a class="btn btn-danger btn-xs" style="border-radius: 0%;" href="{% url 'delete-student' t.id  %}"><span class="glyphicon glyphicon-trash"></span></a></td>
+        <td><a class="btn btn-success btn-xs" style="border-radius: 0%;" href="{% url 'organization-update-student' t.id  %}"><span class="glyphicon glyphicon-edit"></span></a>
+        <a class="btn btn-danger btn-xs" style="border-radius: 0%;" href="{% url 'organization-delete-student' t.id  %}"><span class="glyphicon glyphicon-trash"></span></a></td>
       </tr>
       {% endfor %}
     </table>

@@ -45,8 +45,16 @@ class CourseForm(forms.ModelForm):
 class QuestionForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        print(f"{kwargs = }")
-        if "initial" in kwargs.keys():
+        if "instance" in kwargs.keys():
+            self.fields["courseID"] = forms.ModelChoiceField(
+                queryset=EMODEL.Course.objects.filter(
+                    organization=kwargs.get("instance").organization
+                ),
+                empty_label="Course Name",
+                to_field_name="id",
+                initial=EMODEL.Course.objects.get(id=kwargs.get("instance").course.id)
+            )
+        elif "initial" in kwargs.keys():
             self.fields["courseID"] = forms.ModelChoiceField(
                 queryset=EMODEL.Course.objects.filter(
                     organization=kwargs.get("initial").get("organization")
@@ -55,7 +63,6 @@ class QuestionForm(forms.ModelForm):
                 to_field_name="id",
                 initial=None,
             )
-
         else:
             self.fields["courseID"] = forms.ModelChoiceField(
                 queryset=EMODEL.Course.objects.all(),
@@ -63,6 +70,7 @@ class QuestionForm(forms.ModelForm):
                 to_field_name="id",
                 initial=None,
             )
+
 
     class Meta:
         model = EMODEL.Question

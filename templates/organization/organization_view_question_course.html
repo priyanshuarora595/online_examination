@@ -1,4 +1,4 @@
-{% extends 'teacher/teacherbase.html' %}
+{% extends 'organization/organizationbase.html' %}
 {% block content %}
 {%load static%}
 
@@ -25,25 +25,25 @@
 <div class="container">
   <div class="panel panel-primary">
     <div class="panel-heading">
-      <h6 class="panel-title">Available Questions</h6>
+      <h6 class="panel-title">Available Question Sets</h6>
     </div>
     <table class="table table-hover table-bordered" id="dev-table">
       <thead>
         <tr>
 
-          <th>Question</th>
-         
-          <th>Marks</th>
-          <th>Action</th>
+          <th>Course Name</th>
+          <th>Total Question</th>
+          <th>Total Marks</th>
+          <th>View</th>
         </tr>
       </thead>
-      {% for c in questions %}
+      {% for c in courses %}
       <tr>
 
-        <td> {{c.question}}</td>
-        
-        <td>{{c.marks}}</td>
-        <td><a class="btn btn-danger btn-xs" style="border-radius: 0%;" href="{% url 'remove-question' c.id  %}"><span class="glyphicon glyphicon-trash"></span></a></td>
+        <td> {{c.course_name}}</td>
+        <td>{{c.question_number}}</td>
+        <td>{{c.total_marks}}</td>
+        <td><a class="btn btn-primary btn-xs" style="border-radius: 0%;" href="{% url 'organization-view-question' c.id  %}"><span class="glyphicon glyphicon-eye-open"></span></a></td>
         
       </tr>
       {% endfor %}

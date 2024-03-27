@@ -1,0 +1,133 @@
+{% extends 'organization/organizationbase.html' %} {% load widget_tweaks %} 
+{% block content %}
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link
+    rel="stylesheet"
+    href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+  />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <style>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  a:link {
+      text-decoration: none;
+    }
+  </style>
+</head>
+<h2 style="text-align: center">Update Question</h2>
+<form
+  method="POST"
+  id="update_question_form"
+  autocomplete="off"
+  style="margin: 100px; margin-top: 0px"
+  enctype="multipart/form-data"
+>
+  {%csrf_token%}
+  <div class="form-group">
+    <label for="question">Course</label>
+    {% render_field questionForm.courseID|attr:'required:true' class="form-control" %}
+    <br />
+
+    <label for="question">Question</label>
+    {% render_field questionForm.question|attr:'required:true' class="form-control" placeholder="Example: Which one of the following is not a phase of Prototyping Model?" %}
+    <br />
+    <label for="question_image">Image</label> {% render_field questionForm.question_image class="form-control" %}
+    <br />
+    <label for="question_number">Marks</label>
+    {% render_field questionForm.marks|attr:'required:true' class="form-control" placeholder="Example: 5" %}
+    <br />
+
+    <div id="options">
+      {% for option in optionForm %}
+      <div >
+      <label>{{option.option.label}} </label>
+       {% render_field option.option|attr:'required:true' class="form-control" placeholder="Example: Quick Design" oninput="createDropdown()" %}
+       <button  onclick="deleteCodeFromForm(this)">Delete Option</button>
+      <br />
+      <br />
+      </div>
+      {% endfor %}
+    </div>
+    <label for="answer" onload="createDropdown()">Correct Answer</label>
+    <select id="dropdown" name="answer">
+      <option>Select an option</option>
+    </select>
+
+    {% comment %} {% render_field questionForm.answer|attr:'required:true'
+    class="form-control" %} {% endcomment %}
+  </div>
+
+  <button
+    type="button"
+    class="btn btn-primary"
+    style="border-radius: 0px"
+    onclick="addCodeToForm()"
+  >
+    Add Option
+  </button>
+  <button type="submit" class="btn btn-success" style="border-radius: 0px">
+    Update Question
+  </button>
+</form>
+
+<script>
+  function addCodeToForm() {
+    var form = document.getElementById("options");
+
+    // Create a new input element
+    var elem = `<div ><label >Option</label>
+      {% render_field newOption.option|attr:'required:true' class="form-control" placeholder="Example: Coding" oninput="createDropdown()"  %}
+      <button  onclick="deleteCodeFromForm(this)">Delete Option</button>
+      <br/><br/>
+    </div>`
+
+
+    // Append the new input element to the form
+    form.innerHTML += elem;
+    createDropdown();
+  }
+
+  function deleteCodeFromForm(elem) {
+    obj = elem.parentElement
+    obj.remove();
+    createDropdown();
+}
+
+  function createDropdown() {
+    console.log("createDropdown called");
+  var optionsDiv = document.getElementById("options");
+  var dropdown = document.getElementById("dropdown");
+
+  // Clear existing options
+  dropdown.innerHTML = "<option>Select an option</option>";
+
+  // Iterate through child elements of options div and add them to dropdown
+  for (var i = 0; i < optionsDiv.children.length; i++) {
+      var optionDiv = optionsDiv.children[i];
+      //console.log(optionDiv.nodeName);
+      if (optionDiv.nodeName == "DIV")
+      {
+        //console.log(optionDiv.children[0].innerHTML);
+        //var optionText = optionDiv.children[0].innerHTML; // Get the text content of the div
+        // Create a new option element
+        var option = document.createElement("option");
+        //option.textContent = optionText;
+        option.textContent = optionDiv.children[1].value;
+        console.log(option.textContent);
+        if(option.textContent==`{{answerForm}}`){
+          option.selected=true;
+        }
+        // Append the option to the dropdown
+        dropdown.appendChild(option);
+      }
+  }
+  
+}
+  createDropdown();
+</script>
+<br /><br /><br />
+{% endblock content %}

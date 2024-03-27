@@ -31,19 +31,22 @@
       <thead>
         <tr>
 
-          <th>Course</th>
-          <th>Total Question</th>
-          <th>Total Marks</th>
+          <th>Question</th>
+         
+          <th>Marks</th>
           <th>Action</th>
         </tr>
       </thead>
-      {% for c in courses %}
+      {% for c in questions %}
       <tr>
 
-        <td> {{c.course_name}}</td>
-        <td>{{c.question_number}}</td>
-        <td>{{c.total_marks}}</td>
-        <td><a class="btn btn-primary btn-sm" style="border-radius: 0%;" href="{% url 'see-question' c.id  %}"><span class="glyphicon glyphicon-eye-open"></span> View Question</a></td>
+        <td> {{c.question}}</td>
+        
+        <td>{{c.marks}}</td>
+        <td>
+          <a class="btn btn-primary btn-xs" style="border-radius: 0%;" href="{% url 'teacher-update-question' c.id  %}"><span class="glyphicon glyphicon-edit"></span></a>
+          <a class="btn btn-danger btn-xs" style="border-radius: 0%;" href="{% url 'teacher-remove-question' c.id  %}"><span class="glyphicon glyphicon-trash"></span></a>
+        </td>
         
       </tr>
       {% endfor %}

@@ -199,7 +199,7 @@ def reject_teacher_view(request, pk):
 def update_teacher_view(request, pk):
     teacher = TMODEL.Teacher.objects.get(id=pk)
     user = TMODEL.User.objects.get(id=teacher.user_id)
-    userForm = TFORM.TeacherUserForm(instance=user)
+    userForm = EFORM.UserUpdateForm(instance=user)
     teacherForm = TFORM.TeacherForm(instance=teacher)
     mydict = {"userForm": userForm, "teacherForm": teacherForm}
     organization_id = OMODEL.Organization.objects.get(user=request.user).id
@@ -208,7 +208,7 @@ def update_teacher_view(request, pk):
         request.POST._mutable = True
         request.POST["organizationID"] = organization_id
         request.POST._mutable = False
-        userForm = TFORM.TeacherUserForm(request.POST, instance=user)
+        userForm = EFORM.UserUpdateForm(request.POST, instance=user)
         teacherForm = TFORM.TeacherForm(request.POST, instance=teacher)
         if userForm.is_valid() and teacherForm.is_valid():
             if teacher.organization_id == organization_id:
@@ -272,16 +272,18 @@ def organization_view_student_view(request):
 def update_student_view(request, pk):
     student = SMODEL.Student.objects.get(id=pk)
     user = SMODEL.User.objects.get(id=student.user_id)
-    userForm = SFORM.StudentUserForm(instance=user)
+    userForm = EFORM.UserUpdateForm(instance=user)
     studentForm = SFORM.StudentForm(instance=student)
     mydict = {"userForm": userForm, "studentForm": studentForm}
+    organization_id = OMODEL.Organization.objects.get(user=request.user).id
     if request.method == "POST":
-        userForm = SFORM.StudentUserForm(request.POST, instance=user)
+        request.POST._mutable = True
+        request.POST["organizationID"] = organization_id
+        request.POST._mutable = False
+        userForm = EFORM.UserUpdateForm(request.POST, instance=user)
         studentForm = SFORM.StudentForm(request.POST, instance=student)
         if userForm.is_valid() and studentForm.is_valid():
-            user = userForm.save()
-            user.set_password(user.password)
-            user.save()
+            userForm.save()
             studentForm.save()
             return redirect("organization-view-student")
     return render(request, "organization/update_student.html", context=mydict)
@@ -300,7 +302,8 @@ def delete_student_view(request, pk):
 @login_required(login_url="organizationlogin")
 @user_passes_test(is_organization)
 def organization_view_student_marks_view(request):
-    students = SMODEL.Student.objects.all()
+    organization = OMODEL.Organization.objects.get(user=request.user)
+    students = SMODEL.Student.objects.filter(organization=organization)
     return render(
         request,
         "organization/organization_view_student_marks.html",
@@ -311,7 +314,8 @@ def organization_view_student_marks_view(request):
 @login_required(login_url="organizationlogin")
 @user_passes_test(is_organization)
 def organization_view_marks_view(request, pk):
-    courses = EMODEL.Course.objects.all()
+    organization = OMODEL.Organization.objects.get(user=request.user)
+    courses = EMODEL.Course.objects.filter(organization=organization)
     response = render(
         request, "organization/organization_view_marks.html", {"courses": courses}
     )
@@ -325,17 +329,17 @@ def organization_check_marks_view(request, pk):
     course = EMODEL.Course.objects.get(id=pk)
     student_id = request.COOKIES.get("student_id")
     student = SMODEL.Student.objects.get(user_id=student_id)
-    results = EMODEL.Result.objects.all().filter(exam=course).filter(student=student)
+    results = EMODEL.Result.objects.filter(exam=course).filter(student=student)
 
     return render(
         request, "organization/organization_check_marks.html", {"results": results}
     )
 
 
-@login_required(login_url="organizationlogin")
-@user_passes_test(is_organization)
-def organization_course_view(request):
-    return render(request, "organization/organization_course.html")
+# @login_required(login_url="organizationlogin")
+# @user_passes_test(is_organization)
+# def organization_course_view(request):
+#     return render(request, "organization/organization_course.html")
 
 
 @login_required(login_url="organizationlogin")
@@ -420,7 +424,6 @@ def organization_add_question_view(request):
     optionForm = EFORM.OptionForm()
     if request.method == "POST":
         questionForm = EFORM.QuestionForm(request.POST, request.FILES)
-
         question = questionForm.save(commit=False)
         course = EMODEL.Course.objects.get(id=request.POST.get("courseID"))
         question.course = course
@@ -430,12 +433,14 @@ def organization_add_question_view(request):
         question.save()
 
         options_list = request.POST.getlist("option")
-        answer_pos = int(request.POST.get("answer").split(" ")[1])-1
+        answer = request.POST.get("answer")
         for option in options_list:
-            option_obj = EMODEL.Option.objects.create(option=option,question=question)
+            option_obj = EMODEL.Option.objects.create(option=option, question=question)
             option_obj.save()
-            if option == options_list[answer_pos]:
-                answer_obj = EMODEL.Answer.objects.create(question=question,answer=option_obj)
+            if option == answer:
+                answer_obj = EMODEL.Answer.objects.create(
+                    question=question, answer=option_obj
+                )
                 answer_obj.save()
 
         return redirect("organization-add-question")
@@ -448,28 +453,82 @@ def organization_add_question_view(request):
 
 @login_required(login_url="organizationlogin")
 @user_passes_test(is_organization)
-def organization_view_question_view(request):
+def organization_view_question_course_view(request):
     organization = OMODEL.Organization.objects.get(user=request.user)
     courses = EMODEL.Course.objects.filter(organization=organization.id)
     return render(
-        request, "organization/organization_view_question.html", {"courses": courses}
+        request,
+        "organization/organization_view_question_course.html",
+        {"courses": courses},
     )
 
 
 @login_required(login_url="organizationlogin")
 @user_passes_test(is_organization)
-def view_question_view(request, pk):
-    questions = EMODEL.Question.objects.all().filter(course_id=pk)
-    return render(request, "organization/view_question.html", {"questions": questions})
+def organization_view_question_view(request, pk):
+    questions = EMODEL.Question.objects.filter(course_id=pk)
+    return render(
+        request,
+        "organization/organization_view_question.html",
+        {"questions": questions},
+    )
+
+
+@login_required(login_url="organizationlogin")
+@user_passes_test(is_organization)
+def organization_update_question_view(request, pk):
+    organization = OMODEL.Organization.objects.get(user=request.user)
+    question = EMODEL.Question.objects.get(id=pk)
+    question.organization = organization
+    questionForm = EFORM.QuestionForm(instance=question)
+    options = EMODEL.Option.objects.filter(question=question)
+    optionForms = []
+    newOption=EFORM.OptionForm()
+
+    for option in options:
+        optionForms.append(EFORM.OptionForm(instance=option))
+
+    answer = EMODEL.Answer.objects.get(question=question)
+
+    if request.method == "POST":
+        course = EMODEL.Course.objects.get(id=request.POST.get("courseID"))
+        course.total_marks -= int(question.marks)
+        questionForm = EFORM.QuestionForm(request.POST, request.FILES,instance=question)
+        print(request.POST)
+        question = questionForm.save(commit=False)
+        question.course = course
+        course.total_marks += int(request.POST.get("marks"))
+        course.save()
+        question.save()
+        for option in options:
+            option.delete()
+        
+        # answerForm.delete()
+
+        options_list = request.POST.getlist("option")
+        answer_resp = request.POST.get("answer")
+        for option in options_list:
+            option_obj = EMODEL.Option.objects.create(option=option,question=question)
+            option_obj.save()
+            if option == answer_resp:
+                answer_obj = EMODEL.Answer.objects.create(question=question,answer=option_obj)
+                answer_obj.save()
+
+        return redirect("organization-view-question-course")
+    return render(
+        request,
+        "organization/organization_update_question.html",
+        {"questionForm": questionForm, "optionForm": optionForms,"answerForm":answer.answer.option,"newOption":newOption},
+    )
 
 
 @login_required(login_url="organizationlogin")
 @user_passes_test(is_organization)
 def delete_question_view(request, pk):
     question = EMODEL.Question.objects.get(id=pk)
-    question.delete()
     course = EMODEL.Course.objects.all().filter(course_name=question.course)[0]
     course.question_number -= 1
     course.total_marks -= question.marks
+    question.delete()
     course.save()
-    return HttpResponseRedirect("/organization-view-question")
+    return HttpResponseRedirect("organization-view-question")

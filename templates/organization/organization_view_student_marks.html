@@ -46,7 +46,7 @@
         <!-- <td> <img src="{% static t.profile_pic.url %}" alt="Profile Pic" height="40px" width="40px" /></td> -->
         
         
-        <td><a class="btn btn-primary btn-sm" style="border-radius: 0%;" href="{% url 'admin-view-marks' t.user_id  %}"><span class="glyphicon glyphicon-eye-open"></span> View Marks</a></td>
+        <td><a class="btn btn-primary btn-sm" style="border-radius: 0%;" href="{% url 'organization-view-marks' t.user_id  %}"><span class="glyphicon glyphicon-eye-open"></span> View Marks</a></td>
         
       </tr>
       {% endfor %}

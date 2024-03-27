@@ -83,7 +83,7 @@ def teacher_add_course_view(request):
             course.save()
         else:
             print("form is invalid")
-        return redirect("teacher-view-exam")
+        return redirect("teacher-view-course")
     return render(request, "teacher/teacher_add_course.html", {"courseForm": courseForm})
 
 
@@ -123,8 +123,11 @@ def teacher_update_course_view(request, pk):
 @user_passes_test(is_teacher)
 def teacher_delete_course_view(request, pk):
     course = EMODEL.Course.objects.get(id=pk)
-    course.delete()
-    return HttpResponseRedirect("/teacher/teacher-view-exam")
+    if course.created_by==request.user:
+        course.delete()
+    else:
+        return render(request, "exam/unauthorized.html")
+    return redirect("teacher-view-course")
 
 
 @login_required(login_url="teacherlogin")
@@ -142,25 +145,24 @@ def teacher_add_question_view(request):
     optionForm = EFORM.OptionForm()
     if request.method == "POST":
         questionForm = EFORM.QuestionForm(request.POST, request.FILES)
-        if questionForm.is_valid():
-            question = questionForm.save(commit=False)
-            course = EMODEL.Course.objects.get(id=request.POST.get("courseID"))
-            question.course = course
-            course.question_number += 1
-            course.total_marks += int(request.POST.get("marks"))
-            course.save()
-            question.save()
+        question = questionForm.save(commit=False)
+        course = EMODEL.Course.objects.get(id=request.POST.get("courseID"))
+        question.course = course
+        course.question_number += 1
+        course.total_marks += int(request.POST.get("marks"))
+        course.save()
+        question.save()
 
-            options_list = request.POST.getlist("option")
-            answer_pos = int(request.POST.get("answer").split(" ")[1])-1
-            for option in options_list:
-                option_obj = EMODEL.Option.objects.create(option=option,question=question)
-                option_obj.save()
-                if option == options_list[answer_pos]:
-                    answer_obj = EMODEL.Answer.objects.create(question=question,answer=option_obj)
-                    answer_obj.save()
-        else:
-            print("form is invalid")
+        options_list = request.POST.getlist("option")
+        answer = request.POST.get("answer")
+        for option in options_list:
+            option_obj = EMODEL.Option.objects.create(option=option, question=question)
+            option_obj.save()
+            if option == answer:
+                answer_obj = EMODEL.Answer.objects.create(
+                    question=question, answer=option_obj
+                )
+                answer_obj.save()
         return redirect("teacher-add-question")
     return render(
         request, "teacher/teacher_add_question.html", {"questionForm": questionForm,"optionForm":optionForm}
@@ -169,26 +171,78 @@ def teacher_add_question_view(request):
 
 @login_required(login_url="teacherlogin")
 @user_passes_test(is_teacher)
-def teacher_view_question_view(request):
-    courses = EMODEL.Course.objects.all()
-    return render(request, "teacher/teacher_view_question.html", {"courses": courses})
+def teacher_view_question_course_view(request):
+    organization = TMODEL.Teacher.objects.get(user=request.user.id).organization
+    courses = EMODEL.Course.objects.filter(organization=organization)
+    return render(request, "teacher/teacher_view_question_course.html", {"courses": courses})
+
+@login_required(login_url="teacherlogin")
+@user_passes_test(is_teacher)
+def teacher_view_question_view(request,pk):
+    questions = EMODEL.Question.objects.filter(course_id=pk)
+    return render(request, "teacher/teacher_view_question.html", {"questions": questions})
+
+
+# @login_required(login_url="teacherlogin")
+# @user_passes_test(is_teacher)
+# def see_question_view(request, pk):
+#     questions = EMODEL.Question.objects.all().filter(course_id=pk)
+#     return render(request, "teacher/see_question.html", {"questions": questions})
 
 
 @login_required(login_url="teacherlogin")
 @user_passes_test(is_teacher)
-def see_question_view(request, pk):
-    questions = EMODEL.Question.objects.all().filter(course_id=pk)
-    return render(request, "teacher/see_question.html", {"questions": questions})
-
-
-@login_required(login_url="teacherlogin")
-@user_passes_test(is_teacher)
-def remove_question_view(request, pk):
-
+def teacher_update_question_view(request, pk):
+    organization = TMODEL.Teacher.objects.get(user=request.user.id).organization
     question = EMODEL.Question.objects.get(id=pk)
-    question.delete()
-    course = EMODEL.Course.objects.all().filter(course_name=question.course)[0]
+    question.organization = organization
+    questionForm = EFORM.QuestionForm(instance=question)
+    options = EMODEL.Option.objects.filter(question=question)
+    optionForms = []
+    newOption=EFORM.OptionForm()
+
+    for option in options:
+        optionForms.append(EFORM.OptionForm(instance=option))
+
+    answer = EMODEL.Answer.objects.get(question=question)
+
+    if request.method == "POST":
+        course = EMODEL.Course.objects.get(id=request.POST.get("courseID"))
+        course.total_marks -= int(question.marks)
+        questionForm = EFORM.QuestionForm(request.POST, request.FILES,instance=question)
+        question = questionForm.save(commit=False)
+        question.course = course
+        course.total_marks += int(request.POST.get("marks"))
+        course.save()
+        question.save()
+        for option in options:
+            option.delete()
+        
+        # answerForm.delete()
+
+        options_list = request.POST.getlist("option")
+        answer_resp = request.POST.get("answer")
+        for option in options_list:
+            option_obj = EMODEL.Option.objects.create(option=option,question=question)
+            option_obj.save()
+            if option == answer_resp:
+                answer_obj = EMODEL.Answer.objects.create(question=question,answer=option_obj)
+                answer_obj.save()
+
+        return redirect("teacher-view-question-course")
+    return render(
+        request,
+        "teacher/teacher_update_question.html",
+        {"questionForm": questionForm, "optionForm": optionForms,"answerForm":answer.answer.option,"newOption":newOption},
+    )
+
+@login_required(login_url="teacherlogin")
+@user_passes_test(is_teacher)
+def teacher_remove_question_view(request, pk):
+    question = EMODEL.Question.objects.get(id=pk)
+    course = EMODEL.Course.objects.filter(course_name=question.course)[0]
     course.question_number -= 1
     course.total_marks -= question.marks
+    question.delete()
     course.save()
-    return HttpResponseRedirect("/teacher/teacher-view-question")
+    return redirect("teacher-view-question-course")

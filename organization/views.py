@@ -526,9 +526,9 @@ def organization_update_question_view(request, pk):
 @user_passes_test(is_organization)
 def delete_question_view(request, pk):
     question = EMODEL.Question.objects.get(id=pk)
-    course = EMODEL.Course.objects.all().filter(course_name=question.course)[0]
+    course = EMODEL.Course.objects.filter(course_name=question.course)[0]
     course.question_number -= 1
     course.total_marks -= question.marks
     question.delete()
     course.save()
-    return HttpResponseRedirect("organization-view-question")
+    return redirect(request.META.get('HTTP_REFERER'))

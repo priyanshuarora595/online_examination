@@ -39,19 +39,24 @@ def is_admin(user):
 
 def afterlogin_view(request):
     if is_student(request.user):
-        return redirect("student/student-dashboard")
+        response = redirect("student/student-dashboard")
+        org = SMODEL.Student.objects.filter(user=request.user).first().organization
+        response.set_cookie("organization",org)
+        return response
 
     elif is_teacher(request.user):
-        accountapproval = TMODEL.Teacher.objects.all().filter(
+        accountapproval = TMODEL.Teacher.objects.filter(
             user_id=request.user.id, status=True
         )
         if accountapproval:
-            return redirect("teacher/teacher-dashboard")
+            response = redirect("teacher/teacher-dashboard")
+            response.set_cookie("organization",accountapproval.first().organization)
+            return response
         else:
             return render(request, "teacher/teacher_wait_for_approval.html")
 
     elif is_organization(request.user):
-        accountapproval = OMODEL.Organization.objects.all().filter(
+        accountapproval = OMODEL.Organization.objects.filter(
             user_id=request.user.id, status=True
         )
         if accountapproval:

@@ -17,5 +17,16 @@
 <br><br>
 {% include "exam/footer.html" %}
 
+<script>
+  function clearAllCookies(){
+    var Cookies = document.cookie.split(';');
+ // set past expiry to all cookies
+for (var i = 0; i < Cookies.length; i++) {
+   document.cookie = Cookies[i] + "=; expires="+ new Date(0).toUTCString();
+}
+  }
+
+  clearAllCookies()
+</script>
   </body>
 </html>

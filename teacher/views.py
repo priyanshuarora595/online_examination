@@ -9,6 +9,7 @@ from student import models as SMODEL
 from organization import models as OMODEL
 from teacher import models as TMODEL
 from exam import forms as EFORM
+from teacher import forms as TFORM
 
 
 # for showing signup/login button for teacher
@@ -29,8 +30,13 @@ def teacher_signup_view(request):
     teacherForm = forms.TeacherForm()
     mydict = {"userForm": userForm, "teacherForm": teacherForm}
     if request.method == "POST":
+        request.POST._mutable = True
+        request.POST["salary"] = 0
+        request.POST._mutable = False
         userForm = forms.TeacherUserForm(request.POST)
         teacherForm = forms.TeacherForm(request.POST, request.FILES)
+        print(userForm.errors)
+        print(teacherForm.errors)
         if userForm.is_valid() and teacherForm.is_valid():
             user = userForm.save()
             user.set_password(user.password)
@@ -46,6 +52,29 @@ def teacher_signup_view(request):
         return HttpResponseRedirect("teacherlogin")
     return render(request, "teacher/teachersignup.html", context=mydict)
 
+@login_required(login_url="teacherlogin")
+@user_passes_test(is_teacher)
+def teacher_profile_view(request):
+    teacher = TMODEL.Teacher.objects.get(user=request.user)
+    user = TMODEL.User.objects.get(id=teacher.user_id)
+    userForm = EFORM.UserUpdateForm(instance=user)
+    teacherForm = TFORM.TeacherForm(instance=teacher)
+    teacherForm.fields['salary'].widget.attrs['readonly'] = True
+    mydict = {"userForm": userForm, "teacherForm": teacherForm}
+
+    if request.method == "POST":
+        request.POST._mutable = True
+        request.POST["organizationID"] = teacher.organization_id
+        request.POST["salary"] = teacher.salary
+        request.POST._mutable = False
+        userForm = EFORM.UserUpdateForm(request.POST, instance=user)
+        teacherForm = TFORM.TeacherForm(request.POST, instance=teacher)
+        if userForm.is_valid() and teacherForm.is_valid():
+            pass
+            userForm.save()
+            teacherForm.save()
+            return redirect("teacher-profile")
+    return render(request, "teacher/teacher_update_profile.html", context=mydict)
 
 @login_required(login_url="teacherlogin")
 @user_passes_test(is_teacher)
@@ -115,7 +144,7 @@ def teacher_update_course_view(request, pk):
         return redirect("teacher-view-course")
     return render(
         request,
-        "teacher/update_course.html",
+        "teacher/teacher_update_course.html",
         {"courseForm": courseForm, "organization_id": organization.id},
     )
 
@@ -245,4 +274,4 @@ def teacher_remove_question_view(request, pk):
     course.total_marks -= question.marks
     question.delete()
     course.save()
-    return redirect("teacher-view-question-course")
+    return redirect(request.META.get('HTTP_REFERER'))

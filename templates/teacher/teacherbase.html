@@ -177,13 +177,15 @@
 
       <img src="{% static "image/teacher.png" %}" class="profile_image" alt="">
       <h4>{{request.user.first_name}}</h4>
-      <h6 style="color: rgb(255, 255, 255);">( Teacher )</h6>
+      
+      <h6 style="color: rgb(255, 255, 255);">( {{ request.COOKIES.organization }} )</h6>
 
     </center>
 
     <a href="/teacher/teacher-dashboard"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
     <a href="/teacher/teacher-course"><i class="fas fa-book"></i><span>Manage Courses</span></a>
     <a href="/teacher/teacher-question"><i class="fas fa-question-circle"></i><span>Manage Questions</span></a>
+    <a href="/teacher/teacher-profile"><i class="fas fa-question-circle"></i><span>Manage Profile</span></a>
   </div>
   <!--sidebar end-->
 

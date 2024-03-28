@@ -1,9 +1,19 @@
+from typing import Any
+from django.http import HttpRequest
+from django.http.response import HttpResponse as HttpResponse
 from django.urls import path,include
 from django.contrib import admin
 from exam import views
 from django.contrib.auth.views import LogoutView,LoginView
 from django.conf import settings
 from django.conf.urls.static import static
+
+class LogoutViewCustom(LogoutView):
+    def dispatch(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        request.COOKIES.clear()
+        return super().dispatch(request, *args, **kwargs)
+    pass
+
 urlpatterns = [
    
     path('admin/', admin.site.urls),
@@ -14,7 +24,7 @@ urlpatterns = [
 
 
     path('',views.home_view,name=''),
-    path('logout', LogoutView.as_view(template_name='exam/logout.html'),name='logout'),
+    path('logout', LogoutViewCustom.as_view(template_name='exam/logout.html'),name='logout'),
     path('contactus', views.contactus_view),
     path('afterlogin', views.afterlogin_view,name='afterlogin'),
 

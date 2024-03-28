@@ -96,8 +96,8 @@ def start_exam_view(request,pk):
         questions,question_id_list,selected_ids=QMODEL.Question.get_random(course=course,n=100)
         # print(questions)
         request.session['filtered'] = '1'
-        request.session['question_id_list'] = question_id_list;
-        request.session['course_id'] = pk;
+        request.session['question_id_list'] = question_id_list
+        request.session['course_id'] = pk
         request.session['page_number'] = 1
         request.session['selected_ids'] = selected_ids
         paginator = Paginator(questions,1)

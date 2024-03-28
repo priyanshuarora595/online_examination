@@ -55,26 +55,46 @@
   
 
   <script>
-    function addCodeToForm() {
-        var form = document.getElementById("options");
-    
-        // Create a new input element
-        var elem = `<div ><label >Option</label>
-        {% render_field optionForm.option|attr:'required:true' class="form-control" placeholder="Example: Coding" oninput="createDropdown()"  %}
-        <button  onclick="deleteCodeFromForm(this)">Delete Option</button>
-        <br/><br/>
-      </div>`
-    
-        // Append the new input element to the form
-        form.innerHTML += elem;
-        createDropdown()
-    }
-    
     function deleteCodeFromForm(elem) {
-        obj = elem.parentElement
-        obj.remove();
-        createDropdown();
-    }
+      obj = elem.parentElement
+      obj.remove();
+      createDropdown();
+  }
+  
+    function addCodeToForm() {
+      // Append the new input element to the form
+     // form.innerHTML += elem;
+    const div = document.createElement('div');
+    const label = document.createElement('label');
+    label.innerHTML = "OPTION";
+    div.appendChild(label);
+
+    var inputElem = document.createElement('input');
+    inputElem.type = "text";
+    inputElem.className="form-control";
+    inputElem.name="option";
+    inputElem.maxlength="200";
+    //inputElem.oninput="createDropdown()";
+    inputElem.placeholder = "Example";
+    inputElem.required = true;
+    inputElem.addEventListener('input', function(event){
+      createDropdown();
+    })
+
+    div.appendChild(inputElem);
+
+    var btn = document.createElement('button');
+    btn.innerHTML = "DELETE";
+    btn.type="button"
+    btn.addEventListener('click',function(event){deleteCodeFromForm(this)})
+
+    div.appendChild(btn)
+    div.appendChild(document.createElement("br"))
+    div.appendChild(document.createElement("br"))
+
+    document.getElementById("options").appendChild(div);
+    createDropdown()
+  }
 
     function createDropdown() {
       var optionsDiv = document.getElementById("options");

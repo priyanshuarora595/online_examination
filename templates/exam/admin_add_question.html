@@ -36,17 +36,7 @@
         <br>
 
       <div id="options">
-        <div id="option_1">
-      <label for="option1">Option 1</label>
-      {% render_field optionForm.option|attr:'required:true' class="form-control" placeholder="Example: Quick Design" %}
-        <br>
-        </div>
-
-      <div id="option_2">
-      <label for="option2">Option 2</label>
-      {% render_field optionForm.option|attr:'required:true' class="form-control" placeholder="Example: Coding" %}
-        <br>
-      </div>
+        <h4> Options</h4>
       </div>
         
       <label for="answer" onload="createDropdown()">Correct Answer</label>
@@ -65,46 +55,45 @@
   
 
   <script>
-    function deleteCodeFromForm(elem) {
-      obj = elem.parentElement
-      obj.remove();
-      createDropdown();
-  }
-  
     function addCodeToForm() {
-      // Append the new input element to the form
-     // form.innerHTML += elem;
-    const div = document.createElement('div');
-    const label = document.createElement('label');
-    label.innerHTML = "OPTION";
-    div.appendChild(label);
+        // Append the new input element to the form
+       // form.innerHTML += elem;
+      const div = document.createElement('div');
+      const label = document.createElement('label');
+      label.innerHTML = "OPTION";
+      div.appendChild(label);
 
-    var inputElem = document.createElement('input');
-    inputElem.type = "text";
-    inputElem.className="form-control";
-    inputElem.name="option";
-    inputElem.maxlength="200";
-    //inputElem.oninput="createDropdown()";
-    inputElem.placeholder = "Example";
-    inputElem.required = true;
-    inputElem.addEventListener('input', function(event){
-      createDropdown();
-    })
+      var inputElem = document.createElement('input');
+      inputElem.type = "text";
+      inputElem.className="form-control";
+      inputElem.name="option";
+      inputElem.maxlength="200";
+      //inputElem.oninput="createDropdown()";
+      inputElem.placeholder = "Example";
+      inputElem.required = true;
+      inputElem.addEventListener('input', function(event){
+        createDropdown();
+      })
 
-    div.appendChild(inputElem);
+      div.appendChild(inputElem);
 
-    var btn = document.createElement('button');
-    btn.innerHTML = "DELETE";
-    btn.type="button"
-    btn.addEventListener('click',function(event){deleteCodeFromForm(this)})
+      var btn = document.createElement('button');
+      btn.innerHTML = "DELETE";
+      btn.addEventListener('click',function(event){deleteCodeFromForm(this)})
 
-    div.appendChild(btn)
-    div.appendChild(document.createElement("br"))
-    div.appendChild(document.createElement("br"))
+      div.appendChild(btn)
+      div.appendChild(document.createElement("br"))
+      div.appendChild(document.createElement("br"))
 
-    document.getElementById("options").appendChild(div);
-    createDropdown()
-  }
+      document.getElementById("options").appendChild(div);
+      createDropdown()
+    }
+    
+    function deleteCodeFromForm(elem) {
+        obj = elem.parentElement
+        obj.remove();
+        createDropdown();
+    }
 
     function createDropdown() {
       var optionsDiv = document.getElementById("options");

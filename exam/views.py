@@ -437,21 +437,62 @@ def admin_add_question_view(request):
         question.save()
 
         options_list = request.POST.getlist("option")
-        answer_pos = int(request.POST.get("answer").split(" ")[1]) - 1
+        answer = request.POST.get("answer")
         for option in options_list:
             option_obj = EMODEL.Option.objects.create(option=option, question=question)
             option_obj.save()
-            if option == options_list[answer_pos]:
+            if option == answer:
                 answer_obj = EMODEL.Answer.objects.create(
                     question=question, answer=option_obj
                 )
                 answer_obj.save()
-
         return redirect("admin-add-question")
     return render(
+        request, "exam/admin_add_question.html", {"questionForm": questionForm,"optionForm":optionForm}
+    )
+
+@login_required(login_url="adminlogin")
+def admin_update_question_view(request,pk):
+    question = EMODEL.Question.objects.get(id=pk)
+    question.organization = question.course.organization
+    questionForm = EFORM.QuestionForm(instance=question)
+    options = EMODEL.Option.objects.filter(question=question)
+    optionForms = []
+    newOption=EFORM.OptionForm()
+
+    for option in options:
+        optionForms.append(EFORM.OptionForm(instance=option))
+
+    answer = EMODEL.Answer.objects.get(question=question)
+
+    if request.method == "POST":
+        course = EMODEL.Course.objects.get(id=request.POST.get("courseID"))
+        course.total_marks -= int(question.marks)
+        questionForm = EFORM.QuestionForm(request.POST, request.FILES,instance=question)
+        question = questionForm.save(commit=False)
+        question.course = course
+        course.total_marks += int(request.POST.get("marks"))
+        course.save()
+        question.save()
+        for option in options:
+            option.delete()
+        
+        # answerForm.delete()
+
+        options_list = request.POST.getlist("option")
+        answer_resp = request.POST.get("answer")
+        for option in options_list:
+            option_obj = EMODEL.Option.objects.create(option=option,question=question)
+            option_obj.save()
+            if option == answer_resp:
+                answer_obj = EMODEL.Answer.objects.create(question=question,answer=option_obj)
+                answer_obj.save()
+
+        return redirect(request.META.get('HTTP_REFERER'))
+    return render(
         request,
-        "exam/admin_add_question.html",
-        {"questionForm": questionForm, "optionForm": optionForm},
+        "exam/admin_update_question.html",
+        {"questionForm": questionForm, "optionForm": optionForms,"answerForm":answer.answer.option,"newOption":newOption},
     )
 
 
@@ -470,12 +511,12 @@ def view_question_view(request, pk):
 @login_required(login_url="adminlogin")
 def delete_question_view(request, pk):
     question = EMODEL.Question.objects.get(id=pk)
-    question.delete()
     course = EMODEL.Course.objects.all().filter(course_name=question.course)[0]
     course.question_number -= 1
     course.total_marks -= question.marks
+    question.delete()
     course.save()
-    return HttpResponseRedirect("/admin-view-question")
+    return redirect(request.META.get('HTTP_REFERER'))
 
 
 @login_required(login_url="adminlogin")
@@ -486,7 +527,8 @@ def admin_view_student_marks_view(request):
 
 @login_required(login_url="adminlogin")
 def admin_view_marks_view(request, pk):
-    courses = EMODEL.Course.objects.all()
+    student = SMODEL.Student.objects.get(user=pk)
+    courses = EMODEL.Course.objects.filter(organization=student.organization)
     response = render(request, "exam/admin_view_marks.html", {"courses": courses})
     response.set_cookie("student_id", str(pk))
     return response

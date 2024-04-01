@@ -3,17 +3,71 @@
 <html lang="en" dir="ltr">
 
 <style>
-  .jumbotron{
-    margin-bottom: 0px;
+
+  .outer-text{
+    animation: showup 7s infinite;
   }
+
+  .inner-text{
+    justify-content: center;
+    animation: reveal 7s infinite;
+  }
+
+  .text{
+    margin-left:-355px;
+    animation: slidein 7s infinite;
+  }
+
+  .clip{
+    overflow-x: hidden;
+    top: 0;
+    height: 100vh;
+    width: 20%;
+  }
+
+  .clip-left{
+    clip-path: polygon(0 0,0% 100%,100% 100%);
+    background-color: #212529;
+  }
+
+  .clip-right{
+    right: 0;
+    height: 100%;
+  }
+
+  @keyframes showup {
+    0% {opacity:0;}
+    20% {opacity:1;}
+    80% {opacity:1;}
+    100% {opacity:0;}
+  }
+
+  @keyframes slidein {
+    0% { margin-left:-2000px; }
+    50% { margin-left:0px; }
+    100% { margin-left: 0px; }
+  }
+
+  @keyframes reveal {
+    0% {opacity:1;width: 1000px;}
+    80% {opacity: 1;width: 1000px;}
+    100% {opacity:0;width:1000px;}
+  }
+
 </style>
 <body>
   {% include "exam/navbar.html" %}
 <br>
-<section id="section-jumbotron" class="jumbotron jumbotron-fluid d-flex justify-content-center align-items-center">
-  <div class="container text-center">
-    <h2 class="display-3 text-info">Online Examination System</h2>
-    <p class="display-4 d-none d-sm-block">Attend your examinations online!</p>
+<section id="section-jumbotron" class="jumbotron-fluid d-flex justify-content-center align-items-center">
+  <div class="clip clip-left">
+    
+  </div>
+  <div class="container text-center clip clip-right">
+    <h2 class="display-2 text-info outer-text">Online Examination System</h2>
+    <div class=" inner-text">
+      <p class="display-4 d-none d-sm-block text">Attend your examinations online!</p>
+    </div>
+    <br><br><br>
     <p class="lead">Sign Up now to start your first online examination</p>
 
   

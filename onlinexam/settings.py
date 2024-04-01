@@ -81,7 +81,11 @@ WSGI_APPLICATION = 'onlinexam.wsgi.application'
 # message configuration
 
 MESSAGE_TAGS = {
-    messages.ERROR : 'danger',
+        messages.DEBUG: 'secondary',
+        messages.INFO: 'info',
+        messages.SUCCESS: 'success',
+        messages.WARNING: 'warning',
+        messages.ERROR: 'danger',
 }
 
 # Database

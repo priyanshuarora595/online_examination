@@ -74,6 +74,9 @@
     background: #347736;
 }
 
+.errorlist > li{
+    color: red;
+} 
 
     </style>
   </head>
@@ -86,6 +89,10 @@
                 <form class="box" method="post">
                     {% csrf_token %}
                     <h1>Student Login Panel</h1>
+                    {% if form.non_field_errors %}
+                        {{ form.non_field_errors}}
+                    {% endif %}
+
 
                      {% render_field form.username class="form-control" autocomplete="off" placeholder="Username" %}
                      {% render_field form.password class="form-control" autocomplete="off" placeholder="Password" %}

@@ -100,15 +100,19 @@
         <input type="hidden" name="csrfmiddlewaretoken" value="C24rUotmdHawVQJL3KrqiWxvti8UffOFYUc8TRbZtLt36AVLdP3jbkzUVe3beRAa">
         <input type= "hidden" name="question_id" value="{{q.id}}" id="question_id">
         
+        {% for option in options %}
           <div class="form-check mx-4">
-            <input class="form-check-input" type="radio" name="{{ questions.number }}" id="{{q.option1}}" value="Option1">
-            <label class="form-check-label" for="option1">
-              {{q.option1}}
+            <input class="form-check-input" type="radio" name="{{ questions.number }}" id="{{q.option1}}" value={{option.option}}>
+            <label class="form-check-label" for="option">
+              {{option.option}}
             </label>
-          </div>
+            {% comment %} {{q.option1}} {% endcomment %}
+          </label>
+        </div>
+        {% endfor %}
 
         
-          <div class="form-check mx-4">
+          {% comment %} <div class="form-check mx-4">
             <input class="form-check-input" type="radio" name="{{ questions.number }}" id="{{q.option2}}" value="Option2">
             <label class="form-check-label" for="option2">
               {{q.option2}}
@@ -143,7 +147,7 @@
             <label class="form-check-label" for="option6">
               {{q.option6}}
             </label>
-          </div>
+          </div> {% endcomment %}
 
     {% endfor %}
 
@@ -153,7 +157,7 @@
         
         <div>
           {% if questions.has_previous %}
-          <a type="button" class="btn btn-success btn-lg" style="border-radius: 0%;" onclick="save()" href="{% url 'start-exam' course.id%}?page={{questions.previous_page_number}}" >Previous</a>
+          <a type="button" class="btn btn-success btn-lg" style="border-radius: 0%;" onclick="save()" href="{% url 'start-exam' course.id access_code %}?page={{questions.previous_page_number}}" >Previous</a>
           {% endif %}
         </div>
         
@@ -168,7 +172,7 @@
         
         <div>
           {% if questions.has_next %}
-          <a type="button" class="btn btn-success btn-lg" onclick="save()" style="border-radius: 0%;" href="{% url 'start-exam' course.id %}?page={{questions.next_page_number}}">Next</a>
+          <a type="button" class="btn btn-success btn-lg" onclick="save()" style="border-radius: 0%;" href="{% url 'start-exam' course.id access_code %}?page={{questions.next_page_number}}">Next</a>
           {% endif %}
         </div>
         

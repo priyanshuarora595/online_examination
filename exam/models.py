@@ -14,6 +14,7 @@ class Course(models.Model):
     total_marks = models.PositiveIntegerField(default=0)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
     access_code = models.UUIDField(default=uuid.uuid4)
+    duration = models.PositiveIntegerField(default=0)
     created_by = models.ForeignKey(User,on_delete=models.CASCADE)
 
     def __str__(self):
@@ -33,7 +34,7 @@ class Question(models.Model):
         import random
 
         n = int(n)  # Number of objects to return
-        last = cls.objects.count()
+        last = cls.objects.all().filter(course=course).count()
 
         selection = random.sample(range(0, last), n)
         selected_ids = []

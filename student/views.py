@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from . import forms,models
 from django.db.models import Sum
 from django.contrib.auth.models import Group
@@ -11,6 +11,8 @@ from organization import models as OMODEL
 from django.core.paginator import Paginator
 import json
 import random 
+
+from django.contrib import messages
 
 #for showing signup/login button for student
 def studentclick_view(request):
@@ -68,55 +70,68 @@ def take_exam_view(request,pk):
     #     del request.session['start_time']
     #     del request.session['remaining_time']
     course=QMODEL.Course.objects.get(id=pk)
-    
-    total_questions=QMODEL.Question.objects.all().filter(course=course).count()
-    questions=QMODEL.Question.objects.all().filter(course=course)
-    total_marks=0
-    for q in questions:
-        total_marks=total_marks + q.marks
-    return render(request,'student/take_exam.html',{'course':course,'total_questions':total_questions,'total_marks':total_marks})
+    return render(request,'student/take_exam.html',{'course':course})
 
 @login_required(login_url='studentlogin')
 @user_passes_test(is_student)
-def start_exam_view(request,pk):
+def start_exam_view(request,pk,access_code):
     # print(request.session.keys())
     fil=0
-    if 'remaining_time' not in request.session:
-            # request.session['start_time'] = time.time()
-            # end_time = request.session['start_time'] + 100 * 60 # 90 minutes in seconds
-            remaining_time = 100 * 60
-            request.session['remaining_time'] = int(remaining_time)
+    course=QMODEL.Course.objects.get(id=pk)
+
+    if course:
+        if access_code!=str(course.access_code):
+            messages.error(request, "Invalid Access Code")
+            return redirect(request.META.get('HTTP_REFERER'))
+        
+        if 'remaining_time' not in request.session:
+                # request.session['start_time'] = time.time()
+                # end_time = request.session['start_time'] + 100 * 60 # 90 minutes in seconds
+                # course=QMODEL.Course.objects.get(id=pk)
+                remaining_time = int(course.duration) * 60
+                request.session['remaining_time'] = int(remaining_time)
+        else:
+            remaining_time = request.session['remaining_time']
+            
+        if 'filtered' not in request.session:
+            fil=1
+            # request.session['time_left'] = date
+            # course=QMODEL.Course.objects.get(id=pk)
+            questions,question_id_list,selected_ids=QMODEL.Question.get_random(course=course,n=2)
+            # print(questions)
+            request.session['filtered'] = '1'
+            request.session['question_id_list'] = question_id_list
+            request.session['course_id'] = pk
+            request.session['page_number'] = 1
+            request.session['selected_ids'] = selected_ids
+            paginator = Paginator(questions,1)
+            page_number = 1
+            final_questions = paginator.get_page(page_number)
+            options = QMODEL.Option.objects.filter(question=final_questions.object_list[0])
+            answer = QMODEL.Answer.objects.filter(question=final_questions.object_list[0])
+            # options = QMODEL.Option.objects.filter(question=final_questions)
+            # print(options)
+            # print(final_questions)
+            
+        else:
+            # course = QMODEL.Course.objects.get(id=pk)
+            questions_ = QMODEL.Question.get_from_list(course=course,id_list=request.session['question_id_list'])
+            # print(questions_)
+            paginator = Paginator(questions_,1) 
+            page_number = request.GET.get("page")
+            final_questions = paginator.get_page(page_number)
+            print(final_questions.object_list[0])
+            options = QMODEL.Option.objects.filter(question=final_questions.object_list[0])
+            answer = QMODEL.Answer.objects.filter(question=final_questions.object_list[0])
+            print(options,answer)
+
+
+        response = render(request,'student/start_exam.html',{'course':course,'questions':final_questions,'access_code':access_code,'options':options,'answer':answer})
+        response.set_cookie("course_id",pk)
+        if(fil==1):
+            response.set_cookie("remaining_time",remaining_time)
     else:
-        remaining_time = request.session['remaining_time']
-        
-    if 'filtered' not in request.session:
-        fil=1
-        # request.session['time_left'] = date
-        course=QMODEL.Course.objects.get(id=pk)
-        questions,question_id_list,selected_ids=QMODEL.Question.get_random(course=course,n=100)
-        # print(questions)
-        request.session['filtered'] = '1'
-        request.session['question_id_list'] = question_id_list
-        request.session['course_id'] = pk
-        request.session['page_number'] = 1
-        request.session['selected_ids'] = selected_ids
-        paginator = Paginator(questions,1)
-        page_number = 1
-        final_questions = paginator.get_page(page_number)
-        # print(final_questions)
-        
-    else:
-        course = QMODEL.Course.objects.get(id=pk)
-        questions_ = QMODEL.Question.get_from_list(course=course,id_list=request.session['question_id_list'])
-        # print(questions_)
-        paginator = Paginator(questions_,1) 
-        page_number = request.GET.get("page")
-        final_questions = paginator.get_page(page_number)
-        
-    response= render(request,'student/start_exam.html',{'course':course,'questions':final_questions})
-    response.set_cookie("course_id",pk)
-    if(fil==1):
-        response.set_cookie("remaining_time",remaining_time)
+        response = redirect(request.META.HTTP_REFERER)
     return response
         
 

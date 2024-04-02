@@ -14,6 +14,8 @@ class Course(models.Model):
     total_marks = models.PositiveIntegerField(default=0)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
     access_code = models.UUIDField(default=uuid.uuid4)
+    duration = models.PositiveIntegerField(default=0)
+    passing_percentage = models.PositiveIntegerField(default=75)
     created_by = models.ForeignKey(User,on_delete=models.CASCADE)
 
     def __str__(self):
@@ -27,13 +29,14 @@ class Question(models.Model):
     question_image = models.ImageField(upload_to="image/Exam/", null=True, blank=True)
 
     @classmethod
-    def get_random(cls, course, n=100):
+    def get_random(cls, course, n):
         """Returns a number of random objects. Pass number when calling"""
 
         import random
 
-        n = int(n)  # Number of objects to return
-        last = cls.objects.count()
+        n = course.question_number  # Number of objects to return
+        # last = cls.objects.all().filter(course=course).count()
+        last = course.question_number
 
         selection = random.sample(range(0, last), n)
         selected_ids = []

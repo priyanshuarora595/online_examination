@@ -529,7 +529,7 @@ def view_question_view(request, pk):
 @login_required(login_url="adminlogin")
 def delete_question_view(request, pk):
     question = EMODEL.Question.objects.get(id=pk)
-    course = EMODEL.Course.objects.all().filter(course_name=question.course)[0]
+    course = EMODEL.Course.objects.all().filter(course_name=question.course)[0]        
     course.question_number -= 1
     course.total_marks -= question.marks
     question.delete()

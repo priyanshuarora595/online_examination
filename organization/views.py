@@ -13,6 +13,7 @@ from organization import forms as OFORM
 from exam import forms as EFORM
 from django.contrib.auth.models import User
 from django.db.models import Sum
+from django.contrib import messages
 
 
 # Create your views here.
@@ -45,7 +46,15 @@ def organization_signup_view(request):
             organization.save()
             my_organization_group = Group.objects.get_or_create(name="ORGANIZATION")
             my_organization_group[0].user_set.add(user)
-        return HttpResponseRedirect("organizationlogin")
+            return HttpResponseRedirect("organizationlogin")
+        else:
+            if userForm.errors:
+                for key,val in userForm.errors.as_data().items():
+                    messages.error(request,val[0].message)
+            if organizationForm.errors:
+                for key,val in organizationForm.errors.as_data().items():
+                    messages.error(request,val[0].message)
+            mydict = {"userForm": userForm, "organizationForm": organizationForm}
     return render(request, "organization/organizationsignup.html", context=mydict)
 
 

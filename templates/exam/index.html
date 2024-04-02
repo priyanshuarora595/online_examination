@@ -54,6 +54,49 @@
     100% {opacity:0;width:1000px;}
   }
 
+.button {
+  display: inline-block;
+  padding: .25rem 1rem;
+  border-radius: 1rem;
+  color: #190303;
+  text-transform: uppercase;
+  font-size: 1rem;
+  letter-spacing: .15rem;
+  transition: all .3s;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  &:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #7fc4e6;
+    border-radius: 3rem;
+    z-index: -2;
+  }
+  &:before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0%;
+    height: 100%;
+    background-color: #50a5cf;
+    transition: all .3s;
+    border-radius: 3rem;
+    z-index: -1;
+  }
+  &:hover {
+    color: #fff;
+    &:before {
+      width: 100%;
+    }
+  }
+}
+
 </style>
 <body>
   {% include "exam/navbar.html" %}
@@ -72,7 +115,7 @@
 
   
     <p><strong> Start Your Journey Here:</strong></p>
-    <a href="/student/studentsignup" class="btn btn-lg btn-info" style="padding-right: 35px; border-radius: 0%;"><i class="fa fa-graduation-cap" aria-hidden="true"></i> Sign Up as Student</a>
+    <a href="/student/studentsignup" class="button" style="padding-right: 35px;"><i class="fa fa-graduation-cap" aria-hidden="true"></i> Sign Up as Student</a>
     
     <br><br><br>
   </div>  

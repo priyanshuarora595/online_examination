@@ -45,7 +45,15 @@ def student_signup_view(request):
             student.save()
             my_student_group = Group.objects.get_or_create(name='STUDENT')
             my_student_group[0].user_set.add(user)
-        return HttpResponseRedirect('studentlogin')
+            return HttpResponseRedirect('studentlogin')
+        else:
+            if userForm.errors:
+                for key,val in userForm.errors.as_data().items():
+                    messages.error(request,val[0].message)
+            if studentForm.errors:
+                for key,val in studentForm.errors.as_data().items():
+                    messages.error(request,val[0].message)
+            mydict = {"userForm": userForm, "studentForm": studentForm}
     return render(request,'student/studentsignup.html',context=mydict)
 
 

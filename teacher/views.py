@@ -10,6 +10,7 @@ from organization import models as OrganizationModel
 from teacher import models as TeacherModel
 from exam import forms as ExamForms
 from teacher import forms as TeacherForms
+from django.contrib import messages
 
 
 # for showing signup/login button for teacher
@@ -28,18 +29,13 @@ def teacherclick_view(request):
 def teacher_signup_view(request):
     userForm = forms.TeacherUserForm()
     teacherForm = forms.TeacherForm()
-    mydict = {
-        "userForm": userForm,
-        "teacherForm": teacherForm
-    }
+    mydict = {"userForm": userForm, "teacherForm": teacherForm}
     if request.method == "POST":
         request.POST._mutable = True
         request.POST["salary"] = 0
         request.POST._mutable = False
         userForm = forms.TeacherUserForm(request.POST)
         teacherForm = forms.TeacherForm(request.POST, request.FILES)
-        print(userForm.errors)
-        print(teacherForm.errors)
         if userForm.is_valid() and teacherForm.is_valid():
             user = userForm.save()
             user.set_password(user.password)
@@ -52,8 +48,17 @@ def teacher_signup_view(request):
             teacher.save()
             my_teacher_group = Group.objects.get_or_create(name="TEACHER")
             my_teacher_group[0].user_set.add(user)
-        return HttpResponseRedirect("teacherlogin")
+            return HttpResponseRedirect("teacherlogin")
+        else:
+            if userForm.errors:
+                for key, val in userForm.errors.as_data().items():
+                    messages.error(request, val[0].message)
+            if teacherForm.errors:
+                for key, val in teacherForm.errors.as_data().items():
+                    messages.error(request, val[0].message)
+            mydict = {"userForm": userForm, "teacherForm": teacherForm}
     return render(request, "teacher/teachersignup.html", context=mydict)
+
 
 @login_required(login_url="teacherlogin")
 @user_passes_test(is_teacher)
@@ -63,16 +68,11 @@ def teacher_profile_view(request):
     user_form = ExamForms.UserUpdateForm(instance=user)
     teacherForm = TeacherForms.TeacherForm(instance=teacher)
 
+    user_form.fields["username"].widget.attrs["readonly"] = True
+    user_form.fields["email"].widget.attrs["readonly"] = True
 
-    user_form.fields['username'].widget.attrs['readonly'] = True
-    user_form.fields['email'].widget.attrs['readonly'] = True
-
-
-    teacherForm.fields['salary'].widget.attrs['readonly'] = True
-    mydict = {
-        "userForm": user_form, 
-        "teacherForm": teacherForm
-    }
+    teacherForm.fields["salary"].widget.attrs["readonly"] = True
+    mydict = {"userForm": user_form, "teacherForm": teacherForm}
 
     if request.method == "POST":
         request.POST._mutable = True
@@ -89,12 +89,15 @@ def teacher_profile_view(request):
             return redirect("teacher-profile")
     return render(request, "teacher/teacher_update_profile.html", context=mydict)
 
+
 @login_required(login_url="teacherlogin")
 @user_passes_test(is_teacher)
 def teacher_dashboard_view(request):
     organization = TeacherModel.Teacher.objects.get(user=request.user.id).organization
     dict = {
-        "total_course": ExamModel.Course.objects.filter(organization=organization).count(),
+        "total_course": ExamModel.Course.objects.filter(
+            organization=organization
+        ).count(),
         "total_student": StudentModel.Student.objects.filter(
             organization=organization
         ).count(),
@@ -126,7 +129,9 @@ def teacher_add_course_view(request):
         else:
             print("form is invalid")
         return redirect("teacher-view-course")
-    return render(request, "teacher/teacher_add_course.html", {"courseForm": courseForm})
+    return render(
+        request, "teacher/teacher_add_course.html", {"courseForm": courseForm}
+    )
 
 
 @login_required(login_url="teacherlogin")
@@ -161,11 +166,12 @@ def teacher_update_course_view(request, pk):
         {"courseForm": courseForm, "organization_id": organization.id},
     )
 
+
 @login_required(login_url="teacherlogin")
 @user_passes_test(is_teacher)
 def teacher_delete_course_view(request, pk):
     course = ExamModel.Course.objects.get(id=pk)
-    if course.created_by==request.user:
+    if course.created_by == request.user:
         course.delete()
     else:
         return render(request, "exam/unauthorized.html")
@@ -198,7 +204,9 @@ def teacher_add_question_view(request):
         options_list = request.POST.getlist("option")
         answer = request.POST.get("answer")
         for option in options_list:
-            option_obj = ExamModel.Option.objects.create(option=option, question=question)
+            option_obj = ExamModel.Option.objects.create(
+                option=option, question=question
+            )
             option_obj.save()
             if option == answer:
                 answer_obj = ExamModel.Answer.objects.create(
@@ -207,7 +215,9 @@ def teacher_add_question_view(request):
                 answer_obj.save()
         return redirect("teacher-add-question")
     return render(
-        request, "teacher/teacher_add_question.html", {"questionForm": questionForm,"optionForm":optionForm}
+        request,
+        "teacher/teacher_add_question.html",
+        {"questionForm": questionForm, "optionForm": optionForm},
     )
 
 
@@ -216,13 +226,18 @@ def teacher_add_question_view(request):
 def teacher_view_question_course_view(request):
     organization = TeacherModel.Teacher.objects.get(user=request.user.id).organization
     courses = ExamModel.Course.objects.filter(organization=organization)
-    return render(request, "teacher/teacher_view_question_course.html", {"courses": courses})
+    return render(
+        request, "teacher/teacher_view_question_course.html", {"courses": courses}
+    )
+
 
 @login_required(login_url="teacherlogin")
 @user_passes_test(is_teacher)
-def teacher_view_question_view(request,pk):
+def teacher_view_question_view(request, pk):
     questions = ExamModel.Question.objects.filter(course_id=pk)
-    return render(request, "teacher/teacher_view_question.html", {"questions": questions})
+    return render(
+        request, "teacher/teacher_view_question.html", {"questions": questions}
+    )
 
 
 # @login_required(login_url="teacherlogin")
@@ -241,7 +256,7 @@ def teacher_update_question_view(request, pk):
     questionForm = ExamForms.QuestionForm(instance=question)
     options = ExamModel.Option.objects.filter(question=question)
     optionForms = []
-    newOption=ExamForms.OptionForm()
+    newOption = ExamForms.OptionForm()
 
     for option in options:
         optionForms.append(ExamForms.OptionForm(instance=option))
@@ -251,7 +266,9 @@ def teacher_update_question_view(request, pk):
     if request.method == "POST":
         course = ExamModel.Course.objects.get(id=request.POST.get("courseID"))
         course.total_marks -= int(question.marks)
-        questionForm = ExamForms.QuestionForm(request.POST, request.FILES,instance=question)
+        questionForm = ExamForms.QuestionForm(
+            request.POST, request.FILES, instance=question
+        )
         question = questionForm.save(commit=False)
         question.course = course
         course.total_marks += int(request.POST.get("marks"))
@@ -259,24 +276,34 @@ def teacher_update_question_view(request, pk):
         question.save()
         for option in options:
             option.delete()
-        
+
         # answerForm.delete()
 
         options_list = request.POST.getlist("option")
         answer_resp = request.POST.get("answer")
         for option in options_list:
-            option_obj = ExamModel.Option.objects.create(option=option,question=question)
+            option_obj = ExamModel.Option.objects.create(
+                option=option, question=question
+            )
             option_obj.save()
             if option == answer_resp:
-                answer_obj = ExamModel.Answer.objects.create(question=question,answer=option_obj)
+                answer_obj = ExamModel.Answer.objects.create(
+                    question=question, answer=option_obj
+                )
                 answer_obj.save()
 
         return redirect("teacher-view-question-course")
     return render(
         request,
         "teacher/teacher_update_question.html",
-        {"questionForm": questionForm, "optionForm": optionForms,"answerForm":answer.answer.option,"newOption":newOption},
+        {
+            "questionForm": questionForm,
+            "optionForm": optionForms,
+            "answerForm": answer.answer.option,
+            "newOption": newOption,
+        },
     )
+
 
 @login_required(login_url="teacherlogin")
 @user_passes_test(is_teacher)
@@ -287,4 +314,4 @@ def teacher_remove_question_view(request, pk):
     course.total_marks -= question.marks
     question.delete()
     course.save()
-    return redirect(request.META.get('HTTP_REFERER'))
+    return redirect(request.META.get("HTTP_REFERER"))

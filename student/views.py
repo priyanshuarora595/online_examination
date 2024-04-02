@@ -77,6 +77,10 @@ def student_profile_view(request):
     }
 
     if request.method == "POST":
+        request.POST._mutable = True
+        request.POST["organizationID"] =student.organization.id
+        request.POST._mutable = False
+        
         user_form = ExamForms.UserUpdateForm(request.POST, instance=user)
         student_form = StudentForms.StudentForm(request.POST, instance=student)
         

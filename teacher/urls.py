@@ -4,9 +4,13 @@ from django.contrib.auth.views import LoginView
 
 urlpatterns = [
 path('teacherclick', views.teacherclick_view),
+
 path('teacherlogin', LoginView.as_view(template_name='teacher/teacherlogin.html'),name='teacherlogin'),
 path('teachersignup', views.teacher_signup_view,name='teachersignup'),
-path('teacher-profile', views.teacher_profile_view,name='teacher-profile'),
+
+path('teacher-profile', views.teacher_profile_view,
+name='teacher-profile'),
+
 path('teacher-dashboard', views.teacher_dashboard_view,name='teacher-dashboard'),
 path('teacher-course', views.teacher_course_view,name='teacher-course'),
 path('teacher-question', views.teacher_question_view,name='teacher-question'),

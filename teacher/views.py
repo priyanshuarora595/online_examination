@@ -4,12 +4,12 @@ from django.db.models import Sum
 from django.contrib.auth.models import Group
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required, user_passes_test
-from exam import models as EMODEL
-from student import models as SMODEL
-from organization import models as OMODEL
-from teacher import models as TMODEL
-from exam import forms as EFORM
-from teacher import forms as TFORM
+from exam import models as ExamModel
+from student import models as StudentModel
+from organization import models as OrganizationModel
+from teacher import models as TeacherModel
+from exam import forms as ExamForms
+from teacher import forms as TeacherForms
 
 
 # for showing signup/login button for teacher
@@ -28,7 +28,10 @@ def teacherclick_view(request):
 def teacher_signup_view(request):
     userForm = forms.TeacherUserForm()
     teacherForm = forms.TeacherForm()
-    mydict = {"userForm": userForm, "teacherForm": teacherForm}
+    mydict = {
+        "userForm": userForm,
+        "teacherForm": teacherForm
+    }
     if request.method == "POST":
         request.POST._mutable = True
         request.POST["salary"] = 0
@@ -43,7 +46,7 @@ def teacher_signup_view(request):
             user.save()
             teacher = teacherForm.save(commit=False)
             teacher.user = user
-            teacher.organization = OMODEL.Organization.objects.get(
+            teacher.organization = OrganizationModel.Organization.objects.get(
                 id=request.POST.get("organizationID")
             )
             teacher.save()
@@ -55,23 +58,33 @@ def teacher_signup_view(request):
 @login_required(login_url="teacherlogin")
 @user_passes_test(is_teacher)
 def teacher_profile_view(request):
-    teacher = TMODEL.Teacher.objects.get(user=request.user)
-    user = TMODEL.User.objects.get(id=teacher.user_id)
-    userForm = EFORM.UserUpdateForm(instance=user)
-    teacherForm = TFORM.TeacherForm(instance=teacher)
+    teacher = TeacherModel.Teacher.objects.get(user=request.user)
+    user = TeacherModel.User.objects.get(id=teacher.user_id)
+    user_form = ExamForms.UserUpdateForm(instance=user)
+    teacherForm = TeacherForms.TeacherForm(instance=teacher)
+
+
+    user_form.fields['username'].widget.attrs['readonly'] = True
+    user_form.fields['email'].widget.attrs['readonly'] = True
+
+
     teacherForm.fields['salary'].widget.attrs['readonly'] = True
-    mydict = {"userForm": userForm, "teacherForm": teacherForm}
+    mydict = {
+        "userForm": user_form, 
+        "teacherForm": teacherForm
+    }
 
     if request.method == "POST":
         request.POST._mutable = True
         request.POST["organizationID"] = teacher.organization_id
         request.POST["salary"] = teacher.salary
         request.POST._mutable = False
-        userForm = EFORM.UserUpdateForm(request.POST, instance=user)
-        teacherForm = TFORM.TeacherForm(request.POST, instance=teacher)
-        if userForm.is_valid() and teacherForm.is_valid():
+        user_form = ExamForms.UserUpdateForm(request.POST, instance=user)
+        teacherForm = TeacherForms.TeacherForm(request.POST, instance=teacher)
+
+        if user_form.is_valid() and teacherForm.is_valid():
             pass
-            userForm.save()
+            user_form.save()
             teacherForm.save()
             return redirect("teacher-profile")
     return render(request, "teacher/teacher_update_profile.html", context=mydict)
@@ -79,10 +92,10 @@ def teacher_profile_view(request):
 @login_required(login_url="teacherlogin")
 @user_passes_test(is_teacher)
 def teacher_dashboard_view(request):
-    organization = TMODEL.Teacher.objects.get(user=request.user.id).organization
+    organization = TeacherModel.Teacher.objects.get(user=request.user.id).organization
     dict = {
-        "total_course": EMODEL.Course.objects.filter(organization=organization).count(),
-        "total_student": SMODEL.Student.objects.filter(
+        "total_course": ExamModel.Course.objects.filter(organization=organization).count(),
+        "total_student": StudentModel.Student.objects.filter(
             organization=organization
         ).count(),
     }
@@ -98,13 +111,13 @@ def teacher_course_view(request):
 @login_required(login_url="teacherlogin")
 @user_passes_test(is_teacher)
 def teacher_add_course_view(request):
-    courseForm = EFORM.CourseForm()
-    organization = TMODEL.Teacher.objects.get(user=request.user.id).organization
+    courseForm = ExamForms.CourseForm()
+    organization = TeacherModel.Teacher.objects.get(user=request.user.id).organization
     if request.method == "POST":
         request.POST._mutable = True
         request.POST["organizationID"] = organization.id
         request.POST._mutable = False
-        courseForm = EFORM.CourseForm(request.POST)
+        courseForm = ExamForms.CourseForm(request.POST)
         if courseForm.is_valid():
             course = courseForm.save(commit=False)
             course.created_by = request.user
@@ -119,22 +132,22 @@ def teacher_add_course_view(request):
 @login_required(login_url="teacherlogin")
 @user_passes_test(is_teacher)
 def teacher_view_course_view(request):
-    organization = TMODEL.Teacher.objects.get(user=request.user.id).organization
-    courses = EMODEL.Course.objects.filter(organization=organization)
+    organization = TeacherModel.Teacher.objects.get(user=request.user.id).organization
+    courses = ExamModel.Course.objects.filter(organization=organization)
     return render(request, "teacher/teacher_view_course.html", {"courses": courses})
 
 
 @login_required(login_url="teacherlogin")
 @user_passes_test(is_teacher)
 def teacher_update_course_view(request, pk):
-    course = EMODEL.Course.objects.get(id=pk)
-    courseForm = EFORM.CourseForm(instance=course)
-    organization = TMODEL.Teacher.objects.get(user=request.user.id).organization
+    course = ExamModel.Course.objects.get(id=pk)
+    courseForm = ExamForms.CourseForm(instance=course)
+    organization = TeacherModel.Teacher.objects.get(user=request.user.id).organization
     if request.method == "POST":
         request.POST._mutable = True
         request.POST["organizationID"] = organization.id
         request.POST._mutable = False
-        courseForm = EFORM.CourseForm(request.POST, instance=course)
+        courseForm = ExamForms.CourseForm(request.POST, instance=course)
         if courseForm.is_valid():
             course = courseForm.save(commit=False)
             course.organization = organization
@@ -151,7 +164,7 @@ def teacher_update_course_view(request, pk):
 @login_required(login_url="teacherlogin")
 @user_passes_test(is_teacher)
 def teacher_delete_course_view(request, pk):
-    course = EMODEL.Course.objects.get(id=pk)
+    course = ExamModel.Course.objects.get(id=pk)
     if course.created_by==request.user:
         course.delete()
     else:
@@ -168,14 +181,14 @@ def teacher_question_view(request):
 @login_required(login_url="teacherlogin")
 @user_passes_test(is_teacher)
 def teacher_add_question_view(request):
-    organization = TMODEL.Teacher.objects.get(user=request.user.id).organization
+    organization = TeacherModel.Teacher.objects.get(user=request.user.id).organization
     og = {"organization": organization}
-    questionForm = EFORM.QuestionForm(initial=og)
-    optionForm = EFORM.OptionForm()
+    questionForm = ExamForms.QuestionForm(initial=og)
+    optionForm = ExamForms.OptionForm()
     if request.method == "POST":
-        questionForm = EFORM.QuestionForm(request.POST, request.FILES)
+        questionForm = ExamForms.QuestionForm(request.POST, request.FILES)
         question = questionForm.save(commit=False)
-        course = EMODEL.Course.objects.get(id=request.POST.get("courseID"))
+        course = ExamModel.Course.objects.get(id=request.POST.get("courseID"))
         question.course = course
         course.question_number += 1
         course.total_marks += int(request.POST.get("marks"))
@@ -185,10 +198,10 @@ def teacher_add_question_view(request):
         options_list = request.POST.getlist("option")
         answer = request.POST.get("answer")
         for option in options_list:
-            option_obj = EMODEL.Option.objects.create(option=option, question=question)
+            option_obj = ExamModel.Option.objects.create(option=option, question=question)
             option_obj.save()
             if option == answer:
-                answer_obj = EMODEL.Answer.objects.create(
+                answer_obj = ExamModel.Answer.objects.create(
                     question=question, answer=option_obj
                 )
                 answer_obj.save()
@@ -201,44 +214,44 @@ def teacher_add_question_view(request):
 @login_required(login_url="teacherlogin")
 @user_passes_test(is_teacher)
 def teacher_view_question_course_view(request):
-    organization = TMODEL.Teacher.objects.get(user=request.user.id).organization
-    courses = EMODEL.Course.objects.filter(organization=organization)
+    organization = TeacherModel.Teacher.objects.get(user=request.user.id).organization
+    courses = ExamModel.Course.objects.filter(organization=organization)
     return render(request, "teacher/teacher_view_question_course.html", {"courses": courses})
 
 @login_required(login_url="teacherlogin")
 @user_passes_test(is_teacher)
 def teacher_view_question_view(request,pk):
-    questions = EMODEL.Question.objects.filter(course_id=pk)
+    questions = ExamModel.Question.objects.filter(course_id=pk)
     return render(request, "teacher/teacher_view_question.html", {"questions": questions})
 
 
 # @login_required(login_url="teacherlogin")
 # @user_passes_test(is_teacher)
 # def see_question_view(request, pk):
-#     questions = EMODEL.Question.objects.all().filter(course_id=pk)
+#     questions = ExamModel.Question.objects.all().filter(course_id=pk)
 #     return render(request, "teacher/see_question.html", {"questions": questions})
 
 
 @login_required(login_url="teacherlogin")
 @user_passes_test(is_teacher)
 def teacher_update_question_view(request, pk):
-    organization = TMODEL.Teacher.objects.get(user=request.user.id).organization
-    question = EMODEL.Question.objects.get(id=pk)
+    organization = TeacherModel.Teacher.objects.get(user=request.user.id).organization
+    question = ExamModel.Question.objects.get(id=pk)
     question.organization = organization
-    questionForm = EFORM.QuestionForm(instance=question)
-    options = EMODEL.Option.objects.filter(question=question)
+    questionForm = ExamForms.QuestionForm(instance=question)
+    options = ExamModel.Option.objects.filter(question=question)
     optionForms = []
-    newOption=EFORM.OptionForm()
+    newOption=ExamForms.OptionForm()
 
     for option in options:
-        optionForms.append(EFORM.OptionForm(instance=option))
+        optionForms.append(ExamForms.OptionForm(instance=option))
 
-    answer = EMODEL.Answer.objects.get(question=question)
+    answer = ExamModel.Answer.objects.get(question=question)
 
     if request.method == "POST":
-        course = EMODEL.Course.objects.get(id=request.POST.get("courseID"))
+        course = ExamModel.Course.objects.get(id=request.POST.get("courseID"))
         course.total_marks -= int(question.marks)
-        questionForm = EFORM.QuestionForm(request.POST, request.FILES,instance=question)
+        questionForm = ExamForms.QuestionForm(request.POST, request.FILES,instance=question)
         question = questionForm.save(commit=False)
         question.course = course
         course.total_marks += int(request.POST.get("marks"))
@@ -252,10 +265,10 @@ def teacher_update_question_view(request, pk):
         options_list = request.POST.getlist("option")
         answer_resp = request.POST.get("answer")
         for option in options_list:
-            option_obj = EMODEL.Option.objects.create(option=option,question=question)
+            option_obj = ExamModel.Option.objects.create(option=option,question=question)
             option_obj.save()
             if option == answer_resp:
-                answer_obj = EMODEL.Answer.objects.create(question=question,answer=option_obj)
+                answer_obj = ExamModel.Answer.objects.create(question=question,answer=option_obj)
                 answer_obj.save()
 
         return redirect("teacher-view-question-course")
@@ -268,8 +281,8 @@ def teacher_update_question_view(request, pk):
 @login_required(login_url="teacherlogin")
 @user_passes_test(is_teacher)
 def teacher_remove_question_view(request, pk):
-    question = EMODEL.Question.objects.get(id=pk)
-    course = EMODEL.Course.objects.filter(course_name=question.course)[0]
+    question = ExamModel.Question.objects.get(id=pk)
+    course = ExamModel.Course.objects.filter(course_name=question.course)[0]
     course.question_number -= 1
     course.total_marks -= question.marks
     question.delete()

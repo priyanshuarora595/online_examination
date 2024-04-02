@@ -24,10 +24,9 @@
                     <p class="card-text">
                         </p><ul style="list-style:decimal;">
                             <li>Course : {{course.course_name}}</li>
-                            <li>Total Question : 100</li>
-                            <li>Total Marks : 100</li>
-                            {% comment %} <li>Total Question : {{total_questions}}</li>
-                            <li>Total Marks : {{total_marks}}</li> {% endcomment %}
+                            <li>Total Question : {{course.question_number}}</li>
+                            <li>Total Marks : {{course.total_marks}}</li>
+                            <li>Total Time : {{course.duration}} minutes</li>
                         </ul>
                     <p></p>
 
@@ -35,7 +34,7 @@
 
                     <h4 class="card-title">Rules :</h4>
                     <p class="card-text">
-                        </p><ul style="list-style:decimal;">
+                        <ul style="list-style:decimal;">
                             <li>All questions are MCQ (multiple choice question)</li>
                             <li><span class="text-danger">Only one choice is correct among the given.</span></li>
                             <li>Every question carry different marks.</li>
@@ -44,8 +43,19 @@
                             <li>Questions are presented randomly.</li>
                             <li>You will be able to view marks immediately once after you submit the answer.</li>
                         </ul>
-                    <p></p>
-                    <a href="{% url 'start-exam' pk=course.id%}?page=1" class="btn btn-success" style="border-radius:0px;">Enter Examination</a>
+                    </p>
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        <strong>Message: </strong>{{ message }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    {% endfor %}
+                    <label for="access_code">Please Enter Access Code for the Exam</label>
+                    <input class="form-control" type="text" name="access_code" id="course_access_id">
+                    <button type="button" class="btn btn-success" onclick="startExam()" >Start Exam</button>
+                    {% comment %} <a href="{% url 'start-exam' pk=course.id access_code='d2057ae5-c8d9-483d-a540-2f071023fa29' %}?page=1" class="btn btn-success" style="border-radius:0px;">Enter Examination</a> {% endcomment %}
                 </div>  
                 <div class="card-footer">Best Of Luck, Students!</div>  
             </div>  
@@ -55,4 +65,21 @@
 </div>
 
 <br><br><br><br><br><br>
+<script>
+    function  startExam() {
+        var accessCode = document.getElementById("course_access_id").value;
+        var courseId = {{course.id}};
+
+        var url = "{% url 'start-exam' pk=course.id access_code='d2057ae5-c8d9-483d-a540-2f071023fa29' %}?page=1"
+        url = url.replace("d2057ae5-c8d9-483d-a540-2f071023fa29",accessCode)
+        console.log(url);
+
+        //console.log(accessCode);
+        //console.log(courseId);
+        //console.log(window.location.pathname)
+        //window.location.pathname='student/start-exam/'+courseId+'/'+accessCode;
+        document.location.href=url;
+        
+    }
+</script>
 {% endblock content %}

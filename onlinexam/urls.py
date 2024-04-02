@@ -35,6 +35,7 @@ urlpatterns = [
     path('admin-dashboard', views.admin_dashboard_view,name='admin-dashboard'),
     path('invalid-user', views.invalid_user,name='invalid-user'),
 
+    path('delete-account', views.delete_account, name='delete-account'),
 
     path('admin-teacher', views.admin_teacher_view,name='admin-teacher'),
     path('admin-view-teacher', views.admin_view_teacher_view,name='admin-view-teacher'),

@@ -13,7 +13,7 @@ from student import forms as SFORM
 from organization import forms as OFORM
 from exam import forms as EFORM
 from django.contrib.auth.models import User
-
+from django.db.models import Q
 
 def home_view(request):
     if request.user.is_authenticated:
@@ -79,6 +79,24 @@ def adminclick_view(request):
         return HttpResponseRedirect("afterlogin")
     return HttpResponseRedirect("adminlogin")
 
+@login_required()
+def delete_account(request):
+    '''
+    delete a user account 
+    '''
+    username = request.user.username
+    user_email = request.user.email
+
+    if not username or not user_email:
+        # print('user information not enough to delete')
+        return redirect('invalid-user')
+    
+    user_obj = User.objects.filter(
+                    Q(username = username) | Q(email = user_email)
+                ).first()
+            
+    delete_info = user_obj.delete()
+    return redirect('')
 
 @login_required(login_url="adminlogin")
 @user_passes_test(is_admin)

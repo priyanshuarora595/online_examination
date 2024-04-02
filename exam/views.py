@@ -85,14 +85,14 @@ def delete_account(request):
     delete a user account 
     '''
     username = request.user.username
-    user_email = request.user.email
+    # user_email = request.user.email
 
-    if not username or not user_email:
-        # print('user information not enough to delete')
-        return redirect('invalid-user')
+    # if not username or not user_email:
+    #     # print('user information not enough to delete')
+    #     return redirect('invalid-user')
     
     user_obj = User.objects.filter(
-                    Q(username = username) | Q(email = user_email)
+                    Q(username = username)
                 ).first()
             
     delete_info = user_obj.delete()

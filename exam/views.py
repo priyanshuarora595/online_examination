@@ -15,6 +15,7 @@ from exam import forms as EFORM
 from django.contrib.auth.models import User
 from django.db.models import Q
 
+
 def home_view(request):
     if request.user.is_authenticated:
         return HttpResponseRedirect("afterlogin")
@@ -41,7 +42,7 @@ def afterlogin_view(request):
     if is_student(request.user):
         response = redirect("student/student-dashboard")
         org = SMODEL.Student.objects.filter(user=request.user).first().organization
-        response.set_cookie("organization",org)
+        response.set_cookie("organization", org)
         return response
 
     elif is_teacher(request.user):
@@ -50,7 +51,7 @@ def afterlogin_view(request):
         )
         if accountapproval:
             response = redirect("teacher/teacher-dashboard")
-            response.set_cookie("organization",accountapproval.first().organization)
+            response.set_cookie("organization", accountapproval.first().organization)
             return response
         else:
             return render(request, "teacher/teacher_wait_for_approval.html")
@@ -79,24 +80,33 @@ def adminclick_view(request):
         return HttpResponseRedirect("afterlogin")
     return HttpResponseRedirect("adminlogin")
 
+
 @login_required()
 def delete_account(request):
-    '''
-    delete a user account 
-    '''
+    """
+    delete a user account
+    """
     username = request.user.username
-    # user_email = request.user.email
+    user_obj = User.objects.filter(Q(username=username)).first()
 
-    # if not username or not user_email:
-    #     # print('user information not enough to delete')
-    #     return redirect('invalid-user')
-    
-    user_obj = User.objects.filter(
-                    Q(username = username)
-                ).first()
-            
-    delete_info = user_obj.delete()
-    return redirect('')
+    if is_organization(request.user):
+        org = OMODEL.Organization.objects.filter(user_id=request.user.id).first()
+        # org.delete()
+        teachers = TMODEL.Teacher.objects.filter(organization=org)
+        students = SMODEL.Student.objects.filter(organization=org)
+
+        # Delete related teacher profiles and user entries
+        for teacher in teachers:
+            teacher.user.delete()
+            # teacher.delete()
+
+        # Delete related student profiles and user entries
+        for student in students:
+            student.user.delete()
+            # student.delete()
+    user_obj.delete()
+    return redirect("")
+
 
 @login_required(login_url="adminlogin")
 @user_passes_test(is_admin)
@@ -466,17 +476,20 @@ def admin_add_question_view(request):
                 answer_obj.save()
         return redirect("admin-add-question")
     return render(
-        request, "exam/admin_add_question.html", {"questionForm": questionForm,"optionForm":optionForm}
+        request,
+        "exam/admin_add_question.html",
+        {"questionForm": questionForm, "optionForm": optionForm},
     )
 
+
 @login_required(login_url="adminlogin")
-def admin_update_question_view(request,pk):
+def admin_update_question_view(request, pk):
     question = EMODEL.Question.objects.get(id=pk)
     question.organization = question.course.organization
     questionForm = EFORM.QuestionForm(instance=question)
     options = EMODEL.Option.objects.filter(question=question)
     optionForms = []
-    newOption=EFORM.OptionForm()
+    newOption = EFORM.OptionForm()
 
     for option in options:
         optionForms.append(EFORM.OptionForm(instance=option))
@@ -486,7 +499,9 @@ def admin_update_question_view(request,pk):
     if request.method == "POST":
         course = EMODEL.Course.objects.get(id=request.POST.get("courseID"))
         course.total_marks -= int(question.marks)
-        questionForm = EFORM.QuestionForm(request.POST, request.FILES,instance=question)
+        questionForm = EFORM.QuestionForm(
+            request.POST, request.FILES, instance=question
+        )
         question = questionForm.save(commit=False)
         question.course = course
         course.total_marks += int(request.POST.get("marks"))
@@ -494,23 +509,30 @@ def admin_update_question_view(request,pk):
         question.save()
         for option in options:
             option.delete()
-        
+
         # answerForm.delete()
 
         options_list = request.POST.getlist("option")
         answer_resp = request.POST.get("answer")
         for option in options_list:
-            option_obj = EMODEL.Option.objects.create(option=option,question=question)
+            option_obj = EMODEL.Option.objects.create(option=option, question=question)
             option_obj.save()
             if option == answer_resp:
-                answer_obj = EMODEL.Answer.objects.create(question=question,answer=option_obj)
+                answer_obj = EMODEL.Answer.objects.create(
+                    question=question, answer=option_obj
+                )
                 answer_obj.save()
 
-        return redirect(request.META.get('HTTP_REFERER'))
+        return redirect(request.META.get("HTTP_REFERER"))
     return render(
         request,
         "exam/admin_update_question.html",
-        {"questionForm": questionForm, "optionForm": optionForms,"answerForm":answer.answer.option,"newOption":newOption},
+        {
+            "questionForm": questionForm,
+            "optionForm": optionForms,
+            "answerForm": answer.answer.option,
+            "newOption": newOption,
+        },
     )
 
 
@@ -529,12 +551,12 @@ def view_question_view(request, pk):
 @login_required(login_url="adminlogin")
 def delete_question_view(request, pk):
     question = EMODEL.Question.objects.get(id=pk)
-    course = EMODEL.Course.objects.all().filter(course_name=question.course)[0]        
+    course = EMODEL.Course.objects.all().filter(course_name=question.course)[0]
     course.question_number -= 1
     course.total_marks -= question.marks
     question.delete()
     course.save()
-    return redirect(request.META.get('HTTP_REFERER'))
+    return redirect(request.META.get("HTTP_REFERER"))
 
 
 @login_required(login_url="adminlogin")

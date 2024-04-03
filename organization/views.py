@@ -169,7 +169,6 @@ def organization_view_pending_teacher_view(request):
 @user_passes_test(is_organization)
 def approve_teacher_view(request, pk):
     teacherSalary = forms.TeacherSalaryForm()
-    print(request.POST)
     if request.method == "POST":
         teacherSalary = forms.TeacherSalaryForm(request.POST)
         if teacherSalary.is_valid():
@@ -503,7 +502,6 @@ def organization_update_question_view(request, pk):
         course = EMODEL.Course.objects.get(id=request.POST.get("courseID"))
         course.total_marks -= int(question.marks)
         questionForm = EFORM.QuestionForm(request.POST, request.FILES,instance=question)
-        print(request.POST)
         question = questionForm.save(commit=False)
         question.course = course
         course.total_marks += int(request.POST.get("marks"))

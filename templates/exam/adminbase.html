@@ -168,11 +168,28 @@
     <div class="left_area">
       <h3>Online Exam</h3>
     </div>
-    <div class="right_area">
-      <a href="/logout" class="logout_btn" style="border-radius:0px;"> Logout</a>
+    <div class="d-flex justify-content-end">
+      <div class="right_area">
+        <a href="/password-reset" class="logout_btn" style="border-radius:0px;">Change Password</a>
+      </div>
+      <div class="right_area">
+        <a href="/delete-account" class="logout_btn" style="border-radius:0px;">Delete Account?</a>
+      </div>
+      <div class="right_area">
+        <a href="/logout" class="logout_btn" style="border-radius:0px;">Logout</a>
+      </div>
+
     </div>
   </header>
   <!--header area end-->
+  {% for message in messages %}
+  <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+    <strong>Message: </strong>{{ message }}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  {% endfor %}
   <!--sidebar start-->
   <div class="sidebar">
     <center>

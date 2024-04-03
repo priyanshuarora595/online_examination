@@ -39,7 +39,7 @@ class CourseForm(forms.ModelForm):
 
     class Meta:
         model = EMODEL.Course
-        fields = ["course_name"]
+        fields = ["course_name","duration","passing_percentage"]
 
 
 class QuestionForm(forms.ModelForm):
@@ -97,4 +97,4 @@ class OptionForm(forms.ModelForm):
 class UserUpdateForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ["first_name", "last_name", "username"]
+        fields = ["first_name", "last_name", "username", 'email']

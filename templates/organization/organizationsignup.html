@@ -20,6 +20,14 @@
 <br><br><br>
 <div class="container">
   <h3 style="text-align: center;">Organization Signup Form</h3>
+  {% for message in messages %}
+  <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+    <strong>Message: </strong>{{ message }}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  {% endfor %}
 <form method="POST" autocomplete="off" enctype="multipart/form-data">
     {% csrf_token %}
     
@@ -53,6 +61,10 @@
         <div class="form-group col-md-6">
           <label for="inputPassword4">Password</label>
           {% render_field userForm.password|attr:'required:true'  class="form-control" placeholder="password" %}
+        </div>
+        <div class="form-group col-md-6">
+          <label for="email">Email</label>
+          {% render_field userForm.email|attr:'required:true'  class="form-control" placeholder="Email" %}
         </div>
       </div>
 

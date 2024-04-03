@@ -4,9 +4,17 @@ from django.http.response import HttpResponse as HttpResponse
 from django.urls import path,include
 from django.contrib import admin
 from exam import views
-from django.contrib.auth.views import LogoutView,LoginView
+from django.contrib.auth.views import (
+    LogoutView, 
+    LoginView, 
+    PasswordResetView,
+    PasswordResetDoneView, 
+    PasswordResetConfirmView, 
+    PasswordResetCompleteView
+)
 from django.conf import settings
 from django.conf.urls.static import static
+from django.urls import reverse_lazy
 
 class LogoutViewCustom(LogoutView):
     def dispatch(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
@@ -28,6 +36,27 @@ urlpatterns = [
     path('contactus', views.contactus_view),
     path('afterlogin', views.afterlogin_view,name='afterlogin'),
 
+    path('password-reset/', PasswordResetView.as_view(
+            template_name='common/password_reset.html', success_url = reverse_lazy('password-reset-done'),
+            email_template_name = 'common/password_reset_email.html'
+        ), 
+        name='password-reset',
+    ),
+    path('password-reset-done/', PasswordResetDoneView.as_view(
+            template_name="common/password_reset_done.html",
+        ), 
+        name='password-reset-done',
+    ),
+    path('password-reset-confirm/<uidb64>/<token>/', PasswordResetConfirmView.as_view(
+        template_name='common/password_reset_confirm.html', success_url = reverse_lazy('password-reset-complete'),
+        ),
+        name='password-reset-confirm',
+    ),
+    path('password-reset-complete/', PasswordResetCompleteView.as_view(
+        template_name='common/password_reset_complete.html'), 
+        name='password-reset-complete',
+    ),
+
 
 
     path('adminclick', views.adminclick_view),
@@ -35,6 +64,7 @@ urlpatterns = [
     path('admin-dashboard', views.admin_dashboard_view,name='admin-dashboard'),
     path('invalid-user', views.invalid_user,name='invalid-user'),
 
+    path('delete-account', views.delete_account, name='delete-account'),
 
     path('admin-teacher', views.admin_teacher_view,name='admin-teacher'),
     path('admin-view-teacher', views.admin_view_teacher_view,name='admin-view-teacher'),

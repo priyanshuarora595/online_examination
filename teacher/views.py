@@ -68,8 +68,9 @@ def teacher_profile_view(request):
     user_form = ExamForms.UserUpdateForm(instance=user)
     teacherForm = TeacherForms.TeacherForm(instance=teacher)
 
+    # making the username field read only
     user_form.fields["username"].widget.attrs["readonly"] = True
-    user_form.fields["email"].widget.attrs["readonly"] = True
+    # user_form.fields["email"].widget.attrs["readonly"] = True
 
     teacherForm.fields["salary"].widget.attrs["readonly"] = True
     mydict = {"userForm": user_form, "teacherForm": teacherForm}

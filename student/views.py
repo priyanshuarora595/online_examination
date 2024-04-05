@@ -67,9 +67,10 @@ def student_profile_view(request):
     user = StudentModel.User.objects.get(id=request.user.id)
     user_form = ExamForms.UserUpdateForm(instance=user)
     student_form = StudentForms.StudentForm(instance = student)
-    
+
+    # making the username field read only    
     user_form.fields['username'].widget.attrs['readonly'] = True
-    user_form.fields['email'].widget.attrs['readonly'] = True
+    # user_form.fields['email'].widget.attrs['readonly'] = True
 
     page_context  = {
         "userForm": user_form,

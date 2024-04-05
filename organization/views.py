@@ -84,7 +84,10 @@ def organization_profile_view(request):
     user = OMODEL.User.objects.get(id=request.user.id)
     userForm = forms.UserUpdateForm(instance=user)
     organizationForm = OFORM.OrganizationForm(instance=organization)
-    mydict = {"userForm": userForm, "organizationForm": organizationForm}
+    page_context = {
+        "userForm": userForm, 
+        "organizationForm": organizationForm
+    }
 
     if request.method == "POST":
         userForm = forms.UserUpdateForm(request.POST, instance=user)
@@ -96,7 +99,7 @@ def organization_profile_view(request):
             return redirect("organization-profile")
         else:
             return render(request, "exam/unauthorized.html")
-    return render(request, "organization/update_organization.html", context=mydict)
+    return render(request, "organization/update_organization.html", context=page_context)
 
 
 @login_required(login_url="organizationlogin")

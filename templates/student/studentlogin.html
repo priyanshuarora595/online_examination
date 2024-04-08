@@ -12,7 +12,7 @@
     background: #304352;  /* fallback for old browsers */
     background: -webkit-linear-gradient(to right, #d7d2cc, #304352);  /* Chrome 10-25, Safari 5.1-6 */
     background: linear-gradient(to right, #d7d2cc, #304352); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-
+    width: 100%;
 }
 
 .box {
@@ -78,11 +78,18 @@
     color: red;
 } 
 
+.forget-password-link{
+    text-decoration: none;
+}
+.forget-password-link:hover{
+    color : white;
+}
+
     </style>
   </head>
   <body>
     {% include "exam/navbar.html" %}
-    <div class="container">
+    <div class="container-form">
     <div class="row">
         <div class="col-md-6">
             <div class="card">
@@ -96,6 +103,10 @@
 
                      {% render_field form.username class="form-control" autocomplete="off" placeholder="Username" %}
                      {% render_field form.password class="form-control" autocomplete="off" placeholder="Password" %}
+                    
+                     <div>
+                        <a class="forget-password-link" href="{% url 'password-reset' %}">Forget Password?</a>
+                     </div>
 
                      <input type="submit" name="" value="Login">
 
@@ -104,9 +115,6 @@
         </div>
     </div>
 </div>
-<br><br><br><br><br><br><br><br><br>
-<br><br><br><br><br><br><br><br><br>
-<br><br><br><br><br>
 {% include "exam/footer.html" %}
   </body>
 </html>

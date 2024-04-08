@@ -4,6 +4,12 @@
 
 <style>
 
+  body{
+    background: #304352;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #d7d2cc, #304352);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #d7d2cc, #304352); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  }
+
   .outer-text{
     animation: showup 7s infinite;
   }
@@ -20,7 +26,7 @@
 
   .clip{
     overflow-x: hidden;
-    top: 0;
+    top: 10px;
     height: 100vh;
     width: 20%;
   }
@@ -73,7 +79,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #7fc4e6;
+    background-color: #70adc0;
     border-radius: 3rem;
     z-index: -2;
   }
@@ -96,7 +102,30 @@
     }
   }
 }
+@media screen and (max-width: 1110px){
+  .inner-text{
+    max-width: 700px;
+    justify-content: center;
+    animation: reveal 7s infinite;
+  }
 
+  .text{
+    margin-left:-500px;
+    animation: slidein 7s infinite;
+  }
+
+  @keyframes slidein {
+    0% { margin-left:-2000px; }
+    50% { margin-left:0px; }
+    100% { margin-left: 0px; }
+  }
+
+  @keyframes reveal {
+    0% {opacity:1;width: 1000px;}
+    80% {opacity: 1;width: 1000px;}
+    100% {opacity:0;width:1000px;}
+  }
+}
 </style>
 <body>
   {% include "exam/navbar.html" %}
@@ -106,9 +135,9 @@
     
   </div>
   <div class="container text-center clip clip-right">
-    <h2 class="display-2 text-info outer-text">Online Examination System</h2>
+    <h2 class="display-2 outer-text">Online Examination System</h2>
     <div class=" inner-text">
-      <p class="display-4 d-none d-sm-block text">Attend your examinations online!</p>
+      <p class="display-4 text">Attend your examinations online!</p>
     </div>
     <br><br><br>
     <p class="lead">Sign Up now to start your first online examination</p>

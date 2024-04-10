@@ -71,7 +71,10 @@
         var courseId = {{course.id}};
 
         var url = "{% url 'start-exam' pk=course.id access_code='d2057ae5-c8d9-483d-a540-2f071023fa29' %}?page=1"
-        url = url.replace("d2057ae5-c8d9-483d-a540-2f071023fa29",accessCode)
+        if(accessCode!=""){
+            url = url.replace("d2057ae5-c8d9-483d-a540-2f071023fa29",accessCode)
+            console.log(url);
+        }
         console.log(url);
 
         //console.log(accessCode);

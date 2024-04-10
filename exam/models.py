@@ -6,6 +6,7 @@ from organization.models import Organization
 from django.contrib.auth.models import User
 
 import uuid
+import os
 
 
 class Course(models.Model):
@@ -21,12 +22,14 @@ class Course(models.Model):
     def __str__(self):
         return self.course_name
 
+def get_image_path(instance, filename):
+    return os.path.join('image/Exam', instance.course.course_name, filename)
 
 class Question(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     marks = models.PositiveIntegerField(default=1)
     question = models.CharField(max_length=1500)
-    question_image = models.ImageField(upload_to="image/Exam/", null=True, blank=True)
+    question_image = models.ImageField(upload_to=get_image_path, null=True, blank=True)
 
     @classmethod
     def get_random(cls, course, n):

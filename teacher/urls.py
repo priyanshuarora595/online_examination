@@ -22,6 +22,7 @@ path('teacher-delete-course/<int:pk>', views.teacher_delete_course_view,name='te
 
 
 path('teacher-add-question', views.teacher_add_question_view,name='teacher-add-question'),
+path('teacher-upload-question', views.teacher_upload_questions_file,name='teacher-upload-question'),
 path('teacher-view-question-course', views.teacher_view_question_course_view,name='teacher-view-question-course'),
 path('teacher-view-question/<int:pk>', views.teacher_view_question_view,name='teacher-view-question'),
 path('teacher-update-question/<int:pk>', views.teacher_update_question_view,name='teacher-update-question'),

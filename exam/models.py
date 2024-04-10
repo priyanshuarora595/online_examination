@@ -58,6 +58,13 @@ class Question(models.Model):
             selected_objects.append(cls.objects.all().filter(course=course)[each])
         # print(selected_objects)
         return selected_objects
+    
+    def delete(self,using=None, keep_parents=False):
+        if self.question_image:
+            self.question_image.delete()
+        else:
+            pass
+        return super().delete(using, keep_parents)
 
 
 class Option(models.Model):

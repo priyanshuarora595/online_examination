@@ -101,12 +101,14 @@ urlpatterns = [
 
     path('admin-question', views.admin_question_view,name='admin-question'),
     path('admin-add-question', views.admin_add_question_view,name='admin-add-question'),
+    path('admin-upload-question', views.admin_upload_questions_file,name='admin-upload-question'),
     path('admin-view-question', views.admin_view_question_view,name='admin-view-question'),
     path('view-question/<int:pk>', views.view_question_view,name='view-question'),
     path('update-question/<int:pk>', views.admin_update_question_view,name='update-question'),
     path('delete-question/<int:pk>', views.delete_question_view,name='delete-question'),
 
-
+    path('download-question-file-format', views.download_question_file_format,name='download-question-file-format'),
+    path('download-sample-question-file', views.download_sample_question_file,name='download-sample-question-file'),
 ]
 
 urlpatterns+= static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

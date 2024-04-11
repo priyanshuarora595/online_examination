@@ -141,6 +141,10 @@ def start_exam_view(request,pk,access_code):
             messages.error(request, "Invalid Access Code")
             return redirect(request.META.get('HTTP_REFERER'))
         
+        if QuestionModel.Result.objects.filter(student=student,exam=course).exists():
+            messages.error(request, "You have already taken this exam.")
+            return redirect(request.META.get('HTTP_REFERER'))
+        
         if 'remaining_time' not in request.session:
                 # request.session['start_time'] = time.time()
                 # end_time = request.session['start_time'] + 100 * 60 # 90 minutes in seconds

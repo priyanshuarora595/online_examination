@@ -382,3 +382,27 @@ def teacher_remove_question_view(request, pk):
     question.delete()
     course.save()
     return redirect(request.META.get("HTTP_REFERER"))
+
+@login_required(login_url="teacherlogin")
+@user_passes_test(is_teacher)
+def teacher_view_results_courses(request):
+    organization = TeacherModel.Teacher.objects.get(user=request.user.id).organization
+    courses = ExamModel.Course.objects.filter(organization=organization,created_by=request.user)
+    response = render(
+        request, "teacher/teacher_view_result_courses.html", {"courses": courses}
+    )
+    return response
+
+@login_required(login_url="teacherlogin")
+@user_passes_test(is_teacher)
+def teacher_view_marks(request,pk):
+    organization = TeacherModel.Teacher.objects.get(user=request.user.id).organization
+    # courses = ExamModel.Course.objects.filter(organization=organization,created_by=request.user)
+    # students = StudentModel.Student.objects.filter(organization=organization,)
+    results = ExamModel.Result.objects.filter(exam__id=pk)
+    response = render(
+        request, "teacher/teacher_check_marks.html", {"results": results}
+    )
+    print(results)
+    # response.set_cookie("student_id", str(pk))
+    return response

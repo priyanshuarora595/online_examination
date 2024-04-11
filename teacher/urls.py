@@ -27,4 +27,7 @@ path('teacher-view-question-course', views.teacher_view_question_course_view,nam
 path('teacher-view-question/<int:pk>', views.teacher_view_question_view,name='teacher-view-question'),
 path('teacher-update-question/<int:pk>', views.teacher_update_question_view,name='teacher-update-question'),
 path('teacher-remove-question/<int:pk>', views.teacher_remove_question_view,name='teacher-remove-question'),
+
+path('teacher-view-result-courses', views.teacher_view_results_courses,name='teacher-view-result-courses'),
+path('teacher-check-marks<int:pk>', views.teacher_view_marks,name='teacher-check-marks'),
 ]

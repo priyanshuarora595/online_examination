@@ -109,6 +109,8 @@ urlpatterns = [
 
     path('download-question-file-format', views.download_question_file_format,name='download-question-file-format'),
     path('download-sample-question-file', views.download_sample_question_file,name='download-sample-question-file'),
+
+    path('delete-result/<int:pk>', views.delete_result, name='delete-result'),
 ]
 
 urlpatterns+= static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

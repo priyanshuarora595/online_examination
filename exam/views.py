@@ -39,6 +39,8 @@ def is_organization(user):
 def is_admin(user):
     return user.is_superuser
 
+def is_admin_is_teacher_is_organization(user):
+    return user.groups.filter(name="TEACHER").exists() or user.groups.filter(name="ORGANIZATION").exists() or user.is_superuser
 
 def afterlogin_view(request):
     if is_student(request.user):
@@ -83,7 +85,7 @@ def adminclick_view(request):
     return HttpResponseRedirect("adminlogin")
 
 
-@login_required()
+@login_required(login_url="afterlogin")
 def delete_account(request):
     """
     delete a user account
@@ -448,11 +450,13 @@ def update_course_view(request, pk):
 
 
 @login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def admin_question_view(request):
     return render(request, "exam/admin_question.html")
 
 
 @login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def admin_add_question_view(request):
     questionForm = EFORM.QuestionForm()
     optionForm = EFORM.OptionForm()
@@ -555,6 +559,7 @@ def admin_upload_questions_file(request):
 
 
 @login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def admin_update_question_view(request, pk):
     question = EMODEL.Question.objects.get(id=pk)
     question.organization = question.course.organization
@@ -609,18 +614,21 @@ def admin_update_question_view(request, pk):
 
 
 @login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def admin_view_question_view(request):
     courses = EMODEL.Course.objects.all()
     return render(request, "exam/admin_view_question.html", {"courses": courses})
 
 
 @login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def view_question_view(request, pk):
     questions = EMODEL.Question.objects.all().filter(course_id=pk)
     return render(request, "exam/view_question.html", {"questions": questions})
 
 
 @login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def delete_question_view(request, pk):
     question = EMODEL.Question.objects.get(id=pk)
     course = EMODEL.Course.objects.all().filter(course_name=question.course)[0]
@@ -632,12 +640,14 @@ def delete_question_view(request, pk):
 
 
 @login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def admin_view_student_marks_view(request):
     students = SMODEL.Student.objects.all()
     return render(request, "exam/admin_view_student_marks.html", {"students": students})
 
 
 @login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def admin_view_marks_view(request, pk):
     student = SMODEL.Student.objects.get(user=pk)
     courses = EMODEL.Course.objects.filter(organization=student.organization)
@@ -647,6 +657,7 @@ def admin_view_marks_view(request, pk):
 
 
 @login_required(login_url="adminlogin")
+@user_passes_test(is_admin)
 def admin_check_marks_view(request, pk):
     course = EMODEL.Course.objects.get(id=pk)
     student_id = request.COOKIES.get("student_id")
@@ -654,6 +665,14 @@ def admin_check_marks_view(request, pk):
     results = EMODEL.Result.objects.all().filter(exam=course).filter(student=student)
 
     return render(request, "exam/admin_check_marks.html", {"results": results})
+
+@login_required(login_url="afterlogin")
+@user_passes_test(is_admin_is_teacher_is_organization)
+def delete_result(request,pk):
+    result_obj = EMODEL.Result.objects.get(id=pk)
+    result_obj.delete()
+    return redirect(request.META.get("HTTP_REFERER"))
+
 
 
 def aboutus_view(request):

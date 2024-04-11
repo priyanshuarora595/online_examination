@@ -1,4 +1,6 @@
 {% extends "student/studentbase.html" %}
+{% block sidebar %}
+{% endblock sidebar %}
 {% block content %}
   {% load static %}
   <head>
@@ -74,6 +76,13 @@
       grid-template-columns: 100px 100px 100px 100px; 
       gap: 10px;
       padding: 10px;
+    }
+    .content {
+      margin-left: 0px;
+      background-position: center;
+      background-size: cover;
+      height: 100vh;
+      transition: 0s;
     }
     </style>
   </head>

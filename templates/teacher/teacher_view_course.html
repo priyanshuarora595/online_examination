@@ -34,6 +34,7 @@
           <th>Course</th>
           <th>Total Question</th>
           <th>Total Marks</th>
+          <th>Exam Date</th>
           <th>Access Code</th>
           <th>Action</th>
         </tr>
@@ -44,6 +45,7 @@
         <td> {{t.course_name}}</td>
         <td>{{t.question_number}}</td>
         <td>{{t.total_marks}}</td>
+        <td>{{t.exam_date}}</td>
         {% if t.created_by == user  %}
         <td>{{t.access_code}}</td>
         {% endif  %}

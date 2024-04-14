@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 
 import uuid
 import os
-
+import datetime
 
 class Course(models.Model):
     course_name = models.CharField(max_length=50)
@@ -18,6 +18,7 @@ class Course(models.Model):
     duration = models.PositiveIntegerField(default=0)
     passing_percentage = models.PositiveIntegerField(default=75)
     created_by = models.ForeignKey(User,on_delete=models.CASCADE)
+    exam_date = models.DateTimeField()
 
     def __str__(self):
         return self.course_name

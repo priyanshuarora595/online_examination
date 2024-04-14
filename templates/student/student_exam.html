@@ -32,7 +32,7 @@
         <tr>
 
           <th>Exam Name</th>
-          
+          <th>Exam Date</th>
           <th>Action</th>
         </tr>
       </thead>
@@ -40,7 +40,7 @@
       <tr>
 
         <td> {{t.course_name}}</td>
-        
+        <td>{{ t.exam_date }}</td>
         <td><a class="btn btn-success btn-sm" style="border-radius:0px;" href="{% url 'take-exam' t.id  %}"><span class="glyphicon glyphicon-check"></span> Attend Exam</a></td>
       </tr>
       {% endfor %}

@@ -23,6 +23,9 @@
     <div class="form-group">
       <label for="course_name">Course Name</label>
       {% render_field courseForm.course_name class="form-control" placeholder="Example: Databases" %}
+      
+      <label for="course_name">Exam Date</label>
+      {% render_field courseForm.exam_date class="form-control" %}
 
       <label for="course_name">Exam Time ( in minutes )</label>
       {% render_field courseForm.duration class="form-control" placeholder="Example: 180" %}
@@ -36,4 +39,12 @@
     <button type="submit" class="btn btn-success" style="border-radius: 0%;">Submit Info</button>
   </form>
 <br><br><br>
+
+<script>
+  $(function () {
+    $("#datetimepicker1").datetimepicker({
+      format: 'DD/MM/YYYY HH:mm',
+    });
+  });
+</script>
 {% endblock content %}

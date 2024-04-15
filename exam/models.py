@@ -7,18 +7,19 @@ from django.contrib.auth.models import User
 
 import uuid
 import os
-import datetime
+
 
 class Course(models.Model):
-    course_name = models.CharField(max_length=50)
-    question_number = models.PositiveIntegerField(default=0)
-    total_marks = models.PositiveIntegerField(default=0)
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
-    access_code = models.UUIDField(default=uuid.uuid4)
-    duration = models.PositiveIntegerField(default=0)
-    passing_percentage = models.PositiveIntegerField(default=75)
-    created_by = models.ForeignKey(User,on_delete=models.CASCADE)
-    exam_date = models.DateTimeField()
+    course_name = models.CharField(max_length=50)  # name of the course
+    question_number = models.PositiveIntegerField(default=0) # number of question in this exam
+    total_marks = models.PositiveIntegerField(default=0) # total marks to be awarded in this exam
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE) # exam belongs to which organization
+    access_code = models.UUIDField(default=uuid.uuid4) # access code to start the exam
+    duration = models.PositiveIntegerField(default=0) # how long the exam will run.
+    entry_time = models.PositiveIntegerField(default=30) # time in minutes for how to long to allow participants to start exam.
+    passing_percentage = models.PositiveIntegerField(default=75) # passing score criteria
+    created_by = models.ForeignKey(User,on_delete=models.CASCADE) # who created the exam
+    exam_date = models.DateTimeField() # on which date and time the exam is scheduled
 
     def __str__(self):
         return self.course_name

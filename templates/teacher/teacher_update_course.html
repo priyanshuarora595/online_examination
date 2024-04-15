@@ -30,6 +30,9 @@
       <label for="course_name">Exam Time ( in minutes )</label>
       {% render_field courseForm.duration class="form-control" placeholder="Example: 180" %}
 
+      <label for="course_name">Entry Time ( in minutes )</label>
+      {% render_field courseForm.entry_time class="form-control" placeholder="How long to allow participants to start exam" %}
+
       <label for="course_name">Passing Percentage ( without %)</label>
       {% render_field courseForm.passing_percentage class="form-control" placeholder="Example: 75" %}
     </div>

@@ -50,7 +50,7 @@ class CourseForm(forms.ModelForm):
     exam_date = DateTimeLocalField()
     class Meta:
         model = EMODEL.Course
-        fields = ["course_name","duration","passing_percentage", "exam_date"]
+        fields = ["course_name","duration","passing_percentage", "exam_date","entry_time"]
 
 
 class QuestionForm(forms.ModelForm):

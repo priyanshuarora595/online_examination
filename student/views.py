@@ -17,6 +17,7 @@ from organization import models as OrganizationModel
 from django.core.paginator import Paginator
 import json
 import random 
+import datetime
 
 from django.contrib import messages
 
@@ -143,6 +144,11 @@ def start_exam_view(request,pk,access_code):
         
         if QuestionModel.Result.objects.filter(student=student,exam=course).exists():
             messages.error(request, "You have already taken this exam.")
+            return redirect(request.META.get('HTTP_REFERER'))
+        
+        entry_before = course.exam_date+datetime.timedelta(minutes=course.entry_time)
+        if entry_before < datetime.datetime.now():
+            messages.error(request, f"Entry Time up. You can not enter the exam now. Should have started exam before {entry_before}")
             return redirect(request.META.get('HTTP_REFERER'))
         
         if 'remaining_time' not in request.session:

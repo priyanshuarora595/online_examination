@@ -146,11 +146,6 @@ def start_exam_view(request,pk,access_code):
             messages.error(request, "You have already taken this exam.")
             return redirect(request.META.get('HTTP_REFERER'))
         
-        entry_before = course.exam_date+datetime.timedelta(minutes=course.entry_time)
-        if entry_before < datetime.datetime.now():
-            messages.error(request, f"Entry Time up. You can not enter the exam now. Should have started exam before {entry_before}")
-            return redirect(request.META.get('HTTP_REFERER'))
-        
         if 'remaining_time' not in request.session:
                 # request.session['start_time'] = time.time()
                 # end_time = request.session['start_time'] + 100 * 60 # 90 minutes in seconds
@@ -161,6 +156,11 @@ def start_exam_view(request,pk,access_code):
             remaining_time = request.session['remaining_time']
             
         if 'filtered' not in request.session:
+            entry_before = course.exam_date+datetime.timedelta(minutes=course.entry_time)
+            if entry_before < datetime.datetime.now():
+                messages.error(request, f"Entry Time up. You can not enter the exam now. Should have started exam before {entry_before}")
+                return redirect(request.META.get('HTTP_REFERER'))
+            
             fil=1
             # request.session['time_left'] = date
             # course=QuestionModel.Course.objects.get(id=pk)

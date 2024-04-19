@@ -66,16 +66,18 @@
 
 <br><br><br><br><br><br>
 <script>
-    function  startExam() {
+    function startExam() {
         var accessCode = document.getElementById("course_access_id").value;
         var courseId = {{course.id}};
 
-        var url = "{% url 'start-exam' pk=course.id access_code='d2057ae5-c8d9-483d-a540-2f071023fa29' %}?page=1"
+        var url = "{% url 'verify-exam' pk=course.id access_code='d2057ae5-c8d9-483d-a540-2f071023fa29' %}?page=1"
         if(accessCode!=""){
             url = url.replace("d2057ae5-c8d9-483d-a540-2f071023fa29",accessCode)
-            console.log(url);
         }
-        console.log(url);
+
+        //const resp = fetch(url).then(resp => {console.log(resp);if(resp.status==400){
+        //    resp.status=302;
+        //}});
 
         //console.log(accessCode);
         //console.log(courseId);

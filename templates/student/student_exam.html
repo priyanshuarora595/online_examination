@@ -40,7 +40,7 @@
       <tr>
 
         <td> {{t.course_name}}</td>
-        <td>{{ t.exam_date }}</td>
+        <td class="exam_date">{{ t.exam_date|safe }}</td>
         <td><a class="btn btn-success btn-sm" style="border-radius:0px;" href="{% url 'take-exam' t.id  %}"><span class="glyphicon glyphicon-check"></span> Attend Exam</a></td>
       </tr>
       {% endfor %}
@@ -49,4 +49,43 @@
 </div>
 
 <br><br><br><br><br><br>
+<script>
+  // Function to convert exam_time to local time string
+  function convertToLocalTime() {
+      // Get all elements with the class 'exam_time'
+      var examTimeElements = document.querySelectorAll('.exam_date');
+      
+      // Loop through each element
+      const options = {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "numeric",
+        minute: "numeric"
+      };
+      examTimeElements.forEach(function(element) {
+          // Get the UTC time string from the element
+          var utcTimeString = element.textContent.trim();
+          console.log("utcTimeString = >",utcTimeString);
+
+          // Parse the UTC date string into a Date object
+          var utcDate = new Date(utcTimeString);
+
+          // Get the timezone offset in minutes
+          var timezoneOffset = utcDate.getTimezoneOffset();
+          console.log(timezoneOffset)
+
+          // Adjust the date to the local timezone
+          var localDate = new Date(utcDate.getTime() - (timezoneOffset * 60000));
+
+          // Convert local date to UTC date
+          console.log(localDate.toLocaleString("en-US", options))
+          element.textContent = localDate.toLocaleString("en-US", options)
+      })};
+  
+  // Call the function to convert exam_time to local time
+  convertToLocalTime();
+  
+</script>
 {% endblock content %}

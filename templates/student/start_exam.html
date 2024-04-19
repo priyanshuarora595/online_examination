@@ -124,7 +124,7 @@
              class="btn btn-success btn-lg"
              style="border-radius: 0%"
              onclick="save()"
-             href="{% url 'start-exam' course.id access_code %}?page={{ questions.previous_page_number }}">Previous</a>
+             href="{% url 'start-exam' course.id  %}?page={{ questions.previous_page_number }}">Previous</a>
         {% endif %}
       </div>
       <div>
@@ -145,7 +145,7 @@
              class="btn btn-success btn-lg"
              onclick="save()"
              style="border-radius: 0%"
-             href="{% url 'start-exam' course.id access_code %}?page={{ questions.next_page_number }}">Next</a>
+             href="{% url 'start-exam' course.id  %}?page={{ questions.next_page_number }}">Next</a>
         {% endif %}
       </div>
     </ul>
@@ -267,7 +267,8 @@
 }
 
 function cancel(){
-    setCookie('data',JSON.stringify({}),3);
+    setCookie('data',JSON.stringify({}),0);
+    setCookie('allow',JSON.stringify({}),0);
     var url = "{% url 'take-exam' pk=course.id %}"
     console.log(url);
     window.location.href = url;

@@ -39,15 +39,30 @@
     </div>
     
 
-    <button type="submit" class="btn btn-success" style="border-radius: 0%;">Submit Info</button>
+    <button type="submit" onclick="convertToUTCTime()" class="btn btn-success" style="border-radius: 0%;">Submit Info</button>
   </form>
 <br><br><br>
 
 <script>
-  $(function () {
-    $("#datetimepicker1").datetimepicker({
-      format: 'DD/MM/YYYY HH:mm',
-    });
-  });
+    // Function to convert datetime-local to UTC
+      function convertToUTCTime() {
+          // Get all datetime-local inputs
+          var datetimeInputs = document.querySelectorAll('input[type="datetime-local"]');
+          
+          // Loop through each input
+          datetimeInputs.forEach(function(input) {
+              // Get the value of the input
+              var localDateTimeString = input.value;
+              
+              // Create a Date object from the local datetime string
+              var localDateTime = new Date(localDateTimeString);
+              
+              // Convert local time to UTC
+              var utcDateTimeString = localDateTime.toISOString().slice(0, -1); // Remove 'Z' for local time
+              
+              // Update the input value with UTC time
+              input.value = utcDateTimeString;
+          });
+      }
 </script>
 {% endblock content %}

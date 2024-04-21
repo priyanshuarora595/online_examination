@@ -243,20 +243,35 @@
   }
 
   make_answer_dict();
-    function save(){
-      var ele = document.getElementsByTagName('input'); 
-        for(i = 0; i < ele.length; i++) { 
-          console.log(ele[i]);
-            if(ele[i].type=="radio") { 
-                if(ele[i].checked){    
-                  var data_cookie = JSON.parse(retriveCookie('data'));
-                  data_cookie[{{questions.0.id}}] = ele[i].value;
-                  setCookie('data',JSON.stringify(data_cookie),3)
-                  
-                }
-            }
+  function save(event) {
+    // get switchTabCount from local storage
+    switchTabCount = parseInt(localStorage.getItem("switchTabCount"));
+    if (switchTabCount == 0) {
+      console.log("about to call save");
+      document.getElementById("form").submit();
+
+      // close the tab
+      // window.close();
+
+    } else {
+      if (event == "decrement") switchTabCount--;
+      else switchTabCount++;
+      localStorage.setItem("switchTabCount", switchTabCount);
+      console.log("save called");
+      var ele = document.getElementsByTagName('input');
+      for (i = 0; i < ele.length; i++) {
+        if (ele[i].type == "radio") {
+          if (ele[i].checked) {
+            var data_cookie = JSON.parse(retriveCookie('data'));
+
+            data_cookie[{{questions.0.id }}] = ele[i].value;
+          setCookie('data', JSON.stringify(data_cookie), 3)
+
         }
+      }
     }
+  }
+  }
     
     
   function setCookie(cname, cvalue, exdays) {
@@ -274,6 +289,53 @@ function cancel(){
     window.location.href = url;
 }
 
+document.addEventListener("visibilitychange", (event) => {
+    if (document.visibilityState == "hidden") { // Check for tab becoming inactive
+      console.log("tab is inactive");
+      // get switchTabCount from local storage
+      switchTabCount = parseInt(localStorage.getItem("switchTabCount"));
+      switchTabCount--;
+      localStorage.setItem("switchTabCount", switchTabCount);
+      if (switchTabCount >= 1) {
+        showNotifications(switchTabCount); // Uncomment this line if you want to call showNotifications
+      } else {
+        save("decrement");
+        alert("You have switched tabs more than 3 times. Your answers are saved and submitted.");
+        console.log("about to call save");
+      }
+    } else {
+      console.log("tab is active");
+    }
+  });
+
+  function showNotifications(switchTabCount) {
+    // First, check if the browser supports notifications
+    if (!("Notification" in window)) {
+      alert("This browser does not support desktop notifications");
+    }
+
+    // Request permission to show notifications
+    Notification.requestPermission().then(function (permission) {
+      console.log("in permission");
+      if (permission === "granted") {
+        // Create a new notification
+
+        var notification = new Notification("Be Aware!!", {
+          requireInteraction: true,
+          body: "Click this notification to go back to the exam page and submit your answers. Your tab switch remaining: " + (switchTabCount) + " times.",
+          icon: "https://media.istockphoto.com/id/1407160246/vector/danger-triangle-icon.jpg?s=1024x1024&w=is&k=20&c=avotbFj6kjGw3x4reQ6xO7poLs6AJQ-oCKzDPrP2teQ=" // Optional icon URL
+        });
+
+        // Optionally, you can handle notification events
+        notification.onclick = function () {
+          window.focus();
+        };
+      } else {
+        alert("Permission denied");
+      }
+    });
+
+  };
 
 </script>
 <br>

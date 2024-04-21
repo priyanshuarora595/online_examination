@@ -44,6 +44,10 @@
 .button-signup:active {
   background-color: rgb(26, 123, 99);
 }
+
+.old-user {
+  margin-top: 20px;
+}
     </style>
   </head>
   <body>
@@ -114,6 +118,10 @@
 
 
     <button type="submit" class="btn btn-success button-signup"  style="border-radius:0px;">Sign Up</button>
+
+    <div class="old-user">
+      <a href="{% url 'teacherlogin' %}" >Already have an account? Login here</a>
+    </div>
   </form>
 </div>
 

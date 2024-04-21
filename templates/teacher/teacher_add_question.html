@@ -40,7 +40,7 @@
       </div>
         
       <label for="answer" onload="createDropdown()">Correct Answer</label>
-      <select id='dropdown' name="answer">
+      <select id='dropdown' name="answer" required>
         <option>Select an option</option>
       </select>
 
@@ -122,6 +122,20 @@
       
     }
     createDropdown();
+
+    document.querySelector(".btn-success").addEventListener("click", function(event) {
+
+let dropdown = document.getElementById("dropdown");
+if (dropdown.value === "Select an option") {
+    event.preventDefault();
+
+    alert("Please select a correct answer or add an option first.");
+
+    dropdown.focus();
+}
+});
+
+document.querySelector(".form-control").style.height="35px";
     </script>
 <br><br><br>
 {% endblock content %}

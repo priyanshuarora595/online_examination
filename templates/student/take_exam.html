@@ -24,9 +24,11 @@
                     <p class="card-text">
                         </p><ul style="list-style:decimal;">
                             <li>Course : {{course.course_name}}</li>
+                            <li > Scheduled at : <span class="exam_date">{{course.exam_date|safe}}</span></li>
                             <li>Total Question : {{course.question_number}}</li>
                             <li>Total Marks : {{course.total_marks}}</li>
                             <li>Total Time : {{course.duration}} minutes</li>
+                            <li>Entry Time : {{course.entry_time}} minutes after the exam starts.</li>
                         </ul>
                     <p></p>
 
@@ -66,6 +68,43 @@
 
 <br><br><br><br><br><br>
 <script>
+    // Function to convert exam_time to local time string
+  function convertToLocalTime() {
+    // Get all elements with the class 'exam_time'
+    var examTimeElements = document.querySelectorAll('.exam_date');
+    
+    // Loop through each element
+    const options = {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric"
+    };
+    examTimeElements.forEach(function(element) {
+        // Get the UTC time string from the element
+        var utcTimeString = element.textContent.trim();
+        console.log("utcTimeString = >",utcTimeString);
+
+        // Parse the UTC date string into a Date object
+        var utcDate = new Date(utcTimeString);
+
+        // Get the timezone offset in minutes
+        var timezoneOffset = utcDate.getTimezoneOffset();
+        console.log(timezoneOffset)
+
+        // Adjust the date to the local timezone
+        var localDate = new Date(utcDate.getTime() - (timezoneOffset * 60000));
+
+        // Convert local date to UTC date
+        console.log(localDate.toLocaleString("en-US", options))
+        element.textContent = localDate.toLocaleString("en-US", options)
+    })};
+
+// Call the function to convert exam_time to local time
+convertToLocalTime();
+
     function startExam() {
         var accessCode = document.getElementById("course_access_id").value;
         var courseId = {{course.id}};

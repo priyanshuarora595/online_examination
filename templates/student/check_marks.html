@@ -34,7 +34,7 @@
           <th>Course</th>
           <th>Total Marks</th>
           <th>correct answers</th>
-          <th>Number of Attempts</th>
+          {% comment %} <th>Number of Attempts</th> {% endcomment %}
           <th>Exam Date</th>
           <th>Status</th>
         </tr>
@@ -45,8 +45,8 @@
         <td> {{t.exam}}</td>
         <td> {{t.marks}}</td>
         <td> {{t.correct_answers}}</td>
-        <td>Attempt {{ forloop.counter }}</td>
-        <td> {{t.date}}</td>
+        {% comment %} <td>Attempt {{ forloop.counter }}</td> {% endcomment %}
+        <td class = "exam_date"> {{t.date|safe}}</td>
         <td> {{t.percentage}}%</td>
         {% comment %} <td> {{t.status}}</td> {% endcomment %}
         {% if t.status == "Pass" %}
@@ -63,4 +63,42 @@
 </div>
 
 <br><br><br><br><br><br>
+<script>
+  // Function to convert exam_time to local time string
+function convertToLocalTime() {
+  // Get all elements with the class 'exam_time'
+  var examTimeElements = document.querySelectorAll('.exam_date');
+  
+  // Loop through each element
+  const options = {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric"
+  };
+  examTimeElements.forEach(function(element) {
+      // Get the UTC time string from the element
+      var utcTimeString = element.textContent.trim();
+      console.log("utcTimeString = >",utcTimeString);
+
+      // Parse the UTC date string into a Date object
+      var utcDate = new Date(utcTimeString);
+
+      // Get the timezone offset in minutes
+      var timezoneOffset = utcDate.getTimezoneOffset();
+      console.log(timezoneOffset)
+
+      // Adjust the date to the local timezone
+      var localDate = new Date(utcDate.getTime() - (timezoneOffset * 60000));
+
+      // Convert local date to UTC date
+      console.log(localDate.toLocaleString("en-US", options))
+      element.textContent = localDate.toLocaleString("en-US", options)
+  })};
+
+// Call the function to convert exam_time to local time
+convertToLocalTime();
+</script>
 {% endblock content %}

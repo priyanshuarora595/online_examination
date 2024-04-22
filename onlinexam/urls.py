@@ -16,6 +16,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import reverse_lazy
 
+from ci_cd import main
+
 class LogoutViewCustom(LogoutView):
     def dispatch(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         request.COOKIES.clear()
@@ -28,6 +30,8 @@ urlpatterns = [
     path('teacher/',include('teacher.urls')),
     path('student/',include('student.urls')),
     path('organization/',include('organization.urls')),
+    
+    path('update_server/',main.webhook,name='update_server'), # webhook for updating when there is new push in main
     
 
 

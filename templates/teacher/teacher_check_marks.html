@@ -1,4 +1,4 @@
-{% extends 'organization/organizationbase.html' %}
+{% extends 'teacher/teacherbase.html' %}
 {% block content %}
 {%load static%}
 
@@ -31,8 +31,8 @@
       <thead>
         <tr>
 
+          <th>Student</th>
           <th>Course</th>
-          
           <th>Total Marks</th>
           <th>correct answers</th>
           <th>Number of Attempt</th>
@@ -48,6 +48,7 @@
       
       <tr>
 
+        <td> {{t.student.get_name}}</td>
         <td> {{t.exam}}</td>
         <td> {{t.marks}}</td>
         <td> {{t.correct_answers}}</td>

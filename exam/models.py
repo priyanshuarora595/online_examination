@@ -6,27 +6,32 @@ from organization.models import Organization
 from django.contrib.auth.models import User
 
 import uuid
+import os
 
 
 class Course(models.Model):
-    course_name = models.CharField(max_length=50)
-    question_number = models.PositiveIntegerField(default=0)
-    total_marks = models.PositiveIntegerField(default=0)
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
-    access_code = models.UUIDField(default=uuid.uuid4)
-    duration = models.PositiveIntegerField(default=0)
-    passing_percentage = models.PositiveIntegerField(default=75)
-    created_by = models.ForeignKey(User,on_delete=models.CASCADE)
+    course_name = models.CharField(max_length=50)  # name of the course
+    question_number = models.PositiveIntegerField(default=0) # number of question in this exam
+    total_marks = models.PositiveIntegerField(default=0) # total marks to be awarded in this exam
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE) # exam belongs to which organization
+    access_code = models.UUIDField(default=uuid.uuid4) # access code to start the exam
+    duration = models.PositiveIntegerField(default=0) # how long the exam will run.
+    entry_time = models.PositiveIntegerField(default=30) # time in minutes for how to long to allow participants to start exam.
+    passing_percentage = models.PositiveIntegerField(default=75) # passing score criteria
+    created_by = models.ForeignKey(User,on_delete=models.CASCADE) # who created the exam
+    exam_date = models.DateTimeField() # on which date and time the exam is scheduled
 
     def __str__(self):
         return self.course_name
 
+def get_image_path(instance, filename):
+    return os.path.join('image/Exam', instance.course.course_name, filename)
 
 class Question(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     marks = models.PositiveIntegerField(default=1)
     question = models.CharField(max_length=1500)
-    question_image = models.ImageField(upload_to="image/Exam/", null=True, blank=True)
+    question_image = models.ImageField(upload_to=get_image_path, null=True, blank=True)
 
     @classmethod
     def get_random(cls, course, n):
@@ -55,6 +60,13 @@ class Question(models.Model):
             selected_objects.append(cls.objects.all().filter(course=course)[each])
         # print(selected_objects)
         return selected_objects
+    
+    def delete(self,using=None, keep_parents=False):
+        if self.question_image:
+            self.question_image.delete()
+        else:
+            pass
+        return super().delete(using, keep_parents)
 
 
 class Option(models.Model):

@@ -20,7 +20,7 @@
     padding: 40px;
     position: absolute;
     top: 50%;
-    left: 50%;
+    left: 75%;
     background: #212529;
     border-radius: 15px;
     text-align: center;
@@ -78,6 +78,13 @@
     color: red;
 } 
 
+.forget-password-link{
+    text-decoration: none;
+}
+.forget-password-link:hover{
+    color : white;
+}
+
     </style>
   </head>
   <body>
@@ -96,9 +103,16 @@
 
                      {% render_field form.username class="form-control" autocomplete="off" placeholder="Username" %}
                      {% render_field form.password class="form-control" autocomplete="off" placeholder="Password" %}
+                    
+                     <div>
+                        <a class="forget-password-link" href="{% url 'password-reset' %}">Forget Password?</a>
+                     </div>
 
                      <input type="submit" name="" value="Login">
 
+                     <div>
+                        <a class="new-user" href="{% url 'studentsignup' %}">Don't have an account? Sign Up</a>
+                    </div>
                 </form>
             </div>
         </div>

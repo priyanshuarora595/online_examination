@@ -198,7 +198,7 @@
   </header>
   <!--header area end-->
   {% for message in messages %}
-  <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+  <div class="alert alert-{{ message.tags }} alert-dismissible fade show" style="z-index:1" role="alert">
     <strong>Message: </strong>{{ message }}
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
       <span aria-hidden="true">&times;</span>
@@ -218,6 +218,7 @@
 
     <a href="/teacher/teacher-dashboard"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
     <a href="/teacher/teacher-course"><i class="fas fa-book"></i><span>Manage Courses</span></a>
+    <a href="/teacher/teacher-view-result-courses"><i class="fas fa-book"></i><span>Manage Results</span></a>
     <a href="/teacher/teacher-question"><i class="fas fa-question-circle"></i><span>Manage Questions</span></a>
     <a href="/teacher/teacher-profile"><i class="fas fa-question-circle"></i><span>Manage Profile</span></a>
   </div>

@@ -68,8 +68,9 @@ def teacher_profile_view(request):
     user_form = ExamForms.UserUpdateForm(instance=user)
     teacherForm = TeacherForms.TeacherForm(instance=teacher)
 
+    # making the username field read only
     user_form.fields["username"].widget.attrs["readonly"] = True
-    user_form.fields["email"].widget.attrs["readonly"] = True
+    # user_form.fields["email"].widget.attrs["readonly"] = True
 
     teacherForm.fields["salary"].widget.attrs["readonly"] = True
     mydict = {"userForm": user_form, "teacherForm": teacherForm}
@@ -219,7 +220,73 @@ def teacher_add_question_view(request):
         "teacher/teacher_add_question.html",
         {"questionForm": questionForm, "optionForm": optionForm},
     )
+@login_required(login_url="teacherlogin")
+@user_passes_test(is_teacher)
+def teacher_upload_questions_file(request):
+    if request.method=="POST":
+        import pandas as pd
+        import openpyxl
+        import uuid
+        from openpyxl_image_loader import SheetImageLoader
+        from exam.models import Course,Question,Option,Answer
+        from django.core.files.base import ContentFile
+        from io import BytesIO
+        file_obj = request.FILES.get("uploadFile")
+        if file_obj.content_type!='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+            messages.error(request, "Only xlsx files allowed")
+            return redirect(request.META.get("HTTP_REFERER"))
 
+        df = pd.read_excel(file_obj,header=None,engine='openpyxl')
+        df_list = df.values.tolist()
+        # Load the Excel workbook and sheet
+        pxl_doc = openpyxl.load_workbook(file_obj)
+        sheet = pxl_doc['Sheet1']
+        image_loader = SheetImageLoader(sheet)
+        last_row = sheet.max_row
+        course_name = df_list[0][0]
+        # return redirect(request.META.get("HTTP_REFERER"))
+        # return None
+        course_obj = Course.objects.filter(course_name=course_name).first()
+        if not course_obj:
+            messages.error(request, "No course with the provided name")
+            return redirect(request.META.get("HTTP_REFERER"))
+        
+        self_organization = TeacherModel.Teacher.objects.get(user=request.user.id).organization
+        if self_organization!=course_obj.organization:
+            messages.error(request, f"No course found by the name {course_name} in your organization {self_organization}")
+            return redirect(request.META.get("HTTP_REFERER"))
+        
+        for row_number in range(1, last_row + 1):
+            question = Question()
+            row = df_list[row_number - 1]
+            question.question = row[1]
+            question.marks = row[2]
+            question.course = course_obj
+            try:
+                image = image_loader.get("D"+str(row_number))
+            except Exception as e:
+                image = None
+            if image:
+                image_rgb = image.convert('RGB')
+                output = BytesIO()
+                image_rgb.save(output, format='JPEG')
+                image_data = output.getvalue()
+                question.question_image.save(f'{uuid.uuid4().hex}.jpg', ContentFile(image_data))
+            question.save()
+            course_obj.question_number+=1
+            course_obj.total_marks+=question.marks
+            course_obj.save()
+            answer = row[-1]
+            for option in row[4:-1]:
+                op =  Option.objects.create(option=option, question=question)
+                op.save()
+                if answer == option:
+                    ans = Answer.objects.create(answer=op,question=question)
+                    ans.save()
+        messages.success(request, f"questions added in course {course_name}")
+        return redirect(request.META.get("HTTP_REFERER"))
+    else:
+        return render(request,"teacher/teacher_upload_question_file.html")
 
 @login_required(login_url="teacherlogin")
 @user_passes_test(is_teacher)
@@ -315,3 +382,27 @@ def teacher_remove_question_view(request, pk):
     question.delete()
     course.save()
     return redirect(request.META.get("HTTP_REFERER"))
+
+@login_required(login_url="teacherlogin")
+@user_passes_test(is_teacher)
+def teacher_view_results_courses(request):
+    organization = TeacherModel.Teacher.objects.get(user=request.user.id).organization
+    courses = ExamModel.Course.objects.filter(organization=organization,created_by=request.user)
+    response = render(
+        request, "teacher/teacher_view_result_courses.html", {"courses": courses}
+    )
+    return response
+
+@login_required(login_url="teacherlogin")
+@user_passes_test(is_teacher)
+def teacher_view_marks(request,pk):
+    organization = TeacherModel.Teacher.objects.get(user=request.user.id).organization
+    # courses = ExamModel.Course.objects.filter(organization=organization,created_by=request.user)
+    # students = StudentModel.Student.objects.filter(organization=organization,)
+    results = ExamModel.Result.objects.filter(exam__id=pk)
+    response = render(
+        request, "teacher/teacher_check_marks.html", {"results": results}
+    )
+    print(results)
+    # response.set_cookie("student_id", str(pk))
+    return response

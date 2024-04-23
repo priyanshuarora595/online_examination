@@ -77,6 +77,12 @@ background: linear-gradient(to bottom, #d7d2cc, #304352); /* W3C, IE 10+/ Edge, 
     color: red;
 } 
 
+.forget-password-link{
+    text-decoration: none !important;
+}
+.forget-password-link:hover{
+    color : white;
+}
 
     </style>
   </head>
@@ -96,6 +102,9 @@ background: linear-gradient(to bottom, #d7d2cc, #304352); /* W3C, IE 10+/ Edge, 
                      {% render_field form.username class="form-control" autocomplete="off" placeholder="Username" %}
                      {% render_field form.password class="form-control" autocomplete="off" placeholder="Password" %}
 
+                     <div>
+                        <a class="forget-password-link" href="{% url 'password-reset' %}">Forget Password?</a>
+                     </div>                                                            
                      <input type="submit" name="" value="Admin Login">
 
                 </form>

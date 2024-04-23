@@ -24,15 +24,43 @@
       <label for="course_name">Course Name</label>
       {% render_field courseForm.course_name class="form-control" placeholder="Example: Software Engineering" %}
 
+      <label for="course_name">Exam Date</label>
+      {% render_field courseForm.exam_date class="form-control" %}
+
       <label for="course_name">Exam Time ( in minutes )</label>
       {% render_field courseForm.duration class="form-control" placeholder="Example: 180" %}
+
+      <label for="course_name">Entry Time ( in minutes )</label>
+      {% render_field courseForm.entry_time class="form-control" placeholder="How long to allow participants to start exam" %}
 
       <label for="course_name">Passing Percentage ( without %)</label>
       {% render_field courseForm.passing_percentage class="form-control" placeholder="Example: 75" %}
     </div>
     
 
-    <button type="submit" class="btn btn-success" style="border-radius:0px;">Update Course Info</button>
+    <button type="submit" onclick="convertToUTCTime()" class="btn btn-success" style="border-radius:0px;">Update Course Info</button>
   </form>
+  <script>
+  // Function to convert datetime-local to UTC
+    function convertToUTCTime() {
+        // Get all datetime-local inputs
+        var datetimeInputs = document.querySelectorAll('input[type="datetime-local"]');
+        
+        // Loop through each input
+        datetimeInputs.forEach(function(input) {
+            // Get the value of the input
+            var localDateTimeString = input.value;
+            
+            // Create a Date object from the local datetime string
+            var localDateTime = new Date(localDateTimeString);
+            
+            // Convert local time to UTC
+            var utcDateTimeString = localDateTime.toISOString().slice(0, -1); // Remove 'Z' for local time
+            
+            // Update the input value with UTC time
+            input.value = utcDateTimeString;
+        });
+    }
+</script>
 <br><br><br>
 {% endblock content %}

@@ -18,38 +18,20 @@
   </style>
 </head>
 <h2 style="text-align:center;">Add Question</h2>
-<form method="POST" id="add_question_form" autocomplete="off" style="margin:100px;margin-top: 0px;" enctype="multipart/form-data">
+
+<div style="margin:100px;margin-top: 0px;">
+  <a href="{% url 'download-question-file-format' %}" style="text-decoration: none; color: white"><button type="button"class="btn btn-primary" style="border-radius:0px;">Question Format</button></a>
+  <a href="{% url 'download-sample-question-file' %}" style="text-decoration: none; color: white"><button type="button"class="btn btn-primary" style="border-radius:0px;">Sample File</button></a>
+</div>
+<form method="POST" id="add_question_file_form" autocomplete="off" style="margin:100px;margin-top: 0px;" enctype="multipart/form-data">
     {%csrf_token%}
     <div class="form-group">
-        <label for="question">Course</label>
-      {% render_field questionForm.courseID|attr:'required:true' class="form-control"  %}
+        <label for="uploadFile">file</label>
+        <input type="file" name="uploadFile" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" id="uploadFile" required value="Browse"/>
+        {% comment %} <input type="file" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" /> {% endcomment %}
         <br>
-
-      <label for="question">Question</label>
-      {% render_field questionForm.question|attr:'required:true' class="form-control" placeholder="Example: Which one of the following is not a phase of Prototyping Model?" %}
-        <br>
-      <label for="question_image">Image</label>
-      {% render_field questionForm.question_image class="form-control" %}
-        <br>
-      <label for="question_number">Marks</label>
-      {% render_field questionForm.marks|attr:'required:true' class="form-control" placeholder="Example: 5" %}
-        <br>
-
-      <div id="options">
-        <h4> Options</h4>
-      </div>
-        
-      <label for="answer" onload="createDropdown()">Correct Answer</label>
-      <select id='dropdown' name="answer" required>
-        <option>Select an option</option>
-      </select>
-
-
-      {% comment %} {% render_field questionForm.answer|attr:'required:true' class="form-control" %} {% endcomment %}
     </div>
-    
-    <button type ="button" class="btn btn-primary" style="border-radius:0px;"onclick="addCodeToForm()">Add Option</button>
-    <button type="submit" class="btn btn-success" style="border-radius:0px;">Submit Question</button>
+    <button type="submit" class="btn btn-success" style="border-radius:0px;">Upload Questions</button>
   </form>
 
   
@@ -122,20 +104,6 @@
       
     }
     createDropdown();
-
-    document.querySelector(".btn-success").addEventListener("click", function(event) {
-
-let dropdown = document.getElementById("dropdown");
-if (dropdown.value === "Select an option") {
-    event.preventDefault();
-
-    alert("Please select a correct answer or add an option first.");
-
-    dropdown.focus();
-}
-});
-
-document.querySelector(".form-control").style.height="35px";
     </script>
 <br><br><br>
 {% endblock content %}

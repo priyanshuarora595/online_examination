@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from exam import models as EMODEL
-
+from django.db import models as django_db_models
 
 class ContactusForm(forms.Form):
     Name = forms.CharField(max_length=30)
@@ -18,6 +18,16 @@ class TeacherSalaryForm(forms.Form):
 class OrganizationFeesForm(forms.Form):
     fees = forms.IntegerField()
 
+class DateTimeLocalInput(forms.DateTimeInput):
+    input_type = 'datetime-local'
+
+class DateTimeLocalField(forms.DateTimeField):
+    input_formats = [
+        "%Y-%m-%dT%H:%M:%S", 
+        "%Y-%m-%dT%H:%M:%S.%f", 
+        "%Y-%m-%dT%H:%M",
+    ]
+    widget = DateTimeLocalInput(format = '%Y-%m-%dT%H:%M')
 
 class CourseForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -37,9 +47,10 @@ class CourseForm(forms.ModelForm):
         initial=None,
     )
 
+    exam_date = DateTimeLocalField()
     class Meta:
         model = EMODEL.Course
-        fields = ["course_name","duration","passing_percentage"]
+        fields = ["course_name","duration","passing_percentage", "exam_date","entry_time"]
 
 
 class QuestionForm(forms.ModelForm):

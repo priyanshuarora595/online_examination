@@ -37,7 +37,9 @@
           <th>correct answers</th>
           <th>Number of Attempt</th>
           <th>Exam Date</th>
+          <th>Percentage</th>
           <th>Status</th>
+          <th>Delete</th>
         </tr>
       </thead>
       
@@ -58,6 +60,7 @@
         {% else %}
         <td style="background-color:Red"> Fail</td>
         {% endif %} 
+        <td><a class="btn btn-danger btn-xs" style="border-radius: 0%;" href="{% url 'delete-result' t.id  %}"><span class="glyphicon glyphicon-trash"></span></a></td>
         
       </tr>
       {% endfor %}

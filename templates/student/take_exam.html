@@ -24,9 +24,11 @@
                     <p class="card-text">
                         </p><ul style="list-style:decimal;">
                             <li>Course : {{course.course_name}}</li>
+                            <li > Scheduled at : <span class="exam_date">{{course.exam_date|safe}}</span></li>
                             <li>Total Question : {{course.question_number}}</li>
                             <li>Total Marks : {{course.total_marks}}</li>
                             <li>Total Time : {{course.duration}} minutes</li>
+                            <li>Entry Time : {{course.entry_time}} minutes after the exam starts.</li>
                         </ul>
                     <p></p>
 
@@ -37,15 +39,17 @@
                         <ul style="list-style:decimal;">
                             <li>All questions are MCQ (multiple choice question)</li>
                             <li><span class="text-danger">Only one choice is correct among the given.</span></li>
-                            <li>Every question carry different marks.</li>
+                            <li>Every question may carry different marks.</li>
                             <li>Try to answer ASAP.</li>
                             <li>If you PRESS refresh or go back to the previous page, there will be a new question for you and the question you were on will be counted as number of attempts.</li>
                             <li>Questions are presented randomly.</li>
                             <li>You will be able to view marks immediately once after you submit the answer.</li>
+                            <li><span class="text-danger">You need to enable notification permission in order to take exam .</span></li>
+                            <li><strong>Tab Switching Instruction:</strong> Switching tabs during the exam will save your progress until then and auto-submit the exam.</li>
                         </ul>
                     </p>
                     {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" style="z-index:1" role="alert">
                         <strong>Message: </strong>{{ message }}
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -66,20 +70,78 @@
 
 <br><br><br><br><br><br>
 <script>
-    function  startExam() {
-        var accessCode = document.getElementById("course_access_id").value;
-        var courseId = {{course.id}};
+    // Function to convert exam_time to local time string
+  function convertToLocalTime() {
+    // Get all elements with the class 'exam_time'
+    var examTimeElements = document.querySelectorAll('.exam_date');
+    
+    // Loop through each element
+    const options = {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric"
+    };
+    examTimeElements.forEach(function(element) {
+        // Get the UTC time string from the element
+        var utcTimeString = element.textContent.trim();
+        console.log("utcTimeString = >",utcTimeString);
 
-        var url = "{% url 'start-exam' pk=course.id access_code='d2057ae5-c8d9-483d-a540-2f071023fa29' %}?page=1"
-        url = url.replace("d2057ae5-c8d9-483d-a540-2f071023fa29",accessCode)
-        console.log(url);
+        // Parse the UTC date string into a Date object
+        var utcDate = new Date(utcTimeString);
 
-        //console.log(accessCode);
-        //console.log(courseId);
-        //console.log(window.location.pathname)
-        //window.location.pathname='student/start-exam/'+courseId+'/'+accessCode;
-        document.location.href=url;
-        
+        // Get the timezone offset in minutes
+        var timezoneOffset = utcDate.getTimezoneOffset();
+        console.log(timezoneOffset)
+
+        // Adjust the date to the local timezone
+        var localDate = new Date(utcDate.getTime() - (timezoneOffset * 60000));
+
+        // Convert local date to UTC date
+        console.log(localDate.toLocaleString("en-US", options))
+        element.textContent = localDate.toLocaleString("en-US", options)
+    })};
+
+// Call the function to convert exam_time to local time
+convertToLocalTime();
+
+    // setting tab count to 3 for student monitoring
+    localStorage.setItem('switchTabCount', 3);
+ 
+    function startExam() {
+        Notification.requestPermission().then(function (permission) {
+            if (permission === "granted") {
+                console.log("Notification permission granted.");
+                var accessCode = document.getElementById("course_access_id").value;
+                var courseId = {{course.id}};
+
+                var url = "{% url 'verify-exam' pk=course.id access_code='d2057ae5-c8d9-483d-a540-2f071023fa29' %}?page=1"
+                if(accessCode!=""){
+                    url = url.replace("d2057ae5-c8d9-483d-a540-2f071023fa29",accessCode)
+                }
+
+                //const resp = fetch(url).then(resp => {console.log(resp);if(resp.status==400){
+                //    resp.status=302;
+                //}});
+
+                //console.log(accessCode);
+                //console.log(courseId);
+                //console.log(window.location.pathname)
+                //window.location.pathname='student/start-exam/'+courseId+'/'+accessCode;
+                document.location.href=url;
+            }
+            else {
+                // request for notification permission
+                Notification.requestPermission().then(function (permission) {
+                    if (permission === "granted") {
+                        console.log("Notification permission granted.");
+                    }
+                });
+            }
+        });
     }
+
 </script>
 {% endblock content %}

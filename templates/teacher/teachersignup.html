@@ -10,6 +10,44 @@
           
         }
 
+        .form-box {
+  background-color: #15172b !important;
+  border-radius: 20px;
+  box-sizing: border-box;
+  padding: 20px;
+  width: 80%;
+  text-align: center;
+  justify-content: center;
+}
+.title {
+  color: #eee;
+  font-family: sans-serif;
+  font-size: 36px;
+  font-weight: 600;
+  margin-top: 30px;
+}
+.button-signup {
+  background-color: green;
+  border-radius: 12px !important;
+  border: 0;
+  box-sizing: border-box;
+  color: #eee;
+  cursor: pointer;
+  font-size: 18px;
+  height: 50px;
+  margin-top: 38px;
+  text-align: center;
+  width: 100% !important; 
+  border-radius: 5rem !important;
+}
+
+.button-signup:active {
+  background-color: rgb(26, 123, 99);
+}
+
+.old-user {
+  margin-top: 20px;
+}
     </style>
   </head>
   <body>
@@ -18,10 +56,10 @@
 
 
 <br><br><br>
-<div class="container">
-  <h3 style="text-align: center;">Teacher Signup Form</h3>
+<div class="container form-box">
+  <h3 style="text-align: center;" class="title">Teacher Signup Form</h3>
   {% for message in messages %}
-  <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+  <div class="alert alert-{{ message.tags }} alert-dismissible fade show" style="z-index:1" role="alert">
     <strong>Message: </strong>{{ message }}
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
       <span aria-hidden="true">&times;</span>
@@ -79,7 +117,11 @@
       </div>
 
 
-    <button type="submit" class="btn btn-success" style="border-radius:0px;">Sign Up</button>
+    <button type="submit" class="btn btn-success button-signup"  style="border-radius:0px;">Sign Up</button>
+
+    <div class="old-user">
+      <a href="{% url 'teacherlogin' %}" >Already have an account? Login here</a>
+    </div>
   </form>
 </div>
 

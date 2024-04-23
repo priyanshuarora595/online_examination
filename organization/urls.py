@@ -60,6 +60,7 @@ urlpatterns = [
 
     path('organization-question', views.organization_question_view,name='organization-question'),
     path('organization-add-question', views.organization_add_question_view,name='organization-add-question'),
+    path('organization-upload-question', views.organization_upload_questions_file,name='organization-upload-question'),
     path('organization-view-question-course', views.organization_view_question_course_view,name='organization-view-question-course'),
     path('organization-view-question/<int:pk>', views.organization_view_question_view,name='organization-view-question'),
     path('organization-update-question/<int:pk>', views.organization_update_question_view,name='organization-update-question'),

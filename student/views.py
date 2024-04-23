@@ -1,5 +1,4 @@
 from django.shortcuts import render,redirect
-from django.db.models import Sum
 from django.contrib.auth.models import Group
 from django.http import HttpResponseRedirect 
 from django.contrib.auth.decorators import login_required,user_passes_test
@@ -10,13 +9,11 @@ from exam import forms as ExamForms
 from student import forms as StudentForms
 from student import models as StudentModel
 
-from teacher import models as TeacherModel
-
 from organization import models as OrganizationModel
 
 from django.core.paginator import Paginator
 import json
-import random 
+import datetime
 
 from django.contrib import messages
 
@@ -67,9 +64,10 @@ def student_profile_view(request):
     user = StudentModel.User.objects.get(id=request.user.id)
     user_form = ExamForms.UserUpdateForm(instance=user)
     student_form = StudentForms.StudentForm(instance = student)
-    
+
+    # making the username field read only    
     user_form.fields['username'].widget.attrs['readonly'] = True
-    user_form.fields['email'].widget.attrs['readonly'] = True
+    # user_form.fields['email'].widget.attrs['readonly'] = True
 
     page_context  = {
         "userForm": user_form,
@@ -125,65 +123,95 @@ def take_exam_view(request,pk):
         return render(request,"exam/unauthorized.html")
     return render(request,'student/take_exam.html',{'course':course})
 
+
 @login_required(login_url='studentlogin')
 @user_passes_test(is_student)
-def start_exam_view(request,pk,access_code):
-    # print(request.session.keys())
-    fil=0
+def verify_exam_view(request,pk,access_code):
     course=QuestionModel.Course.objects.get(id=pk)
     student = StudentModel.Student.objects.get(user=request.user.id)
     if course.organization.id!=student.organization.id:
-        return render(request,"exam/unauthorized.html")
+        messages.error(request, f"You are unauthorized. This course does not beloing to your organization")
+        return redirect(request.META.get('HTTP_REFERER'))
 
     if course:
         if access_code!=str(course.access_code):
             messages.error(request, "Invalid Access Code")
+            response = redirect(request.META.get('HTTP_REFERER'))
+            return response
+        
+        if QuestionModel.Result.objects.filter(student=student,exam=course).exists():
+            messages.error(request, "You have already taken this exam.")
+            return redirect(request.META.get('HTTP_REFERER'))
+
+        if datetime.datetime.now()<course.exam_date:
+            messages.error(request, f"Exam Has not started yet")
             return redirect(request.META.get('HTTP_REFERER'))
         
-        if 'remaining_time' not in request.session:
-                # request.session['start_time'] = time.time()
-                # end_time = request.session['start_time'] + 100 * 60 # 90 minutes in seconds
-                # course=QuestionModel.Course.objects.get(id=pk)
-                remaining_time = int(course.duration) * 60
-                request.session['remaining_time'] = int(remaining_time)
-        else:
-            remaining_time = request.session['remaining_time']
-            
-        if 'filtered' not in request.session:
-            fil=1
-            # request.session['time_left'] = date
-            # course=QuestionModel.Course.objects.get(id=pk)
-            questions,question_id_list,selected_ids=QuestionModel.Question.get_random(course=course,n=course.question_number)
-            # print(questions)
-            request.session['filtered'] = '1'
-            request.session['question_id_list'] = question_id_list
-            request.session['course_id'] = pk
-            request.session['page_number'] = 1
-            request.session['selected_ids'] = selected_ids
-            paginator = Paginator(questions,1)
-            page_number = 1
-            final_questions = paginator.get_page(page_number)
-            options = QuestionModel.Option.objects.filter(question=final_questions.object_list[0])
-            # options = QuestionModel.Option.objects.filter(question=final_questions)
-            # print(options)
-            # print(final_questions)
-            
-        else:
-            # course = QuestionModel.Course.objects.get(id=pk)
-            questions_ = QuestionModel.Question.get_from_list(course=course,id_list=request.session['question_id_list'])
-            # print(questions_)
-            paginator = Paginator(questions_,1) 
-            page_number = request.GET.get("page")
-            final_questions = paginator.get_page(page_number)
-            options = QuestionModel.Option.objects.filter(question=final_questions.object_list[0])
+        entry_before = course.exam_date+datetime.timedelta(minutes=course.entry_time)
+        if entry_before < datetime.datetime.now():
+            messages.error(request, f"Entry Time up. You can not enter the exam now.")
+            return redirect(request.META.get('HTTP_REFERER'))
+        
+        response = redirect("start-exam",pk=pk)
+        response.set_cookie("allow","True")
+        return response
+        
 
-
-        response = render(request,'student/start_exam.html',{'course':course,'questions':final_questions,'access_code':access_code,'options':options})
-        response.set_cookie("course_id",pk)
-        if(fil==1):
-            response.set_cookie("remaining_time",remaining_time)
     else:
+        messages.error(request, "Invalid Course!!")
         response = redirect(request.META.HTTP_REFERER)
+    return response
+
+@login_required(login_url='studentlogin')
+@user_passes_test(is_student)
+def start_exam_view(request,pk):
+    if request.COOKIES.get('allow')!="True":
+        messages.error(request, f"Not Allowed")
+        return redirect('take-exam',pk=pk)
+    
+    fil=0
+    course=QuestionModel.Course.objects.get(id=pk)
+        
+    if 'remaining_time' not in request.session:
+            remaining_time = int(course.duration) * 60
+            request.session['remaining_time'] = int(remaining_time)
+    else:
+        remaining_time = request.session['remaining_time']
+            
+    if 'filtered' not in request.session:
+        fil=1
+        questions,question_id_list,selected_ids=QuestionModel.Question.get_random(course=course,n=course.question_number)
+
+        if len(questions)<1:
+            messages.error(request, f"No questions Available")
+            return redirect('take-exam',pk=pk)
+        
+        request.session['filtered'] = '1'
+        request.session['question_id_list'] = question_id_list
+        request.session['course_id'] = pk
+        request.session['page_number'] = 1
+        request.session['selected_ids'] = selected_ids
+        paginator = Paginator(questions,1)
+        page_number = 1
+        final_questions = paginator.get_page(page_number)
+        options = QuestionModel.Option.objects.filter(question=final_questions.object_list[0])
+        
+    else:
+        questions_ = QuestionModel.Question.get_from_list(course=course,id_list=request.session['question_id_list'])
+        if len(questions_)<1:
+            messages.error(request, f"No questions Available")
+            return redirect('take-exam',pk=pk)
+        paginator = Paginator(questions_,1) 
+        page_number = request.GET.get("page")
+        final_questions = paginator.get_page(page_number)
+        options = QuestionModel.Option.objects.filter(question=final_questions.object_list[0])
+
+
+    response = render(request,'student/start_exam.html',{'course':course,'questions':final_questions,'options':options})
+    response.set_cookie("course_id",pk)
+    if(fil==1):
+        response.set_cookie("remaining_time",remaining_time)
+
     return response
         
 

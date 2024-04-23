@@ -19,6 +19,10 @@
     .row {
       margin: 100px;
     }
+    .access-width {
+      width: 275px;
+      display: inline-block;
+    }
   </style>
 </head>
 <br><br>
@@ -34,6 +38,8 @@
           <th>Course</th>
           <th>Total Question</th>
           <th>Total Marks</th>
+          <th>Exam Date</th>
+          <th>Access Code</th>
           <th>Action</th>
         </tr>
       </thead>
@@ -43,6 +49,13 @@
         <td> {{t.course_name}}</td>
         <td>{{t.question_number}}</td>
         <td>{{t.total_marks}}</td>
+        <td class="exam_date"  >{{t.exam_date|safe}}</td>
+        {% if t.created_by == user  %}
+        <td><span class="access-width" id="access_code_{{ t.id }}">{{ t.access_code }}</span>
+          <button class="btn btn-xs copy-button" data-clipboard-target="#access_code_{{ t.id }}">
+            <img src="{% static "image/copyToClipboard.png" %}" alt="Copy" style="width: 16px; height: 16px;">
+        </button></td>
+        {% endif  %}
         
         <td>
           {% if t.created_by == user  %}
@@ -57,4 +70,59 @@
 </div>
 
 <br><br><br><br><br><br>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
+<script>
+  // Initialize Clipboard.js
+  var clipboard = new ClipboardJS('.copy-button');
+
+  // Display success message on successful copy
+  clipboard.on('success', function (e) {
+    alert("Access code copied to clipboard!");
+  });
+
+  // Display error message on error
+  clipboard.on('error', function (e) {
+    alert("Failed to copy access code. Please try again manually.");
+  });
+</script>
+
+<script>
+  // Function to convert exam_time to local time string
+  function convertToLocalTime() {
+      // Get all elements with the class 'exam_time'
+      var examTimeElements = document.querySelectorAll('.exam_date');
+      
+      // Loop through each element
+      const options = {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "numeric",
+        minute: "numeric"
+      };
+      examTimeElements.forEach(function(element) {
+          // Get the UTC time string from the element
+          var utcTimeString = element.textContent.trim();
+          console.log("utcTimeString = >",utcTimeString);
+
+          // Parse the UTC date string into a Date object
+          var utcDate = new Date(utcTimeString);
+
+          // Get the timezone offset in minutes
+          var timezoneOffset = utcDate.getTimezoneOffset();
+          console.log(timezoneOffset)
+
+          // Adjust the date to the local timezone
+          var localDate = new Date(utcDate.getTime() - (timezoneOffset * 60000));
+
+          // Convert local date to UTC date
+          console.log(localDate.toLocaleString("en-US", options))
+          element.textContent = localDate.toLocaleString("en-US", options)
+      })};
+  
+  // Call the function to convert exam_time to local time
+  convertToLocalTime();
+  
+</script>
 {% endblock content %}

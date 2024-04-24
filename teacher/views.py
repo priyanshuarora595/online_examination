@@ -11,7 +11,10 @@ from teacher import models as TeacherModel
 from exam import forms as ExamForms
 from teacher import forms as TeacherForms
 from django.contrib import messages
+import hashlib
+from datetime import datetime
 
+import uuid
 
 # for showing signup/login button for teacher
 
@@ -32,7 +35,7 @@ def teacher_signup_view(request):
     mydict = {"userForm": userForm, "teacherForm": teacherForm}
     if request.method == "POST":
         request.POST._mutable = True
-        request.POST["salary"] = 0
+        # request.POST["salary"] = 0
         request.POST._mutable = False
         userForm = forms.TeacherUserForm(request.POST)
         teacherForm = forms.TeacherForm(request.POST, request.FILES)
@@ -55,7 +58,10 @@ def teacher_signup_view(request):
                     messages.error(request, val[0].message)
             if teacherForm.errors:
                 for key, val in teacherForm.errors.as_data().items():
-                    messages.error(request, val[0].message)
+                    if(key == 'mobile'):
+                        messages.error(request, 'Please enter a valid contact number')
+                    else:
+                        messages.error(request, val[0].message)
             mydict = {"userForm": userForm, "teacherForm": teacherForm}
     return render(request, "teacher/teachersignup.html", context=mydict)
 
@@ -72,13 +78,13 @@ def teacher_profile_view(request):
     user_form.fields["username"].widget.attrs["readonly"] = True
     # user_form.fields["email"].widget.attrs["readonly"] = True
 
-    teacherForm.fields["salary"].widget.attrs["readonly"] = True
+    # teacherForm.fields["salary"].widget.attrs["readonly"] = True
     mydict = {"userForm": user_form, "teacherForm": teacherForm}
 
     if request.method == "POST":
         request.POST._mutable = True
         request.POST["organizationID"] = teacher.organization_id
-        request.POST["salary"] = teacher.salary
+        # request.POST["salary"] = teacher.salary
         request.POST._mutable = False
         user_form = ExamForms.UserUpdateForm(request.POST, instance=user)
         teacherForm = TeacherForms.TeacherForm(request.POST, instance=teacher)
@@ -194,8 +200,25 @@ def teacher_add_question_view(request):
     og = {"organization": organization}
     questionForm = ExamForms.QuestionForm(initial=og)
     optionForm = ExamForms.OptionForm()
+
     if request.method == "POST":
+        question_images = request.FILES
+        for img in question_images:
+            file_name = str(question_images[img].name)
+            question_images[img].name = str(uuid.uuid4().hex) + "." + file_name.split('.')[-1]
+            print(question_images[img].name)
+            
         questionForm = ExamForms.QuestionForm(request.POST, request.FILES)
+        
+        if not questionForm.is_valid():
+            return render(
+                    request,
+                    "teacher/teacher_add_question.html",
+                    {
+                        "questionForm": questionForm,
+                        "optionForm": optionForm
+                    },
+                )
         question = questionForm.save(commit=False)
         course = ExamModel.Course.objects.get(id=request.POST.get("courseID"))
         question.course = course
@@ -338,6 +361,17 @@ def teacher_update_question_view(request, pk):
         questionForm = ExamForms.QuestionForm(
             request.POST, request.FILES, instance=question
         )
+        if not questionForm.is_valid():
+            return render(
+                request,
+                "teacher/teacher_update_question.html",
+                {
+                    "questionForm": questionForm,
+                    "optionForm": optionForms,
+                    "answerForm": answer.answer.option,
+                    "newOption": newOption,
+                },
+            )
         question = questionForm.save(commit=False)
         question.course = course
         course.total_marks += int(request.POST.get("marks"))

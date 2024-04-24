@@ -32,4 +32,4 @@ class TeacherForm(forms.ModelForm):
 
     class Meta:
         model = models.Teacher
-        fields = ["address", "mobile","salary"]
+        fields = ["address", "mobile"]

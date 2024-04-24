@@ -1,5 +1,6 @@
 {% extends 'teacher/teacherbase.html' %} {% load widget_tweaks %} 
 {% block content %}
+{% load static %}
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link
@@ -36,6 +37,9 @@
     {% render_field questionForm.question|attr:'required:true' class="form-control" placeholder="Example: Which one of the following is not a phase of Prototyping Model?" %}
     <br />
     <label for="question_image">Image</label> {% render_field questionForm.question_image class="form-control" %}
+    sadsds= {% for x in questionForm.question_image %}
+    {{ questionForm.question_image.image.name }}
+    {% endfor %}
     <br />
     <label for="question_number">Marks</label>
     {% render_field questionForm.marks|attr:'required:true' class="form-control" placeholder="Example: 5" %}

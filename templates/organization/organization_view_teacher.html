@@ -19,6 +19,12 @@
     .row {
       margin: 100px;
     }
+
+    .empty-result{
+      padding: 2rem;
+      text-align: center;
+      font-size: medium;
+    }
   </style>
 </head>
 <br><br>
@@ -27,16 +33,17 @@
     <div class="panel-heading">
       <h6 class="panel-title">Teachers</h6>
     </div>
+    {% if teachers|length >= 1 %}
     <table class="table table-hover table-bordered" id="dev-table">
       <thead>
         <tr>
 
           <th>Name</th>
+          <th>Organization</th>
           <!-- <th>Photo</th> -->
           <th>Contact</th>
           <th>Address</th>
-          <th>Salary</th>
-         
+          <th>Last Login</th>
           <th>Action</th>
         </tr>
       </thead>
@@ -44,16 +51,29 @@
       <tr>
 
         <td> {{t.get_name}}</td>
+        <td> {{t.organization}}</td>
         <!-- <td> <img src="{% static t.profile_pic.url %}" alt="Profile Pic" height="40px" width="40px" /></td> -->
         <td>{{t.mobile}}</td>
         <td>{{t.address}}</td>
-        <td>{{t.salary}}</td>
+        
+        <td>{{t.user.last_login}}</td>
         
         <td><a class="btn btn-success btn-xs" style="border-radius: 0%;" href="{% url 'organization-update-teacher' t.id  %}"><span class="glyphicon glyphicon-edit"></span></a>
         <a class="btn btn-danger btn-xs" style="border-radius: 0%;" href="{% url 'organization-delete-teacher' t.id  %}"><span class="glyphicon glyphicon-trash"></span></a></td>
       </tr>
       {% endfor %}
     </table>
+    {% else %}
+    <div class="empty-result">
+      <span> You do not have any teachers added to your organization! </span>
+      <br>
+      <span> Share this
+        <a href='{% url 'teachersignup' %}'> 
+          link
+        </a> 
+        and when they register you see them listed here
+    </div>
+    {% endif %}
   </div>
 </div>
 

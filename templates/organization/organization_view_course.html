@@ -24,6 +24,26 @@
       width: 275px;
       display: inline-block;
     }
+
+    .exam-link-td {
+      overflow: hidden;
+      width: 100%;
+      display: inline-block;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .access-code-absent {
+      filter: blur(4px);
+    }
+    .access-code-absent:hover,:focus{
+      filter: blur(0);
+      color:red;
+    }
+    .empty-result{
+      padding: 2rem;
+      text-align: center;
+      font-size: medium;
+    }
   </style>
 </head>
 <br><br>
@@ -32,6 +52,7 @@
     <div class="panel-heading">
       <h6 class="panel-title">Courses</h6>
     </div>
+    {% if courses|length >= 1 %}
     <table class="table table-hover table-bordered" id="dev-table">
       <thead>
         <tr>
@@ -41,26 +62,45 @@
           <th>Total Marks</th>
           <th>Exam Date</th>
           <th>Access Code</th>
+          <th>Exam link</th>
           <th>Action</th>
         </tr>
       </thead>
-      {% for t in courses %}
-      <tr>
+        {% for t in courses %}
+        <tr>
 
-        <td> {{t.course_name}}</td>
-        <td>{{t.question_number}}</td>
-        <td>{{t.total_marks}}</td>
-        <td class="exam_date" >{{t.exam_date|safe}}</td>
-        <td><span class="access-width" id="access_code_{{ t.id }}">{{ t.access_code }}</span>
-          <button class="btn btn-xs copy-button" data-clipboard-target="#access_code_{{ t.id }}">
-            <img src="{% static "image/copyToClipboard.png" %}" alt="Copy" style="width: 16px; height: 16px;">
-        </button></td>
-        
-        <td><a class="btn btn-success btn-xs" style="border-radius: 0%;" href="{% url 'organization-update-course' t.id  %}"><span class="glyphicon glyphicon-edit"></span></a>
-        <a class="btn btn-danger btn-xs" style="border-radius: 0%;" href="{% url 'organization-delete-course' t.id  %}"><span class="glyphicon glyphicon-trash"></span></a></td>
-      </tr>
-      {% endfor %}
-    </table>
+          <td> {{t.course_name}}</td>
+          <td>{{t.question_number}}</td>
+          <td>{{t.total_marks}}</td>
+          <td class="exam_date" >{{t.exam_date|safe}}</td>
+          <td><span class="access-width" id="access_code_{{ t.id }}">{{ t.access_code }}</span>
+            <button class="btn btn-xs copy-button" data-clipboard-target="#access_code_{{ t.id }}">
+              <img src="{% static "image/copyToClipboard.png" %}" alt="Copy" style="width: 16px; height: 16px;">
+          </button></td>
+          <td class="exam-link-td"> 
+          
+            <button class="btn btn-xs copy-button"  onclick="navigator.clipboard.writeText(`${window.location.host}{%  url 'take-exam' pk=t.id %}`)">
+              {% url 'take-exam' pk=t.id as the_url %}
+              {% if the_url %}
+                <a href="{{ the_url }}">Exam link</a>
+              {% endif %}
+              <img src="{% static 'image/copyToClipboard.png' %}" alt="Copy" style="width: 16px; height: 16px;">
+          </button>
+          </td>
+
+          <td><a class="btn btn-success btn-xs" style="border-radius: 0%;" href="{% url 'organization-update-course' t.id  %}"><span class="glyphicon glyphicon-edit"></span></a>
+          <a class="btn btn-danger btn-xs" style="border-radius: 0%;" href="{% url 'organization-delete-course' t.id  %}"><span class="glyphicon glyphicon-trash"></span></a></td>
+        </tr>
+        {% endfor %}
+      </table>
+      {% else %}
+      <div class="empty-result">
+        <span> You do not have any courses! </span>
+        <br>
+        <span> Ask your Organization's teacher to add courses </span>
+
+      </div>
+      {% endif %}
   </div>
 </div>
 

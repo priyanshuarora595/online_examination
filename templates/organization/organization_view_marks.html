@@ -19,14 +19,22 @@
     .row {
       margin: 100px;
     }
+
+    .empty-result{
+      padding: 2rem;
+      text-align: center;
+      font-size: medium;
+    }
   </style>
 </head>
 <br><br>
 <div class="container">
   <div class="panel panel-primary">
     <div class="panel-heading">
-      <h6 class="panel-title">Exams</h6>
+      <h6 class="panel-title">Exams Taken</h6>
     </div>
+    
+    {% if courses|length >= 1 %}
     <table class="table table-hover table-bordered" id="dev-table">
       <thead>
         <tr>
@@ -46,6 +54,12 @@
       </tr>
       {% endfor %}
     </table>
+    {% else %}
+    <div class="empty-result">
+      <span> Student has not taken any exams! </span>
+      <br>
+    </div>
+    {% endif %}
   </div>
 </div>
 

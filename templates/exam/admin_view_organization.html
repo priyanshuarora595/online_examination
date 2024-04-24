@@ -32,9 +32,11 @@
         <tr>
 
           <th>Name</th>
+          <th>Username</th>
           <!-- <th>Photo</th> -->
           <th>Contact</th>
           <th>Address</th>
+          <th>Created on</th>
          
           <th>Action</th>
         </tr>
@@ -43,9 +45,11 @@
       <tr>
 
         <td> {{organization.get_name}}</td>
+        <td> {{organization.user.username}}</td>
         <!-- <td> <img src="{% static t.profile_pic.url %}" alt="Profile Pic" height="40px" width="40px" /></td> -->
         <td>{{organization.mobile}}</td>
         <td>{{organization.address}}</td>
+        <td>{{organization.user.date_joined}}</td>
         
         <td><a class="btn btn-success btn-xs" style="border-radius: 0%;" href="{% url 'update-organization' organization.id  %}"><span class="glyphicon glyphicon-edit"></span></a>
         <a class="btn btn-danger btn-xs" style="border-radius: 0%;" href="{% url 'delete-organization' organization.id  %}"><span class="glyphicon glyphicon-trash"></span></a></td>

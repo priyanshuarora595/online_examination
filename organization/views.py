@@ -53,7 +53,11 @@ def organization_signup_view(request):
                     messages.error(request,val[0].message)
             if organizationForm.errors:
                 for key,val in organizationForm.errors.as_data().items():
-                    messages.error(request,val[0].message)
+                    if(key == 'mobile'):
+                        messages.error(request, 'Please enter a valid contact number')
+                    else:
+                        messages.error(request, val[0].message)
+
             mydict = {"userForm": userForm, "organizationForm": organizationForm}
     return render(request, "organization/organizationsignup.html", context=mydict)
 
@@ -147,9 +151,9 @@ def organization_teacher_view(request):
         "pending_teacher": TMODEL.Teacher.objects.all()
         .filter(organization_id=organization_id, status=False)
         .count(),
-        "salary": TMODEL.Teacher.objects.all()
-        .filter(organization_id=organization_id, status=True)
-        .aggregate(Sum("salary"))["salary__sum"],
+        # "salary": TMODEL.Teacher.objects.all()
+        # .filter(organization_id=organization_id, status=True)
+        # .aggregate(Sum("salary"))["salary__sum"],
     }
     return render(request, "organization/organization_teacher.html", context=response)
 
@@ -171,24 +175,14 @@ def organization_view_pending_teacher_view(request):
 @login_required(login_url="organizationlogin")
 @user_passes_test(is_organization)
 def approve_teacher_view(request, pk):
-    teacherSalary = forms.TeacherSalaryForm()
-    if request.method == "POST":
-        teacherSalary = forms.TeacherSalaryForm(request.POST)
-        if teacherSalary.is_valid():
-            teacher = TMODEL.Teacher.objects.get(id=pk)
-            organization_id = OMODEL.Organization.objects.get(user=request.user).id
-            if teacher.organization_id == organization_id:
-                teacher.salary = teacherSalary.cleaned_data["salary"]
-                teacher.status = True
-                teacher.save()
-            else:
-                return render(request, "exam/unauthorized.html")
-        else:
-            print("form is invalid")
-        return redirect("organization-view-pending-teacher")
-    return render(
-        request, "organization/salary_form.html", {"teacherSalary": teacherSalary}
-    )
+    teacher = TMODEL.Teacher.objects.get(id=pk)
+    organization_id = OMODEL.Organization.objects.get(user=request.user).id
+    if teacher.organization_id == organization_id:
+        teacher.status = True
+        teacher.save()
+    else:
+        return render(request, "exam/unauthorized.html")
+    return redirect("organization-view-pending-teacher")
 
 
 @login_required(login_url="organizationlogin")
@@ -246,18 +240,18 @@ def delete_teacher_view(request, pk):
         return render(request, "exam/unauthorized.html")
 
 
-@login_required(login_url="organizationlogin")
-@user_passes_test(is_organization)
-def organization_view_teacher_salary_view(request):
-    organization_id = OMODEL.Organization.objects.get(user=request.user).id
-    teachers = TMODEL.Teacher.objects.all().filter(
-        status=True, organization_id=organization_id
-    )
-    return render(
-        request,
-        "organization/organization_view_teacher_salary.html",
-        {"teachers": teachers},
-    )
+# @login_required(login_url="organizationlogin")
+# @user_passes_test(is_organization)
+# def organization_view_teacher_salary_view(request):
+#     organization_id = OMODEL.Organization.objects.get(user=request.user).id
+#     teachers = TMODEL.Teacher.objects.all().filter(
+#         status=True, organization_id=organization_id
+#     )
+#     return render(
+#         request,
+#         "organization/organization_view_teacher_salary.html",
+#         {"teachers": teachers},
+#     )
 
 
 @login_required(login_url="organizationlogin")
@@ -326,7 +320,11 @@ def organization_view_student_marks_view(request):
 @user_passes_test(is_organization)
 def organization_view_marks_view(request, pk):
     organization = OMODEL.Organization.objects.get(user=request.user)
-    courses = EMODEL.Course.objects.filter(organization=organization)
+    
+    student_id = EMODEL.Student.objects.filter(user_id = pk).first()
+    course_exams_given = EMODEL.Result.objects.filter(student_id=student_id.id).values_list('exam_id')
+    courses = EMODEL.Course.objects.filter(organization=organization, id__in = course_exams_given)
+
     response = render(
         request, "organization/organization_view_marks.html", {"courses": courses}
     )
@@ -541,6 +539,7 @@ def organization_view_question_course_view(request):
 @user_passes_test(is_organization)
 def organization_view_question_view(request, pk):
     questions = EMODEL.Question.objects.filter(course_id=pk)
+    print(questions)
     return render(
         request,
         "organization/organization_view_question.html",

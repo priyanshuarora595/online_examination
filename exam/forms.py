@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from exam import models as EMODEL
 from django.db import models as django_db_models
 
+from django.forms import ValidationError
+
 class ContactusForm(forms.Form):
     Name = forms.CharField(max_length=30)
     Email = forms.EmailField()
@@ -82,6 +84,14 @@ class QuestionForm(forms.ModelForm):
                 initial=None,
             )
 
+    def clean_image(self):
+        image = self.cleaned_data.get('question_image', False)
+        if image:
+            if image._size > 4*1024*1024:
+                raise ValidationError("Image file too large ( > 4mb )")
+            return image
+        else:
+            raise ValidationError("Couldn't read uploaded image")
 
     class Meta:
         model = EMODEL.Question

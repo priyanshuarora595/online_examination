@@ -41,6 +41,7 @@
           <th>Total Marks</th>
           <th>Exam Date</th>
           <th>Access Code</th>
+          <th>Exam link</th>
           <th>Action</th>
         </tr>
       </thead>
@@ -56,6 +57,17 @@
             <img src="{% static "image/copyToClipboard.png" %}" alt="Copy" style="width: 16px; height: 16px;">
         </button></td>
         
+        <td class="exam-link-td"> 
+        
+          <button class="btn btn-xs copy-button"  onclick="navigator.clipboard.writeText(`${window.location.host}{%  url 'take-exam' pk=t.id %}`)">
+            {% url 'take-exam' pk=t.id as the_url %}
+            {% if the_url %}
+              <a href="{{ the_url }}">Exam link</a>
+            {% endif %}
+            <img src="{% static 'image/copyToClipboard.png' %}" alt="Copy" style="width: 16px; height: 16px;">
+        </button>
+        </td>
+
         <td><a class="btn btn-primary btn-xs" style="border-radius: 0%;" href="{% url 'update-course' t.id  %}"><span class="glyphicon glyphicon-edit"></span></a>
         <a class="btn btn-danger btn-xs" style="border-radius: 0%;" href="{% url 'delete-course' t.id  %}"><span class="glyphicon glyphicon-trash"></span></a></td>
       </tr>

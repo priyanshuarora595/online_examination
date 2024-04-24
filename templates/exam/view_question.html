@@ -19,6 +19,12 @@
     .row {
       margin: 100px;
     }
+
+    .empty-result{
+      padding: 2rem;
+      text-align: center;
+      font-size: medium;
+    }
   </style>
 </head>
 <br><br>
@@ -27,6 +33,8 @@
     <div class="panel-heading">
       <h6 class="panel-title">Questions</h6>
     </div>
+
+    {% if questions|length >= 1 %}
     <table class="table table-hover table-bordered" id="dev-table">
       <thead>
         <tr>
@@ -51,6 +59,17 @@
       </tr>
       {% endfor %}
     </table>
+    {% else %}
+    <div class="empty-result">
+      <span> No questions to show. </span>
+      <br>
+      <span> Add some
+        <a href="{% url 'admin-add-question' %}"> 
+          questions
+        </a> 
+        from here
+    </div>
+    {% endif %}
   </div>
 </div>
 

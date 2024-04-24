@@ -133,9 +133,9 @@ def admin_teacher_view(request):
     dict = {
         "total_teacher": TMODEL.Teacher.objects.all().filter(status=True).count(),
         "pending_teacher": TMODEL.Teacher.objects.all().filter(status=False).count(),
-        "salary": TMODEL.Teacher.objects.all()
-        .filter(status=True)
-        .aggregate(Sum("salary"))["salary__sum"],
+        # "salary": TMODEL.Teacher.objects.all()
+        # .filter(status=True)
+        # .aggregate(Sum("salary"))["salary__sum"],
     }
     return render(request, "exam/admin_teacher.html", context=dict)
 
@@ -260,18 +260,14 @@ def admin_view_pending_organization_view(request):
 @login_required(login_url="adminlogin")
 @user_passes_test(is_admin)
 def approve_teacher_view(request, pk):
-    teacherSalary = EFORM.TeacherSalaryForm()
     if request.method == "POST":
-        teacherSalary = EFORM.TeacherSalaryForm(request.POST)
-        if teacherSalary.is_valid():
-            teacher = TMODEL.Teacher.objects.get(id=pk)
-            teacher.salary = teacherSalary.cleaned_data["salary"]
-            teacher.status = True
-            teacher.save()
-        else:
-            print("form is invalid")
+        teacher = TMODEL.Teacher.objects.get(id=pk)
+        teacher.status = True
+        teacher.save()
+    else:
+        print("Not a valid request type")
         return HttpResponseRedirect("/admin-view-pending-teacher")
-    return render(request, "exam/salary_form.html", {"teacherSalary": teacherSalary})
+    return redirect('approve-teacher', pk = pk)
 
 
 @login_required(login_url="adminlogin")
@@ -284,13 +280,13 @@ def reject_teacher_view(request, pk):
     return HttpResponseRedirect("/admin-view-pending-teacher")
 
 
-@login_required(login_url="adminlogin")
-@user_passes_test(is_admin)
-def admin_view_teacher_salary_view(request):
-    teachers = TMODEL.Teacher.objects.all().filter(status=True)
-    return render(
-        request, "exam/admin_view_teacher_salary.html", {"teachers": teachers}
-    )
+# @login_required(login_url="adminlogin")
+# @user_passes_test(is_admin)
+# def admin_view_teacher_salary_view(request):
+#     teachers = TMODEL.Teacher.objects.all().filter(status=True)
+#     return render(
+#         request, "exam/admin_view_teacher_salary.html", {"teachers": teachers}
+#     )
 
 
 @login_required(login_url="adminlogin")
@@ -307,20 +303,13 @@ def admin_view_organization_fees_view(request):
 @login_required(login_url="adminlogin")
 @user_passes_test(is_admin)
 def approve_organization_view(request, pk):
-    OrganizationFees = EFORM.OrganizationFeesForm()
-    if request.method == "POST":
-        OrganizationFees = EFORM.OrganizationFeesForm(request.POST)
-        if OrganizationFees.is_valid():
-            organization = OMODEL.Organization.objects.get(id=pk)
-            organization.fees = OrganizationFees.cleaned_data["fees"]
-            organization.status = True
-            organization.save()
-        else:
-            print("form is invalid")
-        return HttpResponseRedirect("/admin-view-pending-teacher")
-    return render(
-        request, "exam/fees_form.html", {"OrganizationFees": OrganizationFees}
-    )
+    try:
+        organization = OMODEL.Organization.objects.get(id=pk)
+        organization.status = True
+        organization.save()
+    except Exception as e:
+        print("Error on approving organization from admin {e}")
+    return redirect('admin-view-pending-organization')
 
 
 @login_required(login_url="adminlogin")
@@ -330,7 +319,7 @@ def reject_organization_view(request, pk):
     user = User.objects.get(id=teacher.user_id)
     user.delete()
     teacher.delete()
-    return HttpResponseRedirect("/admin-view-pending-teacher")
+    return HttpResponseRedirect("/admin-view-pending-organization")
 
 
 @login_required(login_url="adminlogin")
@@ -406,6 +395,8 @@ def admin_add_course_view(request):
         else:
             print("form is invalid")
             print(f"{courseForm.errors = }")
+            messages.error(request, courseForm.errors)
+            return render(request, "exam/admin_add_course.html", {"courseForm": courseForm})
         return HttpResponseRedirect("/admin-view-course")
     return render(request, "exam/admin_add_course.html", {"courseForm": courseForm})
 

@@ -19,6 +19,12 @@
     .row {
       margin: 100px;
     }
+        
+    .empty-result{
+      padding: 2rem;
+      text-align: center;
+      font-size: medium;
+    }
   </style>
 </head>
 <br><br>
@@ -27,6 +33,8 @@
     <div class="panel-heading">
       <h6 class="panel-title">Exams</h6>
     </div>
+
+    {% if courses|length >= 1 %}
     <table class="table table-hover table-bordered" id="dev-table">
       <thead>
         <tr>
@@ -46,6 +54,13 @@
       </tr>
       {% endfor %}
     </table>
+    {% else %}
+    <div class="empty-result">
+      <span> No exams to show here</span>
+      <br>
+      <span> Ask your organization's teacher to add some courses
+    </div>
+    {% endif %}
   </div>
 </div>
 

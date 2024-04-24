@@ -23,6 +23,20 @@
       width: 275px;
       display: inline-block;
     }
+    .exam-link-td {
+      overflow: hidden;
+      width: 100%;
+      display: inline-block;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .access-code-absent {
+      filter: blur(4px);
+    }
+    .access-code-absent:hover,:focus{
+      filter: blur(0);
+      color:red;
+    }
   </style>
 </head>
 <br><br>
@@ -40,6 +54,7 @@
           <th>Total Marks</th>
           <th>Exam Date</th>
           <th>Access Code</th>
+          <th>Exam link</th>
           <th>Action</th>
         </tr>
       </thead>
@@ -50,13 +65,31 @@
         <td>{{t.question_number}}</td>
         <td>{{t.total_marks}}</td>
         <td class="exam_date"  >{{t.exam_date|safe}}</td>
+        
         {% if t.created_by == user  %}
         <td><span class="access-width" id="access_code_{{ t.id }}">{{ t.access_code }}</span>
           <button class="btn btn-xs copy-button" data-clipboard-target="#access_code_{{ t.id }}">
             <img src="{% static "image/copyToClipboard.png" %}" alt="Copy" style="width: 16px; height: 16px;">
         </button></td>
+        {% else %}
+          <td>
+            <span class="access-code-absent">
+              You do not have proper access !
+            </span>
+          </td>
         {% endif  %}
         
+        <td class="exam-link-td"> 
+        
+          <button class="btn btn-xs copy-button"  onclick="navigator.clipboard.writeText(`${window.location.host}{%  url 'take-exam' pk=t.id %}`)">
+            {% url 'take-exam' pk=t.id as the_url %}
+            {% if the_url %}
+              <a href="{{ the_url }}">Exam link</a>
+            {% endif %}
+            <img src="{% static 'image/copyToClipboard.png' %}" alt="Copy" style="width: 16px; height: 16px;">
+        </button>
+        </td>
+
         <td>
           {% if t.created_by == user  %}
           <a class="btn btn-primary btn-xs" style="border-radius: 0%;" href="{% url 'teacher-update-course' t.id  %}"><span class="glyphicon glyphicon-edit"></span></a>

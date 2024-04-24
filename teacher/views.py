@@ -160,6 +160,8 @@ def teacher_update_course_view(request, pk):
             course.save()
         else:
             print("form is invalid")
+            messages.error(request, "Please check the details again!")
+            return redirect(request.META.get("HTTP_REFERER"))
         return redirect("teacher-view-course")
     return render(
         request,

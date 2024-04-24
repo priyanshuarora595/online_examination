@@ -3,6 +3,7 @@
 
 <head>
   <style media="screen">
+    input[type="tel"],
     input[type="text"],
     select,
     input[type="number"],
@@ -40,6 +41,13 @@
 <div>
   <form method="post" autocomplete="off" enctype="multipart/form-data" style="margin-left: 200px; margin-right: 200px">
     {% csrf_token %}
+
+    
+    <label for="username">
+      Username
+    </label>
+    {% render_field userForm.username|attr:"readonly:True" class="form-control" placeholder="Username" %}
+    
     <label for="first_name">
       First Name
     </label>
@@ -53,17 +61,12 @@
     <label for="mobile">
       Contact
     </label>
-    {% render_field studentForm.mobile class="form-control" placeholder="Mobile" %}
+    {% render_field studentForm.mobile class="form-control" placeholder="Mobile" type="tel" pattern="[0-9]{10}" %}
 
     <label for="address">
       Address
     </label>
     {% render_field studentForm.address class="form-control" placeholder="Address" %}
-
-    <label for="username">
-      Username
-    </label>
-    {% render_field userForm.username|attr:"readonly:True" class="form-control" placeholder="Username" %}
 
     <label for="email">
       Email

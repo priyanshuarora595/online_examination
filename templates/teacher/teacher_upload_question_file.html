@@ -6,21 +6,75 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-  <style>
-       <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-  a:link {
-        text-decoration: none;
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  
+    <style>
+      a:link {
+          text-decoration: none;
       }
-    
-  </style>
+      .content-box{
+        margin: 2rem;
+      }
+      .sample-button{
+        background-color: #337ab7;
+        border-radius: 2rem;
+        color:white;
+      }
+      .sample-button:hover{
+        border-radius: 2rem;
+        color: white;
+      }
+      .sample-content{
+        display: flex;
+flex-direction: column;
+/* border: 1px solid grey; */
+/* border-collapse: collapse; */
+      }
+      .sample-content-table{
+        display: flex;
+        width: 40%;
+        justify-content: space-between;
+        gap:20px;
+      }
+     </style>
 </head>
-<h2 style="text-align:center;">Add Question</h2>
 
-<div style="margin:100px;margin-top: 0px;">
-  <a href="{% url 'download-question-file-format' %}" style="text-decoration: none; color: white"><button type="button"class="btn btn-primary" style="border-radius:0px;">Question Format</button></a>
+<div class="content-box">
+  <div class="heading">
+    <h2>Add Question</h2>
+    <hr>
+    <h4>You can autofill your already existing questions by uploading a Excel file</h4>
+  </div>
+  <br>
+  <div class="sample-content">
+
+      <div class="sample-content-table">
+        <span>
+          Check the format of the Excel file to be uploaded
+          </span>
+        <span style="align-items: left;">
+          <a href="{% url 'download-question-file-format' %}">
+            File Format
+          </a>
+
+        </span>
+      </div>
+      <div class="sample-content-table">
+        <span>
+          Check the Sample File below to see how your excel file should be
+        </span>
+        <a href="{% url 'download-question-file-format' %}">
+          <!-- <button type="button"class="btn sample-button" style="border-radius:2px;">Question Format</button> -->
+          Sample File
+        </a>
+
+      </div>
+  </div>
+</div>
+<div >
   <a href="{% url 'download-sample-question-file' %}" style="text-decoration: none; color: white"><button type="button"class="btn btn-primary" style="border-radius:0px;">Sample File</button></a>
 </div>
 <form method="POST" id="add_question_file_form" autocomplete="off" style="margin:100px;margin-top: 0px;" enctype="multipart/form-data">

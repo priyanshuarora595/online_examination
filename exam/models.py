@@ -4,7 +4,7 @@ from student.models import Student
 from organization.models import Organization
 
 from django.contrib.auth.models import User
-
+from django.core.validators import MinValueValidator, MaxValueValidator
 import uuid
 import os
 
@@ -15,9 +15,9 @@ class Course(models.Model):
     total_marks = models.PositiveIntegerField(default=0) # total marks to be awarded in this exam
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE) # exam belongs to which organization
     access_code = models.UUIDField(default=uuid.uuid4) # access code to start the exam
-    duration = models.PositiveIntegerField(default=0) # how long the exam will run.
-    entry_time = models.PositiveIntegerField(default=30) # time in minutes for how to long to allow participants to start exam.
-    passing_percentage = models.PositiveIntegerField(default=75) # passing score criteria
+    duration = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(120)]) # how long the exam will run.
+    entry_time = models.PositiveIntegerField(default=30, validators=[MinValueValidator(1)]) # time in minutes for how to long to allow participants to start exam.
+    passing_percentage = models.PositiveIntegerField(default=75, validators=[MinValueValidator(1), MaxValueValidator(100)]) # passing score criteria
     created_by = models.ForeignKey(User,on_delete=models.CASCADE) # who created the exam
     exam_date = models.DateTimeField() # on which date and time the exam is scheduled
 
@@ -29,7 +29,7 @@ def get_image_path(instance, filename):
 
 class Question(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    marks = models.PositiveIntegerField(default=1)
+    marks = models.PositiveIntegerField(default=1, validators=[MinValueValidator((-100)),MaxValueValidator(100)])
     question = models.CharField(max_length=1500)
     question_image = models.ImageField(upload_to=get_image_path, null=True, blank=True)
 

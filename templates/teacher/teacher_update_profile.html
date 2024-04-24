@@ -3,10 +3,10 @@
 {% block content %}
 <head>
   <style media="screen">
-    input[type=text], select,input[type=number] ,input[type=password], textarea{
+    input[type=text], select,input[type=number] ,input[type=password], input[type='email'], textarea{
     width: 100%;
     padding: 12px 20px;
-    margin: 8px 0;
+    margin: 3px 0;
     display: inline-block;
     border: 1px solid #ccc;
     border-radius: 4px;
@@ -39,7 +39,12 @@
 <div>
   <form method="post"  autocomplete="off" enctype="multipart/form-data" style="margin-left:200px;margin-right:200px;">
       {% csrf_token %}
-        
+                  
+        <label for="username">
+          Username
+        </label>
+        {% render_field userForm.username|attr:"readonly:True" class="form-control" placeholder="Username" %}
+
         <label for="first_name">
           First Name
         </label>
@@ -53,22 +58,17 @@
         <label for="mobile">
           Contact
         </label>
-        {% render_field teacherForm.mobile class="form-control" placeholder="Mobile" %}
+        {% render_field teacherForm.mobile class="form-control" placeholder="Mobile" type="tel" pattern="[0-9]{10}" %}
         
         <label for="address">
           Address
         </label>
         {% render_field teacherForm.address class="form-control" placeholder="Address" %}
 
-        <label for="address">
+        <!-- <label for="address">
           Salary
         </label>
-        {% render_field teacherForm.salary class="form-control" placeholder="Address"|add_attr:"disabled" %}
-          
-        <label for="username">
-          Username
-        </label>
-        {% render_field userForm.username|attr:"readonly:True" class="form-control" placeholder="Username" %}
+        {% render_field teacherForm.salary class="form-control" placeholder="Address"|add_attr:"disabled" %} -->
     
         <label for="email">
           Email

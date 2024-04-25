@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 import uuid
 import os
+import uuid
 
 
 class Course(models.Model):
@@ -24,14 +25,14 @@ class Course(models.Model):
     def __str__(self):
         return self.course_name
 
-def get_image_path(instance, filename):
-    return os.path.join('image/Exam', instance.course.course_name, filename)
+def get_image_path(instance,filename=f"{uuid.uuid4().hex}.jpg"):
+    return os.path.join('image/Exam', instance.course.course_name,f"{uuid.uuid4().hex}.jpg")
 
 class Question(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     marks = models.PositiveIntegerField(default=1, validators=[MinValueValidator((1)),MaxValueValidator(100)])
     question = models.CharField(max_length=1500)
-    question_image = models.ImageField(upload_to=get_image_path, null=True, blank=True)
+    question_image = models.ImageField(upload_to=get_image_path , null=True, blank=True)
 
     @classmethod
     def get_random(cls, course, n):

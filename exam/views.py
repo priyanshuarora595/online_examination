@@ -506,15 +506,19 @@ def admin_upload_questions_file(request):
         sheet = pxl_doc["Sheet1"]
         image_loader = SheetImageLoader(sheet)
         last_row = sheet.max_row
-        course_name = df_list[0][0]
-        # return redirect(request.META.get("HTTP_REFERER"))
-        # return None
-        course_obj = Course.objects.filter(course_name=course_name).first()
-        if not course_obj:
-            messages.error(request, "No course with the provided name")
-            return redirect(request.META.get("HTTP_REFERER"))
+        # course_name = df_list[0][0]
+        # # return redirect(request.META.get("HTTP_REFERER"))
+        # # return None
+        # course_obj = Course.objects.filter(course_name=course_name).first()
+        # if not course_obj:
+        #     messages.error(request, "No course with the provided name")
+        #     return redirect(request.META.get("HTTP_REFERER"))
 
         for row_number in range(1, last_row + 1):
+            course_name = df_list[row_number-1][0]
+            course_obj = Course.objects.filter(course_name=course_name).first()
+            if not course_obj:
+                continue
             question = Question()
             row = df_list[row_number - 1]
             question.question = row[1]
@@ -554,6 +558,9 @@ def admin_upload_questions_file(request):
 def admin_update_question_view(request, pk):
     question = EMODEL.Question.objects.get(id=pk)
     question.organization = question.course.organization
+    question_image = question.question_image.name
+    if question_image=="":
+        question_image=False
     questionForm = EFORM.QuestionForm(instance=question)
     options = EMODEL.Option.objects.filter(question=question)
     optionForms = []
@@ -570,6 +577,19 @@ def admin_update_question_view(request, pk):
         questionForm = EFORM.QuestionForm(
             request.POST, request.FILES, instance=question
         )
+        
+        if not questionForm.is_valid():
+            return render(
+                request,
+                "exam/admin_update_question.html",
+                {
+                    "questionForm": questionForm,
+                    "optionForm": optionForms,
+                    "answerForm": answer.answer.option,
+                    "newOption": newOption,
+                    "question_image": question_image
+                },
+            )
         question = questionForm.save(commit=False)
         question.course = course
         course.total_marks += int(request.POST.get("marks"))
@@ -600,6 +620,7 @@ def admin_update_question_view(request, pk):
             "optionForm": optionForms,
             "answerForm": answer.answer.option,
             "newOption": newOption,
+            "question_image": question_image
         },
     )
 

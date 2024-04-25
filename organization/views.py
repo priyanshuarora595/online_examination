@@ -49,12 +49,12 @@ def organization_signup_view(request):
             return HttpResponseRedirect("organizationlogin")
         else:
             if userForm.errors:
-                for key,val in userForm.errors.as_data().items():
-                    messages.error(request,val[0].message)
+                for key, val in userForm.errors.as_data().items():
+                    messages.error(request, val[0].message)
             if organizationForm.errors:
-                for key,val in organizationForm.errors.as_data().items():
-                    if(key == 'mobile'):
-                        messages.error(request, 'Please enter a valid contact number')
+                for key, val in organizationForm.errors.as_data().items():
+                    if key == "mobile":
+                        messages.error(request, "Please enter a valid contact number")
                     else:
                         messages.error(request, val[0].message)
 
@@ -88,10 +88,7 @@ def organization_profile_view(request):
     user = OMODEL.User.objects.get(id=request.user.id)
     userForm = forms.UserUpdateForm(instance=user)
     organizationForm = OFORM.OrganizationForm(instance=organization)
-    page_context = {
-        "userForm": userForm, 
-        "organizationForm": organizationForm
-    }
+    page_context = {"userForm": userForm, "organizationForm": organizationForm}
 
     if request.method == "POST":
         userForm = forms.UserUpdateForm(request.POST, instance=user)
@@ -103,7 +100,9 @@ def organization_profile_view(request):
             return redirect("organization-profile")
         else:
             return render(request, "exam/unauthorized.html")
-    return render(request, "organization/update_organization.html", context=page_context)
+    return render(
+        request, "organization/update_organization.html", context=page_context
+    )
 
 
 @login_required(login_url="organizationlogin")
@@ -320,10 +319,14 @@ def organization_view_student_marks_view(request):
 @user_passes_test(is_organization)
 def organization_view_marks_view(request, pk):
     organization = OMODEL.Organization.objects.get(user=request.user)
-    
-    student_id = EMODEL.Student.objects.filter(user_id = pk).first()
-    course_exams_given = EMODEL.Result.objects.filter(student_id=student_id.id).values_list('exam_id')
-    courses = EMODEL.Course.objects.filter(organization=organization, id__in = course_exams_given)
+
+    student_id = EMODEL.Student.objects.filter(user_id=pk).first()
+    course_exams_given = EMODEL.Result.objects.filter(
+        student_id=student_id.id
+    ).values_list("exam_id")
+    courses = EMODEL.Course.objects.filter(
+        organization=organization, id__in=course_exams_given
+    )
 
     response = render(
         request, "organization/organization_view_marks.html", {"courses": courses}
@@ -343,7 +346,6 @@ def organization_check_marks_view(request, pk):
     return render(
         request, "organization/organization_check_marks.html", {"results": results}
     )
-
 
 
 @login_required(login_url="organizationlogin")
@@ -454,27 +456,32 @@ def organization_add_question_view(request):
         {"questionForm": questionForm, "optionForm": optionForm},
     )
 
+
 @login_required(login_url="organizationlogin")
 @user_passes_test(is_organization)
 def organization_upload_questions_file(request):
-    if request.method=="POST":
+    if request.method == "POST":
         import pandas as pd
         import openpyxl
         import uuid
         from openpyxl_image_loader import SheetImageLoader
-        from exam.models import Course,Question,Option,Answer
+        from exam.models import Course, Question, Option, Answer
         from django.core.files.base import ContentFile
         from io import BytesIO
+
         file_obj = request.FILES.get("uploadFile")
-        if file_obj.content_type!='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+        if (
+            file_obj.content_type
+            != "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        ):
             messages.error(request, "Only xlsx files allowed")
             return redirect(request.META.get("HTTP_REFERER"))
 
-        df = pd.read_excel(file_obj,header=None,engine='openpyxl')
+        df = pd.read_excel(file_obj, header=None, engine="openpyxl")
         df_list = df.values.tolist()
         # Load the Excel workbook and sheet
         pxl_doc = openpyxl.load_workbook(file_obj)
-        sheet = pxl_doc['Sheet1']
+        sheet = pxl_doc["Sheet1"]
         image_loader = SheetImageLoader(sheet)
         last_row = sheet.max_row
         course_name = df_list[0][0]
@@ -484,12 +491,15 @@ def organization_upload_questions_file(request):
         if not course_obj:
             messages.error(request, "No course with the provided name")
             return redirect(request.META.get("HTTP_REFERER"))
-        
+
         self_organization = OMODEL.Organization.objects.get(user=request.user)
-        if self_organization!=course_obj.organization:
-            messages.error(request, f"No course found by the name {course_name} in your organization {self_organization}")
+        if self_organization != course_obj.organization:
+            messages.error(
+                request,
+                f"No course found by the name {course_name} in your organization {self_organization}",
+            )
             return redirect(request.META.get("HTTP_REFERER"))
-        
+
         for row_number in range(1, last_row + 1):
             question = Question()
             row = df_list[row_number - 1]
@@ -497,30 +507,32 @@ def organization_upload_questions_file(request):
             question.marks = row[2]
             question.course = course_obj
             try:
-                image = image_loader.get("D"+str(row_number))
+                image = image_loader.get("D" + str(row_number))
             except Exception as e:
                 image = None
             if image:
-                image_rgb = image.convert('RGB')
+                image_rgb = image.convert("RGB")
                 output = BytesIO()
-                image_rgb.save(output, format='JPEG')
+                image_rgb.save(output, format="JPEG")
                 image_data = output.getvalue()
-                question.question_image.save(f'{uuid.uuid4().hex}.jpg', ContentFile(image_data))
+                question.question_image.save(
+                    f"{uuid.uuid4().hex}.jpg", ContentFile(image_data)
+                )
             question.save()
-            course_obj.question_number+=1
-            course_obj.total_marks+=question.marks
+            course_obj.question_number += 1
+            course_obj.total_marks += question.marks
             course_obj.save()
             answer = row[-1]
             for option in row[4:-1]:
-                op =  Option.objects.create(option=option, question=question)
+                op = Option.objects.create(option=option, question=question)
                 op.save()
                 if answer == option:
-                    ans = Answer.objects.create(answer=op,question=question)
+                    ans = Answer.objects.create(answer=op, question=question)
                     ans.save()
         messages.success(request, f"questions added in course {course_name}")
         return redirect(request.META.get("HTTP_REFERER"))
     else:
-        return render(request,"organization/organization_upload_question_file.html")
+        return render(request, "organization/organization_upload_question_file.html")
 
 
 @login_required(login_url="organizationlogin")
@@ -554,9 +566,12 @@ def organization_update_question_view(request, pk):
     question = EMODEL.Question.objects.get(id=pk)
     question.organization = organization
     questionForm = EFORM.QuestionForm(instance=question)
+    question_image = question.question_image.name
+    if question_image == "":
+        question_image = False
     options = EMODEL.Option.objects.filter(question=question)
     optionForms = []
-    newOption=EFORM.OptionForm()
+    newOption = EFORM.OptionForm()
 
     for option in options:
         optionForms.append(EFORM.OptionForm(instance=option))
@@ -566,7 +581,21 @@ def organization_update_question_view(request, pk):
     if request.method == "POST":
         course = EMODEL.Course.objects.get(id=request.POST.get("courseID"))
         course.total_marks -= int(question.marks)
-        questionForm = EFORM.QuestionForm(request.POST, request.FILES,instance=question)
+        questionForm = EFORM.QuestionForm(
+            request.POST, request.FILES, instance=question
+        )
+        if not questionForm.is_valid():
+            return render(
+                request,
+                "organization/organization_update_question.html",
+                {
+                    "questionForm": questionForm,
+                    "optionForm": optionForms,
+                    "answerForm": answer.answer.option,
+                    "newOption": newOption,
+                    "question_image": question_image,
+                },
+            )
         question = questionForm.save(commit=False)
         question.course = course
         course.total_marks += int(request.POST.get("marks"))
@@ -574,23 +603,31 @@ def organization_update_question_view(request, pk):
         question.save()
         for option in options:
             option.delete()
-        
+
         # answerForm.delete()
 
         options_list = request.POST.getlist("option")
         answer_resp = request.POST.get("answer")
         for option in options_list:
-            option_obj = EMODEL.Option.objects.create(option=option,question=question)
+            option_obj = EMODEL.Option.objects.create(option=option, question=question)
             option_obj.save()
             if option == answer_resp:
-                answer_obj = EMODEL.Answer.objects.create(question=question,answer=option_obj)
+                answer_obj = EMODEL.Answer.objects.create(
+                    question=question, answer=option_obj
+                )
                 answer_obj.save()
 
-        return redirect("organization-view-question-course")
+        return redirect(request.META.get("HTTP_REFERER"))
     return render(
         request,
         "organization/organization_update_question.html",
-        {"questionForm": questionForm, "optionForm": optionForms,"answerForm":answer.answer.option,"newOption":newOption},
+        {
+            "questionForm": questionForm,
+            "optionForm": optionForms,
+            "answerForm": answer.answer.option,
+            "newOption": newOption,
+            "question_image": question_image,
+        },
     )
 
 
@@ -603,4 +640,4 @@ def delete_question_view(request, pk):
     course.total_marks -= question.marks
     question.delete()
     course.save()
-    return redirect(request.META.get('HTTP_REFERER'))
+    return redirect(request.META.get("HTTP_REFERER"))

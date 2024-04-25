@@ -36,10 +36,13 @@
     <label for="question">Question</label>
     {% render_field questionForm.question|attr:'required:true' class="form-control" placeholder="Example: Which one of the following is not a phase of Prototyping Model?" %}
     <br />
-    <label for="question_image">Image</label> {% render_field questionForm.question_image class="form-control" %}
-    sadsds= {% for x in questionForm.question_image %}
-    {{ questionForm.question_image.image.name }}
-    {% endfor %}
+    <label for="question_image">Image</label> 
+    <br />
+    {% if question_image %}
+          <img src="{% static '' %}{{ question_image }}" width="350" height="250">
+    {% endif %}
+    <br />
+    {% render_field questionForm.question_image class="form-control" %}
     <br />
     <label for="question_number">Marks</label>
     {% render_field questionForm.marks|attr:'required:true' class="form-control" placeholder="Example: 5" %}

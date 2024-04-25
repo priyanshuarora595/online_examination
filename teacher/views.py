@@ -344,6 +344,9 @@ def teacher_view_question_view(request, pk):
 def teacher_update_question_view(request, pk):
     organization = TeacherModel.Teacher.objects.get(user=request.user.id).organization
     question = ExamModel.Question.objects.get(id=pk)
+    question_image = question.question_image.name
+    if question_image=="":
+        question_image=False
     question.organization = organization
     questionForm = ExamForms.QuestionForm(instance=question)
     options = ExamModel.Option.objects.filter(question=question)
@@ -370,6 +373,7 @@ def teacher_update_question_view(request, pk):
                     "optionForm": optionForms,
                     "answerForm": answer.answer.option,
                     "newOption": newOption,
+                    "question_image": question_image
                 },
             )
         question = questionForm.save(commit=False)
@@ -395,7 +399,7 @@ def teacher_update_question_view(request, pk):
                 )
                 answer_obj.save()
 
-        return redirect("teacher-view-question-course")
+        return redirect(request.META.get("HTTP_REFERER"))
     return render(
         request,
         "teacher/teacher_update_question.html",
@@ -404,6 +408,7 @@ def teacher_update_question_view(request, pk):
             "optionForm": optionForms,
             "answerForm": answer.answer.option,
             "newOption": newOption,
+            "question_image": question_image
         },
     )
 

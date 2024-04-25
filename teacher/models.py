@@ -14,7 +14,7 @@ class Teacher(models.Model):
         validators = [MinLengthValidator(9), MaxLengthValidator(12),RegexValidator('^[+]?[0-9]{9,12}$')],
     )
     status = models.BooleanField(default=False)
-    salary = models.PositiveIntegerField(null=True, default=0)
+    # salary = models.PositiveIntegerField(null=True, default=0)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
 
     @property

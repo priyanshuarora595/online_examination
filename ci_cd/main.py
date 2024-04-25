@@ -12,7 +12,7 @@ def webhook(request):
         # os.system("workon online-exam")
         os.system("source ~/.virtualenvs/online-exam/bin/activate")
         os.system("git stash -u")
-        origin.pull(os.getenv("MAIN_BRANCH", ",main"))
+        origin.pull(os.getenv("MAIN_BRANCH", "main"))
         os.system("git stash pop")
         os.system("pip install -r requirements.txt")
         return HttpResponse("Updated Succesfully", status=200)

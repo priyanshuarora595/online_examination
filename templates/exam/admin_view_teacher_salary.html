@@ -34,7 +34,7 @@
           <th>Name</th>
           <!-- <th>Photo</th> -->
           <th>Contact</th>
-          <th>Salary</th>
+          {% comment %} <th>Salary</th> {% endcomment %}
          
           
         </tr>
@@ -45,7 +45,7 @@
         <td> {{t.get_name}}</td>
         <!-- <td> <img src="{% static t.profile_pic.url %}" alt="Profile Pic" height="40px" width="40px" /></td> -->
         <td>{{t.mobile}}</td>
-        <td>${{t.salary}}</td>
+        {% comment %} <td>${{t.salary}}</td> {% endcomment %}
         </tr>
       {% endfor %}
     </table>

@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.forms",
     "exam",
     "teacher",
     "student",
@@ -79,7 +80,7 @@ TEMPLATES = [
         },
     },
 ]
-
+FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 WSGI_APPLICATION = "onlinexam.wsgi.application"
 
 

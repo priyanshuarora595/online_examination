@@ -5,121 +5,176 @@
     <meta charset="utf-8">
     <title></title>
     <style media="screen">
-      body {
-    margin: 0;
-    padding: 0;
-    font-family: sans-serif;
-    background: #304352;  /* fallback for old browsers */
-background: -webkit-linear-gradient(to left, #d7d2cc, #304352);  /* Chrome 10-25, Safari 5.1-6 */
-background: linear-gradient(to left, #d7d2cc, #304352); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 
-
-}
-
-.box {
-    width: 500px;
-    padding: 40px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    background: #212529;
-    border-radius: 15px;
-    text-align: center;
-    transition: 0.25s;
-    margin-top: 100px
-}
-
-.box input[type="text"],
-.box input[type="password"] {
-    border: 0;
-    background: none;
-    display: block;
-    margin: 20px auto;
-    text-align: center;
-    border: 2px solid #838383;
-    padding: 10px 10px;
-    width: 250px;
-    outline: none;
-    color: white;
-    border-radius: 0px;
-    transition: 0.25s
-}
-
-.box h1 {
-    color: white;
-    font-weight: 500
-}
-
-.box input[type="text"]:focus,
-.box input[type="password"]:focus {
-    width: 300px;
-    border-color: #4caf50;
-}
-
-.box input[type="submit"] {
-    border: 0;
-    background: #4caf50;
-    display: block;
-    margin: 20px auto;
-    text-align: center;
-    padding: 14px 40px;
-    outline: none;
-    color: white;
-    border-radius: 0px;
-    transition: 0.25s;
-    cursor: pointer
-}
-
-.box input[type="submit"]:hover {
-    background: #347736;
-}
-.errorlist > li{
-    color: red;
-} 
-
-.forget-password-link{
-    text-decoration: none;
-}
-.forget-password-link:hover{
-    color : white;
-}
-
+        form{
+          margin: 50px;          
+        }
+        body{
+          background: #304352;  /* fallback for old browsers */
+            background: -webkit-linear-gradient(to right, #d7d2cc, #304352);  /* Chrome 10-25, Safari 5.1-6 */
+            background: linear-gradient(to right, #d7d2cc, #304352); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+        }
+        .container-form {
+          background-color: #15172b;
+          border-radius: 20px;
+          box-sizing: border-box;
+          padding: 20px;
+          width: 40%;
+          text-align: center;
+          justify-content: center;
+        }
+        
+        .title {
+          color: #eee;
+          font-family: sans-serif;
+          font-size: 36px;
+          font-weight: 600;
+          margin-top: 30px;
+        }
+        
+        .input-container {
+          height: 50px;
+          position: relative;
+          width: 100%;
+        }
+        
+        .ic1 {
+          margin-top: 40px;
+        }
+        
+        .ic2 {
+          margin-top: 30px;
+        }
+        
+        .input {
+          background-color: #303245;
+          border-radius: 12px;
+          border: 0;
+          box-sizing: border-box;
+          color: #eee;
+          font-size: 18px;
+          height: 100%;
+          outline: 0;
+          padding: 4px 20px 0;
+          width: 100%;
+        }
+        
+        .cut {
+          background-color: #15172b;
+          border-radius: 10px;
+          height: 20px;
+          left: 20px;
+          position: absolute;
+          top: -20px;
+          transform: translateY(0);
+          transition: transform 200ms;
+          width: 76px;
+        }
+        
+        .placeholder {
+          color: #65657b;
+          font-family: sans-serif;
+          left: 20px;
+          line-height: 14px;
+          pointer-events: none;
+          position: absolute;
+          transform-origin: 0 50%;
+          transition: transform 200ms, color 200ms;
+          top: 13px;
+        }
+        
+        .input:focus ~ .placeholder,
+        .input:not(:placeholder-shown) ~ .placeholder {
+          transform: translateY(-30px) translateX(1px) scale(1);
+        }
+        
+        .input:not(:placeholder-shown) ~ .placeholder {
+          color: #808097;
+        }
+        
+        .input:focus ~ .placeholder {
+          color: #d8bdc3;
+        }
+        
+        .center {
+          margin: auto !important;
+          margin-top: 100px !important;
+          margin-bottom: 30px !important;
+          border: 3px solid rgb(57, 56, 77) !important;
+          padding: auto !important;
+        }
+        
+        .button-login {
+          background-color: green;
+          border-radius: 12px;
+          border: 0;
+          box-sizing: border-box;
+          color: #eee;
+          cursor: pointer;
+          font-size: 18px;
+          height: 50px;
+          margin-top: 38px;
+          text-align: center;
+          width: 100%;
+          border-radius: 5rem;
+        }
+        
+        .button-login:active {
+          background-color: rgb(26, 123, 99);
+        }
+        
+        .errorlist > li{
+            color: red;
+        } 
+        
+        .links{
+            text-decoration: none;
+            color: grey;
+        }
+        .links:hover{
+          text-decoration: none;
+          color : white;
+        }
     </style>
   </head>
   <body>
     {% include "exam/navbar.html" %}
-    <div class="container">
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card">
-                <form class="box" method="post" >
+    <div class="container-form center">        
+        <div class="title">Organization Login Panel</div>
+                <form method="post" >
                     {% csrf_token %}
-                    <h1>Organization Login Panel</h1>
                     {% if form.non_field_errors %}
                         {{ form.non_field_errors}}
                     {% endif %}
 
-                     {% render_field form.username class="form-control" autocomplete="off" placeholder="Username" %}
-                     {% render_field form.password class="form-control" autocomplete="off" placeholder="Password" %}
+                    <div class="form-row">
+                        <div class="form-group col-md-12 input-container ic1">
+                            {% render_field form.username class="form-control input" autocomplete="off" placeholder=" " %}
+                            <div class="cut"></div>
+                            <label for="id_username" class="placeholder">Username</label>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12 input-container ic2">
+                            {% render_field form.password class="form-control input" autocomplete="off" placeholder=" " %}
+                            <div class="cut"></div>
+                            <label for="id_password" class="placeholder">Password</label>
+                        </div>
+                    </div>                 
+                     
                     
-                     <div>
-                        <a class="forget-password-link" href="{% url 'password-reset' %}">Forget Password?</a>
+                     <div style="text-align: left; margin-top: -20px;">
+                        <a class="links" href="{% url 'password-reset' %}">Forget Password?</a>
                      </div>
 
-                     <input type="submit" name="" value="Login">
+                     <input type="submit" name="" value="Login" class="button-login" style="margin-top: 25px;">
 
-                     <div>
-                        <a class="new-user" href="{% url 'organizationsignup' %}">Don't have an account? Sign Up</a>
+                     <div style="margin-top: 30px;">
+                        <a class="new-user links" style="color: white;" href="{% url 'organizationsignup' %}">Don't have an account? Sign Up</a>
                     </div>
 
                 </form>
-            </div>
-        </div>
-    </div>
 </div>
-<br><br><br><br><br><br><br><br><br>
-<br><br><br><br><br><br><br><br><br>
-<br><br><br><br><br>
 {% include "exam/footer.html" %}
   </body>
 </html>

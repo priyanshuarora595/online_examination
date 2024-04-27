@@ -10,6 +10,11 @@ form{
   margin: 50px;          
 }
 
+body{
+  background: #304352;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #d7d2cc, #304352);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #d7d2cc, #304352); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
 .container-form {
   background-color: #15172b;
   border-radius: 20px;
@@ -76,12 +81,12 @@ form{
   position: absolute;
   transform-origin: 0 50%;
   transition: transform 200ms, color 200ms;
-  top: 10px;
+  top: 13px;
 }
 
 .input:focus ~ .placeholder,
 .input:not(:placeholder-shown) ~ .placeholder {
-  transform: translateY(-28px) translateX(1px) scale(1);
+  transform: translateY(-30px) translateX(1px) scale(1);
 }
 
 .input:not(:placeholder-shown) ~ .placeholder {

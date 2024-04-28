@@ -1,0 +1,46 @@
+{% extends base_template %}
+
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+<style>
+    .content-box{
+        margin-top:10rem;
+        max-width: fit-content;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .cancel-button{
+        cursor: pointer;
+    }
+    .delete-button{
+        background-color: rgb(255, 83, 83);
+    }
+
+    .delete-button:hover{
+        background-color: red;
+    }
+</style>
+
+<div class="content-box">
+    <form method="POST">
+        <div class="mt-20 p-4 rounded bg-white max-w-sm text-center border-t-4 border-red-600 mx-auto text-gray-700 pt-0">
+            <h3 class="font-bold text-2xl text-black mb-2">Wanna delete your account?</h3>
+            <p>You'll permanently loose your ability to take exams</p>
+                <div class="flex pt-8">
+                    <a class="w-1/2 mr-1 bg-white border text-gray-600 border-gray-400 hover:bg-gray-300 py-2 px-4 rounded font-medium bg-black cancel-button" onclick="goHome()" >Cancel</a>
+        
+                    <button class="w-1/2 ml-1 bg-red-600 border border-red-600 text-white border-gray-500 hover:bg-red-700 hover:border-red-700 py-2 px-4 rounded font-medium delete-button" type="submit">Yes, delete my account</button>
+                </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    function goHome(){
+        location.href='{% url "" %}';
+    }
+</script>
+{% endblock %}

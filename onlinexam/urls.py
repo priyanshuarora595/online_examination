@@ -37,12 +37,13 @@ urlpatterns = [
 
     path('',views.home_view,name=''),
     path('logout', LogoutViewCustom.as_view(template_name='exam/logout.html'),name='logout'),
-    path('contactus', views.contactus_view),
+    path('contactus', views.contactus_view, name='contact-us-view'),
     path('afterlogin', views.afterlogin_view,name='afterlogin'),
 
     path('password-reset/', PasswordResetView.as_view(
             template_name='common/password_reset.html', success_url = reverse_lazy('password-reset-done'),
-            email_template_name = 'common/password_reset_email.html'
+            html_email_template_name = 'common/password_reset_email.html',
+            email_template_name = 'common/password_reset_email.html',
         ), 
         name='password-reset',
     ),
@@ -68,7 +69,7 @@ urlpatterns = [
     path('admin-dashboard', views.admin_dashboard_view,name='admin-dashboard'),
     path('invalid-user', views.invalid_user,name='invalid-user'),
 
-    path('delete-account', views.delete_account, name='delete-account'),
+    path('delete-account', views.delete_account_view, name='delete-account-view'),
 
     path('admin-teacher', views.admin_teacher_view,name='admin-teacher'),
     path('admin-view-teacher', views.admin_view_teacher_view,name='admin-view-teacher'),

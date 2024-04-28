@@ -85,7 +85,6 @@ def adminclick_view(request):
     return HttpResponseRedirect("adminlogin")
 
 
-@login_required(login_url="afterlogin")
 def delete_account(request):
     """
     delete a user account
@@ -109,7 +108,28 @@ def delete_account(request):
             student.user.delete()
             # student.delete()
     user_obj.delete()
-    return redirect("")
+
+@login_required(login_url="afterlogin")
+def delete_account_view(request):
+    """
+    view for confirming the user's account deletion 
+    """
+    context = {}
+    if is_student(request.user):
+        context['base_template'] = 'student/studentbase.html'
+    elif is_teacher(request.user):
+        context['base_template'] = 'teacher/teacherbase.html'
+    elif is_organization(request.user):
+        context['base_template'] = 'organization/organization.html'
+    elif is_admin(request.user):
+        context['base_template'] = 'exam/adminbase.html'
+
+    if request.method == "POST":
+        # delete the user's account, after confirmation
+        delete_account(request)
+        return redirect('')
+    return render(request, 'common/delete_account_view.html', context=context)
+
 
 
 @login_required(login_url="adminlogin")

@@ -24,6 +24,139 @@
  
 
   <style media="screen">
+
+:root {
+    --transition-duration: 0.8s;
+    --transition-easing: cubic-bezier(0.230, 1.000, 0.320, 1.000);
+    --bounce-easing: cubic-bezier(0.175, 0.885, 0.320, 1.275);
+    --closed-width: 200px;
+    --closed-height: 80px;
+    --opened-width: 400px;
+    --opened-height: 160px;
+}
+
+@import url(https://fonts.googleapis.com/css?family=Roboto:400,700);
+
+.btn.is-open ~ .description {
+  opacity: 0;
+}
+
+.btn {
+  display: block;
+  position: relative;
+  width: 150px; /* $closed-width */
+  height: 40px; /* $closed-height */
+  transition: width 0.8s cubic-bezier(0.230, 1.000, 0.320, 1.000),
+              height 0.8s cubic-bezier(0.230, 1.000, 0.320, 1.000),
+              transform 0.8s cubic-bezier(0.175, 0.885, 0.320, 1.275);
+  transform-style: preserve-3d;
+  transform-origin: 50% 50%;
+  text-align: center;
+}
+
+.btn-front {
+  position: absolute;
+  display: block;
+  width: 100%;
+  height: 100%;
+  line-height: 35px; /* $closed-height */
+  background-color: #f29595;
+  color: #fff;
+  cursor: pointer;
+  backface-visibility: hidden;
+  -webkit-tap-highlight-color: rgba( 0, 0, 0, 0 );
+  transition: background 0.15s ease,
+              line-height 0.8s cubic-bezier(0.230, 1.000, 0.320, 1.000);
+}
+.btn-front:hover {
+  background-color: #ea6050; /* lighten(#F44336, 10%) */
+}
+.btn.is-open .btn-front {
+  pointer-events: none;
+  line-height: 160px; /* $opened-height */
+}
+
+.btn-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: #eee;
+  color: #222;
+  transform: translateZ(-2px) rotateX(180deg);
+  overflow: hidden;
+  transition: box-shadow 0.8s cubic-bezier(0.175, 0.885, 0.320, 1.275);
+}
+.btn-back p {
+  margin-top: 27px;
+  margin-bottom: 25px;
+}
+.btn-back button {
+  padding: 12px 20px;
+  width: 30%;
+  margin: 0 5px;
+  background-color: transparent;
+  border: 0;
+  border-radius: 2px;
+  font-size: 1em;
+  cursor: pointer;
+  -webkit-tap-highlight-color: rgba( 0, 0, 0, 0 );
+  transition: background 0.15s ease;
+}
+
+.btn-back button:focus {
+  outline: 0;
+}
+
+.btn-back button.yes {
+  background-color: #2196F3;
+  color: #fff;
+}
+
+.btn-back button.yes:hover {
+  background-color: #4aafff; /* lighten(#2196F3, 10%) */
+}
+
+.btn-back button.no {
+  color: #2196F3;
+}
+
+.btn-back button.no:hover {
+  background-color: #ddd;
+}
+
+.btn.is-open .btn-back {
+  box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+}
+
+.btn[data-direction="left"] .btn-back,
+.btn[data-direction="right"] .btn-back {
+  transform: translateZ(-2px) rotateY(180deg);
+}
+
+.btn.is-open {
+  width: 400px; /* $opened-width */
+  height: 160px; /* $opened-height */
+}
+
+.btn[data-direction="top"].is-open {
+  transform: rotateX(180deg);
+}
+
+.btn[data-direction="right"].is-open {
+  transform: rotateY(180deg);
+}
+
+.btn[data-direction="bottom"].is-open {
+  transform: rotateX(-180deg);
+}
+
+.btn[data-direction="left"].is-open {
+  transform: rotateY(-180deg);
+}
+
+
+
+
     a:link {
       text-decoration: none;
     }
@@ -79,7 +212,7 @@
       padding-top: 30px;
       position: fixed;
       left: 0;
-      width: 250px;
+      width: 270px;
       height: 100%;
       transition: 0.5s;
       transition-property: left;
@@ -179,14 +312,20 @@
   <input type="checkbox" id="check">
   <!--header area start-->
   <header>
-    <label for="check">
-      <i style="left: 200px;margin-top: 17px;"class="fas fa-bars" id="sidebar_btn"></i>
-    </label>
     <div class="left_area">
       <h4 style="color: white;">Online Exam</h4>
     </div>
+
     <div class="d-flex justify-content-end">
       <div class="right_area">
+        <div class="btn">
+          <div class="btn-back">
+            <p>Are you sure you want to do that?</p>
+            <button class="yes">Yes</button>
+            <button class="no">No</button>
+          </div>
+          <div class="btn-front">Delete</div>
+        </div>
         <a href="/password-reset" class="logout_btn" style="border-radius:0px;">Change Password</a>
       </div>
       <div class="right_area">
@@ -204,22 +343,27 @@
   {% block sidebar %}
   <!--sidebar start-->
   <div class="sidebar">
+    <label for="check">
+      <i style="left: 200px;margin-top: 17px; margin-left: 20px;"class="fas fa-bars" id="sidebar_btn"></i>
+    </label>
+    <div>
     <center>
       
       <img src="{% static 'image/student.png' %}" class="profile_image" alt="">
       <h4>{{request.user.first_name}}</h4>
-      <h6 style="color: rgb(255, 255, 255);">( Student )</h6>
-      <h6 style="color: rgb(255, 255, 255);">( {{ request.COOKIES.organization }} )</h6>
+      <p style="color: rgb(255, 255, 255);"> Student </p>
+      <p style="color: rgb(255, 255, 255);"> {{ request.COOKIES.organization }} </p>
       
     </center>
     
-    <a href="/student/student-dashboard"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
+    <a href="/student/student-dashboard"><i class="fas fa-tachometer-alt" style="margin-top: 50px;"></i><span>Dashboard</span></a>
     
     <a href="/student/student-exam"><i class="fas fa-book"></i><span>Examination</span></a>
     
     <a href="/student/student-marks"><i class="fas fa-sort-numeric-up"></i><span>My Marks</span></a>
     
     <a href="/student/student-profile"><i class="fas fa-tachometer-alt"></i><span>Manage Profile</span></a>
+  </div>
   </div>
   <!--sidebar end-->
   {% endblock sidebar %}
@@ -239,6 +383,9 @@
   </div>
   <!--content end-->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+
+
+
 </body>
 
 </html>

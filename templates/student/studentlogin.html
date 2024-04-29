@@ -135,6 +135,15 @@ body{
     color : white;
 }
 
+.links{
+            text-decoration: none;
+            color: grey;
+        }
+        .links:hover{
+          text-decoration: none;
+          color : white;
+        }
+
     </style>
   </head>
   <body>
@@ -165,13 +174,13 @@ body{
                      
                     
                      <div style="text-align: left; margin-top: -20px;">
-                        <a class="forget-password-link" href="{% url 'password-reset' %}">Forget Password?</a>
+                        <a class="links" href="{% url 'password-reset' %}">Forget Password?</a>
                      </div>
 
                      <input type="submit" name="" value="Login" class="button-login" style="margin-top: 25px;">
 
                      <div style="margin-top: 30px;">
-                        <a class="new-user" href="{% url 'studentsignup' %}">Don't have an account? Sign Up</a>
+                        <a class="new-user" style="color:white;" href="{% url 'studentsignup' %}">Don't have an account? Sign Up</a>
                     </div>
                 </form>
 </div>

@@ -27,6 +27,14 @@ body{
   justify-content: center;
 }
 
+.center {
+          margin: auto !important;
+          margin-top: 100px !important;
+          margin-bottom: 30px !important;
+          border: 3px solid rgb(57, 56, 77) !important;
+          padding: auto !important;
+        }
+
 .title {
   color: #eee;
   font-family: sans-serif;
@@ -115,6 +123,26 @@ body{
 .box input[type="submit"]:hover {
     background: #347736;
 }
+
+.button-login {
+          background-color: green;
+          border-radius: 12px;
+          border: 0;
+          box-sizing: border-box;
+          color: #eee;
+          cursor: pointer;
+          font-size: 18px;
+          height: 50px;
+          margin-top: 38px;
+          text-align: center;
+          width: 100%;
+          border-radius: 5rem;
+        }
+        
+        .button-login:active {
+          background-color: rgb(26, 123, 99);
+        }
+        
 .errorlist > li{
     color: red;
 } 
@@ -126,28 +154,46 @@ body{
     color : white;
 }
 
+.links{
+    text-decoration: none;
+    color: grey;
+}
+.links:hover{
+  text-decoration: none;
+  color : white;
+}
+
     </style>
   </head>
   <body>
     {% include "exam/navbar.html" %}
-    <div class="container">
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card">
-                <form class="box" method="post">
+    <div class="container-form center">
+      <div class="title">Admin Login Panel</div>
+                <form method="post">
                     {% csrf_token %}
-                    <h1>Admin Login Panel</h1>
                     {% if form.non_field_errors %}
                         {{ form.non_field_errors}}
                     {% endif %}
 
-                     {% render_field form.username class="form-control" autocomplete="off" placeholder="Username" %}
-                     {% render_field form.password class="form-control" autocomplete="off" placeholder="Password" %}
+                    <div class="form-row">
+                      <div class="form-group col-md-12  input-container ic1">
+                        {% render_field form.username class="form-control input" autocomplete="off" placeholder=" " %}
+                        <div class="cut"></div>
+                        <label for="id-username" class="placeholder">Username</label>
+                      </div>
+                    </div>
+                    <div class="form-row">
+                      <div class="form-group col-md-12 input-container ic1">
+                        {% render_field form.password class="form-control input" autocomplete="off" placeholder=" " %}
+                        <div class="cut"></div>
+                        <label for="id_password" class="placeholder">Password</label>
+                      </div>
+                    </div>
 
-                     <div>
-                        <a class="forget-password-link" href="{% url 'password-reset' %}">Forget Password?</a>
+                     <div style="text-align: left; margin-top: -20px;">
+                        <a class="links" href="{% url 'password-reset' %}">Forget Password?</a>
                      </div>                                                            
-                     <input type="submit" name="" value="Admin Login">
+                     <input type="submit" name="" value="Admin Login" class="button-login" style="margin-top: 25px;">
 
                 </form>
             </div>

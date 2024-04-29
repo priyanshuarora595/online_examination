@@ -49,7 +49,11 @@ def student_signup_view(request):
                     messages.error(request,val[0].message)
             if studentForm.errors:
                 for key,val in studentForm.errors.as_data().items():
-                    messages.error(request,val[0].message)
+                    if(key == 'mobile'):
+                        messages.error(request, 'Please enter a valid contact number')
+                    else:
+                        messages.error(request, val[0].message)
+                        
             mydict = {"userForm": userForm, "studentForm": studentForm}
     return render(request,'student/studentsignup.html',context=mydict)
 
@@ -105,7 +109,10 @@ def student_dashboard_view(request):
 @user_passes_test(is_student)
 def student_exam_view(request):
     student = StudentModel.Student.objects.get(user=request.user.id)
-    courses=QuestionModel.Course.objects.filter(organization=student.organization)
+
+    exam_take_courses =  QuestionModel.Result.objects.filter(student_id = student.id).values_list('exam_id', flat=True)
+    courses=QuestionModel.Course.objects.filter(organization=student.organization).exclude(id__in = list(exam_take_courses))
+
     return render(request,'student/student_exam.html',{'courses':courses})
 
 @login_required(login_url='studentlogin')
@@ -302,8 +309,11 @@ def check_marks_view(request,pk):
 
 @login_required(login_url='studentlogin')
 @user_passes_test(is_student)
-def student_marks_view(request):
+def student_marks_view(request):    
     student = StudentModel.Student.objects.get(user=request.user.id)
-    courses=QuestionModel.Course.objects.filter(organization=student.organization)
+
+    exam_take_courses =  QuestionModel.Result.objects.filter(student_id = student.id).values_list('exam_id', flat=True)
+    courses=QuestionModel.Course.objects.filter(organization=student.organization, id__in = list(exam_take_courses))
+
     return render(request,'student/student_marks.html',{'courses':courses})
   

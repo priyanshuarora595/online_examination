@@ -10,13 +10,6 @@ form{
   margin: 50px;          
 }
 
-
-body{
-  background: #304352;  /* fallback for old browsers */
-    background: -webkit-linear-gradient(to right, #d7d2cc, #304352);  /* Chrome 10-25, Safari 5.1-6 */
-    background: linear-gradient(to right, #d7d2cc, #304352); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-}
-
 .container-form {
   background-color: #15172b;
   border-radius: 20px;
@@ -26,14 +19,6 @@ body{
   text-align: center;
   justify-content: center;
 }
-
-.center {
-          margin: auto !important;
-          margin-top: 100px !important;
-          margin-bottom: 30px !important;
-          border: 3px solid rgb(57, 56, 77) !important;
-          padding: auto !important;
-        }
 
 .title {
   color: #eee;
@@ -91,68 +76,52 @@ body{
   position: absolute;
   transform-origin: 0 50%;
   transition: transform 200ms, color 200ms;
-  top: 13px;
+  top: 10px;
 }
 
 .input:focus ~ .placeholder,
 .input:not(:placeholder-shown) ~ .placeholder {
-  transform: translateY(-30px) translateX(1px) scale(1);
+  transform: translateY(-28px) translateX(1px) scale(1);
 }
 
-.box input[type="text"]:focus,
-.box input[type="password"]:focus {
-    width: 300px;
-    border-color: #4caf50;
+.input:not(:placeholder-shown) ~ .placeholder {
+  color: #808097;
 }
 
-.box input[type="submit"] {
-    border: 0;
-    background: #4caf50;
-    display: block;
-    margin: 20px auto;
-    text-align: center;
-    
-    padding: 14px 40px;
-    outline: none;
-    color: white;
-    border-radius: 5px;
-    transition: 0.25s;
-    cursor: pointer
+.input:focus ~ .placeholder {
+  color: #d8bdc3;
 }
 
-.box input[type="submit"]:hover {
-    background: #347736;
+.center {
+  margin: auto !important;
+  margin-top: 100px !important;
+  margin-bottom: 30px !important;
+  border: 3px solid rgb(57, 56, 77) !important;
+  padding: auto !important;
 }
 
 .button-login {
-          background-color: green;
-          border-radius: 12px;
-          border: 0;
-          box-sizing: border-box;
-          color: #eee;
-          cursor: pointer;
-          font-size: 18px;
-          height: 50px;
-          margin-top: 38px;
-          text-align: center;
-          width: 100%;
-          border-radius: 5rem;
-        }
-        
-        .button-login:active {
-          background-color: rgb(26, 123, 99);
-        }
-        
+  background-color: green;
+  border-radius: 12px;
+  border: 0;
+  box-sizing: border-box;
+  color: #eee;
+  cursor: pointer;
+  font-size: 18px;
+  height: 50px;
+  margin-top: 38px;
+  text-align: center;
+  width: 100%;
+  border-radius: 5rem;
+}
+
+.button-login:active {
+  background-color: rgb(26, 123, 99);
+}
+
 .errorlist > li{
     color: red;
 } 
-
-.forget-password-link{
-    text-decoration: none !important;
-}
-.forget-password-link:hover{
-    color : white;
-}
 
 .links{
     text-decoration: none;
@@ -168,37 +137,37 @@ body{
   <body>
     {% include "exam/navbar.html" %}
     <div class="container-form center">
-      <div class="title">Admin Login Panel</div>
+        <div class="title">Admin Login Panel</div>
                 <form method="post">
                     {% csrf_token %}
+                    
                     {% if form.non_field_errors %}
                         {{ form.non_field_errors}}
                     {% endif %}
 
                     <div class="form-row">
-                      <div class="form-group col-md-12  input-container ic1">
-                        {% render_field form.username class="form-control input" autocomplete="off" placeholder=" " %}
-                        <div class="cut"></div>
-                        <label for="id-username" class="placeholder">Username</label>
-                      </div>
+                        <div class="form-group col-md-12  input-container ic1">
+                            {% render_field form.username class="form-control input" id="username" autocomplete="off" placeholder=" " %}    
+                            <div class="cut"></div>
+                            <label for="username" class="placeholder">Username</label>
+                        </div>
                     </div>
                     <div class="form-row">
-                      <div class="form-group col-md-12 input-container ic1">
-                        {% render_field form.password class="form-control input" autocomplete="off" placeholder=" " %}
-                        <div class="cut"></div>
-                        <label for="id_password" class="placeholder">Password</label>
-                      </div>
+                        <div class="form-group col-md-12  input-container ic2">
+                            {% render_field form.password class="form-control input" id="password" autocomplete="off" placeholder=" " %}    
+                            <div class="cut"></div>
+                            <label for="password" class="placeholder">Password</label>
+                        </div>
                     </div>
-
+                     
+                    
                      <div style="text-align: left; margin-top: -20px;">
                         <a class="links" href="{% url 'password-reset' %}">Forget Password?</a>
-                     </div>                                                            
-                     <input type="submit" name="" value="Admin Login" class="button-login" style="margin-top: 25px;">
+                     </div>
+
+                     <input type="submit" name="" value="Login" class="button-login" style="margin-top: 25px;">
 
                 </form>
-            </div>
-        </div>
-    </div>
 </div>
 {% include "exam/footer.html" %}
   </body>

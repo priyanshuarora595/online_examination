@@ -85,7 +85,6 @@ def adminclick_view(request):
     return HttpResponseRedirect("adminlogin")
 
 
-@login_required(login_url="afterlogin")
 def delete_account(request):
     """
     delete a user account
@@ -109,7 +108,28 @@ def delete_account(request):
             student.user.delete()
             # student.delete()
     user_obj.delete()
-    return redirect("")
+
+@login_required(login_url="afterlogin")
+def delete_account_view(request):
+    """
+    view for confirming the user's account deletion 
+    """
+    context = {}
+    if is_student(request.user):
+        context['base_template'] = 'student/studentbase.html'
+    elif is_teacher(request.user):
+        context['base_template'] = 'teacher/teacherbase.html'
+    elif is_organization(request.user):
+        context['base_template'] = 'organization/organization.html'
+    elif is_admin(request.user):
+        context['base_template'] = 'exam/adminbase.html'
+
+    if request.method == "POST":
+        # delete the user's account, after confirmation
+        delete_account(request)
+        return redirect('')
+    return render(request, 'common/delete_account_view.html', context=context)
+
 
 
 @login_required(login_url="adminlogin")
@@ -133,9 +153,9 @@ def admin_teacher_view(request):
     dict = {
         "total_teacher": TMODEL.Teacher.objects.all().filter(status=True).count(),
         "pending_teacher": TMODEL.Teacher.objects.all().filter(status=False).count(),
-        "salary": TMODEL.Teacher.objects.all()
-        .filter(status=True)
-        .aggregate(Sum("salary"))["salary__sum"],
+        # "salary": TMODEL.Teacher.objects.all()
+        # .filter(status=True)
+        # .aggregate(Sum("salary"))["salary__sum"],
     }
     return render(request, "exam/admin_teacher.html", context=dict)
 
@@ -260,18 +280,14 @@ def admin_view_pending_organization_view(request):
 @login_required(login_url="adminlogin")
 @user_passes_test(is_admin)
 def approve_teacher_view(request, pk):
-    teacherSalary = EFORM.TeacherSalaryForm()
     if request.method == "POST":
-        teacherSalary = EFORM.TeacherSalaryForm(request.POST)
-        if teacherSalary.is_valid():
-            teacher = TMODEL.Teacher.objects.get(id=pk)
-            teacher.salary = teacherSalary.cleaned_data["salary"]
-            teacher.status = True
-            teacher.save()
-        else:
-            print("form is invalid")
+        teacher = TMODEL.Teacher.objects.get(id=pk)
+        teacher.status = True
+        teacher.save()
+    else:
+        print("Not a valid request type")
         return HttpResponseRedirect("/admin-view-pending-teacher")
-    return render(request, "exam/salary_form.html", {"teacherSalary": teacherSalary})
+    return redirect('approve-teacher', pk = pk)
 
 
 @login_required(login_url="adminlogin")
@@ -284,13 +300,13 @@ def reject_teacher_view(request, pk):
     return HttpResponseRedirect("/admin-view-pending-teacher")
 
 
-@login_required(login_url="adminlogin")
-@user_passes_test(is_admin)
-def admin_view_teacher_salary_view(request):
-    teachers = TMODEL.Teacher.objects.all().filter(status=True)
-    return render(
-        request, "exam/admin_view_teacher_salary.html", {"teachers": teachers}
-    )
+# @login_required(login_url="adminlogin")
+# @user_passes_test(is_admin)
+# def admin_view_teacher_salary_view(request):
+#     teachers = TMODEL.Teacher.objects.all().filter(status=True)
+#     return render(
+#         request, "exam/admin_view_teacher_salary.html", {"teachers": teachers}
+#     )
 
 
 @login_required(login_url="adminlogin")
@@ -307,20 +323,13 @@ def admin_view_organization_fees_view(request):
 @login_required(login_url="adminlogin")
 @user_passes_test(is_admin)
 def approve_organization_view(request, pk):
-    OrganizationFees = EFORM.OrganizationFeesForm()
-    if request.method == "POST":
-        OrganizationFees = EFORM.OrganizationFeesForm(request.POST)
-        if OrganizationFees.is_valid():
-            organization = OMODEL.Organization.objects.get(id=pk)
-            organization.fees = OrganizationFees.cleaned_data["fees"]
-            organization.status = True
-            organization.save()
-        else:
-            print("form is invalid")
-        return HttpResponseRedirect("/admin-view-pending-teacher")
-    return render(
-        request, "exam/fees_form.html", {"OrganizationFees": OrganizationFees}
-    )
+    try:
+        organization = OMODEL.Organization.objects.get(id=pk)
+        organization.status = True
+        organization.save()
+    except Exception as e:
+        print("Error on approving organization from admin {e}")
+    return redirect('admin-view-pending-organization')
 
 
 @login_required(login_url="adminlogin")
@@ -330,7 +339,7 @@ def reject_organization_view(request, pk):
     user = User.objects.get(id=teacher.user_id)
     user.delete()
     teacher.delete()
-    return HttpResponseRedirect("/admin-view-pending-teacher")
+    return HttpResponseRedirect("/admin-view-pending-organization")
 
 
 @login_required(login_url="adminlogin")
@@ -406,6 +415,8 @@ def admin_add_course_view(request):
         else:
             print("form is invalid")
             print(f"{courseForm.errors = }")
+            messages.error(request, courseForm.errors)
+            return render(request, "exam/admin_add_course.html", {"courseForm": courseForm})
         return HttpResponseRedirect("/admin-view-course")
     return render(request, "exam/admin_add_course.html", {"courseForm": courseForm})
 
@@ -515,15 +526,19 @@ def admin_upload_questions_file(request):
         sheet = pxl_doc["Sheet1"]
         image_loader = SheetImageLoader(sheet)
         last_row = sheet.max_row
-        course_name = df_list[0][0]
-        # return redirect(request.META.get("HTTP_REFERER"))
-        # return None
-        course_obj = Course.objects.filter(course_name=course_name).first()
-        if not course_obj:
-            messages.error(request, "No course with the provided name")
-            return redirect(request.META.get("HTTP_REFERER"))
+        # course_name = df_list[0][0]
+        # # return redirect(request.META.get("HTTP_REFERER"))
+        # # return None
+        # course_obj = Course.objects.filter(course_name=course_name).first()
+        # if not course_obj:
+        #     messages.error(request, "No course with the provided name")
+        #     return redirect(request.META.get("HTTP_REFERER"))
 
         for row_number in range(1, last_row + 1):
+            course_name = df_list[row_number-1][0]
+            course_obj = Course.objects.filter(course_name=course_name).first()
+            if not course_obj:
+                continue
             question = Question()
             row = df_list[row_number - 1]
             question.question = row[1]
@@ -563,6 +578,9 @@ def admin_upload_questions_file(request):
 def admin_update_question_view(request, pk):
     question = EMODEL.Question.objects.get(id=pk)
     question.organization = question.course.organization
+    question_image = question.question_image.name
+    if question_image=="":
+        question_image=False
     questionForm = EFORM.QuestionForm(instance=question)
     options = EMODEL.Option.objects.filter(question=question)
     optionForms = []
@@ -579,6 +597,19 @@ def admin_update_question_view(request, pk):
         questionForm = EFORM.QuestionForm(
             request.POST, request.FILES, instance=question
         )
+        
+        if not questionForm.is_valid():
+            return render(
+                request,
+                "exam/admin_update_question.html",
+                {
+                    "questionForm": questionForm,
+                    "optionForm": optionForms,
+                    "answerForm": answer.answer.option,
+                    "newOption": newOption,
+                    "question_image": question_image
+                },
+            )
         question = questionForm.save(commit=False)
         question.course = course
         course.total_marks += int(request.POST.get("marks"))
@@ -609,6 +640,7 @@ def admin_update_question_view(request, pk):
             "optionForm": optionForms,
             "answerForm": answer.answer.option,
             "newOption": newOption,
+            "question_image": question_image
         },
     )
 

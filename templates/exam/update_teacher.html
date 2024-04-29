@@ -50,8 +50,8 @@
             <label for="address">Organization</label>
           {% render_field teacherForm.organizationID class="form-control" placeholder="Address" %}
 
-            <label for="address">Salary</label>
-          {% render_field teacherForm.salary class="form-control" placeholder="Address" %}
+            {% comment %} <label for="address">Salary</label>
+          {% render_field teacherForm.salary class="form-control" placeholder="Address" %} {% endcomment %}
           
         <label for="username">Username</label>
         {% render_field userForm.username class="form-control" placeholder="Username" %} <br><br>

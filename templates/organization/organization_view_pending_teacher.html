@@ -19,6 +19,12 @@
     .row {
       margin: 100px;
     }
+    
+    .empty-result{
+      padding: 2rem;
+      text-align: center;
+      font-size: medium;
+    }
   </style>
 </head>
 <br><br>
@@ -27,11 +33,14 @@
     <div class="panel-heading">
       <h6 class="panel-title">Pending Teachers</h6>
     </div>
+
+    {% if teachers|length >= 1 %}
     <table class="table table-hover table-bordered" id="dev-table">
       <thead>
         <tr>
 
           <th>Name</th>
+          <th>Organization</th>
           <!-- <th>Photo</th> -->
           <th>Contact</th>
           <th>Address</th>
@@ -43,6 +52,7 @@
       <tr>
 
         <td> {{t.get_name}}</td>
+        <td> {{t.organization}}</td>
         <!-- <td> <img src="{% static t.profile_pic.url %}" alt="Profile Pic" height="40px" width="40px" /></td> -->
         <td>{{t.mobile}}</td>
         <td>{{t.address}}</td>
@@ -52,6 +62,12 @@
       </tr>
       {% endfor %}
     </table>
+    {% else %}
+    <div class="empty-result">
+      <span> You do not have teachers waiting for you to approve their accounts! </span>
+      <br>
+    </div>
+    {% endif %}
   </div>
 </div>
 

@@ -19,6 +19,12 @@
     .row {
       margin: 100px;
     }
+    
+    .empty-result{
+      padding: 2rem;
+      text-align: center;
+      font-size: medium;
+    }
   </style>
 </head>
 <br><br>
@@ -27,6 +33,8 @@
     <div class="panel-heading">
       <h6 class="panel-title">Students</h6>
     </div>
+    
+    {% if students|length >= 1 %}
     <table class="table table-hover table-bordered" id="dev-table">
       <thead>
         <tr>
@@ -52,6 +60,17 @@
       </tr>
       {% endfor %}
     </table>
+    {% else %}
+    <div class="empty-result">
+      <span> You do not have any students added to your organization! </span>
+      <br>
+      <span> Share this
+        <a href='{% url 'studentsignup' %}'> 
+          link
+        </a> 
+        and when they register you see them listed here
+    </div>
+    {% endif %}
   </div>
 </div>
 

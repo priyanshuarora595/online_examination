@@ -9,7 +9,6 @@
 form{
   margin: 50px;          
 }
-
 body{
   background: #304352;  /* fallback for old browsers */
     background: -webkit-linear-gradient(to right, #d7d2cc, #304352);  /* Chrome 10-25, Safari 5.1-6 */
@@ -128,21 +127,14 @@ body{
     color: red;
 } 
 
-.forget-password-link{
-    text-decoration: none;
-}
-.forget-password-link:hover{
-    color : white;
-}
-
 .links{
-            text-decoration: none;
-            color: grey;
-        }
-        .links:hover{
-          text-decoration: none;
-          color : white;
-        }
+    text-decoration: none;
+    color: grey;
+}
+.links:hover{
+  text-decoration: none;
+  color : white;
+}
 
     </style>
   </head>
@@ -180,7 +172,7 @@ body{
                      <input type="submit" name="" value="Login" class="button-login" style="margin-top: 25px;">
 
                      <div style="margin-top: 30px;">
-                        <a class="new-user" style="color:white;" href="{% url 'studentsignup' %}">Don't have an account? Sign Up</a>
+                        <a class="new-user links" style="color:white;" href="{% url 'studentsignup' %}">Don't have an account? Sign Up</a>
                     </div>
                 </form>
 </div>

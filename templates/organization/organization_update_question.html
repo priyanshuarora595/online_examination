@@ -1,4 +1,5 @@
 {% extends 'organization/organizationbase.html' %} {% load widget_tweaks %} 
+{% load static %}
 {% block content %}
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -8,13 +9,23 @@
   />
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-  <style>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-  a:link {
+  <style>
+    a:link {
       text-decoration: none;
+    }
+
+    .image-section{
+      max-width: fit-content;
+      padding:2px;
+      border:1px solid black;
+    }
+    
+    .image-section:hover{
+      cursor: pointer;
     }
   </style>
 </head>
@@ -35,7 +46,15 @@
     <label for="question">Question</label>
     {% render_field questionForm.question|attr:'required:true' class="form-control" placeholder="Example: Which one of the following is not a phase of Prototyping Model?" %}
     <br />
-    <label for="question_image">Image</label> {% render_field questionForm.question_image class="form-control" %}
+    <label for="question_image">Image</label> 
+    <br />
+    {% if questionForm.question_image.value %}
+    <div class="image-section">
+      <img src="{% static '' %}{{ questionForm.question_image.value }}" alt="Image not present" width="350" height="250">
+    </div>
+    {% endif %}
+ 
+    {% render_field questionForm.question_image class="form-control" %}
     <br />
     <label for="question_number">Marks</label>
     {% render_field questionForm.marks|attr:'required:true' class="form-control" placeholder="Example: 5" %}
@@ -46,6 +65,7 @@
       <div >
       <label>{{option.option.label}} </label>
        {% render_field option.option|attr:'required:true' class="form-control" placeholder="Example: Quick Design" oninput="createDropdown()" %}
+       <br/>
        <button  onclick="deleteCodeFromForm(this)">Delete Option</button>
       <br />
       <br />

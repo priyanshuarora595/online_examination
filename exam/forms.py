@@ -3,6 +3,14 @@ from django.contrib.auth.models import User
 from exam import models as EMODEL
 from django.db import models as django_db_models
 
+from django.forms import ValidationError
+from django.forms.widgets import ClearableFileInput
+
+import os
+
+class UploadImageWidget(ClearableFileInput):
+    template_name = 'common/clearable_file_input.html'
+
 class ContactusForm(forms.Form):
     Name = forms.CharField(max_length=30)
     Email = forms.EmailField()
@@ -82,7 +90,43 @@ class QuestionForm(forms.ModelForm):
                 initial=None,
             )
 
+    def clean_image(self):
+        image = self.cleaned_data.get('question_image', False)
+        if image:
+            if image._size > 4*1024*1024:
+                raise ValidationError("Image file too large ( > 4mb )")
+            return image
+        else:
+            raise ValidationError("Couldn't read uploaded image")
+        
+    def clean(self):
+        # clean the form fields 
+        cleaned_data = super(QuestionForm, self).clean()
 
+        question_image = cleaned_data['question_image']
+
+        # Delete image in question_image field, based on field input and exisring upload path
+        if question_image == False and self.instance.question_image:
+            if os.path.isfile(self.instance.question_image.path):
+
+                # remove the existing question image
+                file_path = os.path.dirname(self.instance.question_image.path)
+                self.instance.question_image.delete(False)
+                # remove the empty directory
+                if len(os.listdir(file_path)) == 0:
+                    os.rmdir(file_path)
+        
+        # if the image is updated and new image is different from before
+        if  question_image and self.instance.question_image and question_image != self.instance.question_image.name:
+            
+            if os.path.isfile(self.instance.question_image.path):
+                # remove the existing question image
+                file_path = os.path.dirname(self.instance.question_image.path)
+                self.instance.question_image.delete(False)
+
+                # remove the empty directory
+                if len(os.listdir(file_path)) == 0:
+                    os.rmdir(file_path)
     class Meta:
         model = EMODEL.Question
         fields = [
@@ -90,7 +134,10 @@ class QuestionForm(forms.ModelForm):
             "question",
             "question_image",
         ]
-        widgets = {"question": forms.Textarea(attrs={"rows": 3, "cols": 50})}
+        widgets = {
+            "question": forms.Textarea(attrs={"rows": 3, "cols": 50}), 
+            "question_image": UploadImageWidget
+        }
 
 
 class OptionForm(forms.ModelForm):

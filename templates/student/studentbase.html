@@ -350,9 +350,16 @@
     <center>
       
       <img src="{% static 'image/student.png' %}" class="profile_image" alt="">
-      <h4>{{request.user.first_name}}</h4>
-      <p style="color: rgb(255, 255, 255);"> Student </p>
-      <p style="color: rgb(255, 255, 255);"> {{ request.COOKIES.organization }} </p>
+      {% with request.user.first_name as first_name %}
+        {% if first_name|length >= 15 %}
+          <h4> {{ first_name|slice:"0:6"}}...</h4>
+        {% else %}
+          <h4> {{first_name}}</h4>
+        {% endif %}
+      {% endwith %}
+    
+      <h6 style="color: rgb(255, 255, 255);">( Student )</h6>
+      <h6 style="color: rgb(255, 255, 255);">( {{ request.COOKIES.organization }} )</h6>
       
     </center>
     

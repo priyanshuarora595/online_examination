@@ -25,6 +25,11 @@
   text-align: center;
   justify-content: center;
 }
+body{
+  background: #304352;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #d7d2cc, #304352);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #d7d2cc, #304352); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
 
 .title {
   color: #eee;
@@ -38,7 +43,7 @@
   color: #eee;
   font-family: sans-serif;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 400;
   margin-top: 10px;
 }
 
@@ -175,7 +180,7 @@
 
       <div class="form-row">
         <div class="form-group col-md-6 input-container ic2">
-          {% render_field studentForm.mobile|attr:'required:true'  class="form-control input" placeholder=" " %}
+          {% render_field studentForm.mobile|attr:'required:true'  class="form-control input" placeholder=" " type="tel" pattern="[0-9]{10}" %}
           <div class="cut"></div>
           <label for="mobile" class="placeholder">Contact</label>
         </div>
@@ -197,13 +202,14 @@
           <div class="cut"></div>
           <label for="inputPassword4" class="placeholder">Password</label>
         </div>
-        <div class="form-group col-md-6 input-container ic2">
-          {% render_field userForm.email|attr:'required:true'  class="form-control input" placeholder=" " %}
+        <div class="form-group col-md-12 input-container ic2">
+          {% render_field userForm.email|attr:'required:true'  class="form-control input" placeholder=" " type="email" %}
           <div class="cut"></div>
           <label for="email" class="placeholder">Email</label>
         </div>
-      </div>
 
+      </div>
+      
       <div class="form-row">
         <div class="form-group col-md-12 input-container ic2">
           {% render_field studentForm.organizationID|attr:'required:true' class="form-control input" placeholder=" " %}

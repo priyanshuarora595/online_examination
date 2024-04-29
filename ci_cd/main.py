@@ -7,6 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 @csrf_exempt
 def webhook(request):
     if request.method == "POST":
+        os.system("chmod +x ci_cd/main_script.sh")
         os.system("ci_cd/main_script.sh")
         return HttpResponse("Updated Succesfully", status=200)
     else:

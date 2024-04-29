@@ -23,25 +23,6 @@ padding: 20px;
 width: 80%;
 text-align: center;
 justify-content: center;
-.container-form {
-background-color: #15172b;
-border-radius: 20px;
-box-sizing: border-box;
-padding: 20px;
-width: 80%;
-text-align: center;
-justify-content: center;
-}
-body{
-background: #304352;  /* fallback for old browsers */
-  background: -webkit-linear-gradient(to right, #d7d2cc, #304352);  /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to right, #d7d2cc, #304352); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-}
-
-body{
-background: #304352;  /* fallback for old browsers */
-  background: -webkit-linear-gradient(to right, #d7d2cc, #304352);  /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to right, #d7d2cc, #304352); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
 .title {
@@ -149,125 +130,6 @@ padding: auto !important;
 background-color: rgb(26, 123, 99);
 }
 
-.container-form {
-background-color: #15172b;
-border-radius: 20px;
-box-sizing: border-box;
-padding: 20px;
-width: 80%;
-text-align: center;
-justify-content: center;
-}
-body{
-background: #304352;  /* fallback for old browsers */
-  background: -webkit-linear-gradient(to right, #d7d2cc, #304352);  /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to right, #d7d2cc, #304352); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-}
-
-.title {
-color: #eee;
-font-family: sans-serif;
-font-size: 36px;
-font-weight: 600;
-margin-top: 30px;
-}
-
-.subtitle {
-color: #eee;
-font-family: sans-serif;
-font-size: 16px;
-font-weight: 400;
-margin-top: 10px;
-}
-
-.input-container {
-height: 50px;
-position: relative;
-width: 100%;
-}
-
-.ic1 {
-margin-top: 40px;
-}
-
-.ic2 {
-margin-top: 30px;
-}
-
-.input {
-background-color: #303245;
-border-radius: 12px;
-border: 0;
-box-sizing: border-box;
-color: #eee;
-font-size: 18px;
-height: 100%;
-outline: 0;
-padding: 4px 20px 0;
-width: 100%;
-}
-
-.cut {
-background-color: #15172b;
-border-radius: 10px;
-height: 20px;
-left: 20px;
-position: absolute;
-top: -20px;
-transform: translateY(0);
-transition: transform 200ms;
-width: 76px;
-}
-
-.placeholder {
-color: #65657b;
-font-family: sans-serif;
-left: 20px;
-line-height: 14px;
-pointer-events: none;
-position: absolute;
-transform-origin: 0 50%;
-transition: transform 200ms, color 200ms;
-top: 13px;
-}
-
-.input:focus ~ .placeholder,
-.input:not(:placeholder-shown) ~ .placeholder {
-transform: translateY(-30px) translateX(1px) scale(1);
-}
-
-.input:not(:placeholder-shown) ~ .placeholder {
-color: #808097;
-}
-
-.input:focus ~ .placeholder {
-color: #d8bdc3;
-}
-
-.button-signup {
-background-color: green;
-border-radius: 12px;
-border: 0;
-box-sizing: border-box;
-color: #eee;
-cursor: pointer;
-font-size: 18px;
-height: 50px;
-margin-top: 38px;
-text-align: center;
-width: 100%;
-border-radius: 5rem;
-}
-.center {
-margin: auto !important;
-width: auto !important;
-border: 3px solid rgb(57, 56, 77) !important;
-padding: auto !important;
-}
-
-.button-signup:active {
-background-color: rgb(26, 123, 99);
-}
 
 .old-user {
 margin: 20px 0;
@@ -282,10 +144,6 @@ margin: 20px 0;
 
 
 <br><br><br>
-<div class="container-form center">
-  <div style="text-align: center; " class="title">Organization Signup Form</div>
-  <div style="text-align: center;" class="subtitle">Let's create your account!</div>
-
 <div class="container-form center">
   <div style="text-align: center; " class="title">Organization Signup Form</div>
   <div style="text-align: center;" class="subtitle">Let's create your account!</div>
@@ -308,15 +166,7 @@ margin: 20px 0;
           {% render_field userForm.first_name|attr:'required:true'  class="form-control input"  placeholder=" " %}
           <div class="cut"></div>
           <label for="first_name" class="placeholder">First Name</label>
-        <div class="form-group col-md-6 input-container ic1">
-          {% render_field userForm.first_name|attr:'required:true'  class="form-control input"  placeholder=" " %}
-          <div class="cut"></div>
-          <label for="first_name" class="placeholder">First Name</label>
         </div>
-        <div class="form-group col-md-6 input-container ic1">
-          {% render_field userForm.last_name|attr:'required:true'  class="form-control input" placeholder=" " %}
-          <div class="cut"></div>
-          <label for="last_name" class="placeholder">Last Name</label>
         <div class="form-group col-md-6 input-container ic1">
           {% render_field userForm.last_name|attr:'required:true'  class="form-control input" placeholder=" " %}
           <div class="cut"></div>
@@ -329,15 +179,7 @@ margin: 20px 0;
           {% render_field organizationForm.mobile|attr:'required:true'  class="form-control input" placeholder=" " %}
           <div class="cut"></div>
           <label for="mobile" class="placeholder">Contact</label>
-        <div class="form-group col-md-6 input-container ic2">
-          {% render_field organizationForm.mobile|attr:'required:true'  class="form-control input" placeholder=" " %}
-          <div class="cut"></div>
-          <label for="mobile" class="placeholder">Contact</label>
         </div>
-        <div class="form-group col-md-6 input-container ic2">
-          {% render_field organizationForm.address|attr:'required:true'  class="form-control input" placeholder=" " %}
-          <div class="cut"></div>
-          <label for="address" class="placeholder">Address</label>
         <div class="form-group col-md-6 input-container ic2">
           {% render_field organizationForm.address|attr:'required:true'  class="form-control input" placeholder=" " %}
           <div class="cut"></div>
@@ -345,11 +187,7 @@ margin: 20px 0;
         </div>
       </div>
 
-      <div class="form-row">
-        <div class="form-group col-md-6 input-container ic2">
-          {% render_field userForm.username|attr:'required:true'  class="form-control input" placeholder=" " %}
-          <div class="cut"></div>
-          <label for="username" class="placeholder">Username</label>          
+      <div class="form-row">         
         <div class="form-group col-md-6 input-container ic2">
           {% render_field userForm.username|attr:'required:true'  class="form-control input" placeholder=" " %}
           <div class="cut"></div>
@@ -359,15 +197,7 @@ margin: 20px 0;
           {% render_field userForm.password|attr:'required:true'  class="form-control input" placeholder=" " %}
           <div class="cut"></div>
           <label for="inputPassword4" class="placeholder">Password</label>
-        <div class="form-group col-md-6 input-container ic2">
-          {% render_field userForm.password|attr:'required:true'  class="form-control input" placeholder=" " %}
-          <div class="cut"></div>
-          <label for="inputPassword4" class="placeholder">Password</label>
         </div>
-        <div class="form-group col-md-6 input-container ic2">
-          {% render_field userForm.email|attr:'required:true'  class="form-control input" placeholder=" " %}
-          <div class="cut"></div>
-          <label for="email" class="placeholder">Email</label>
         <div class="form-group col-md-6 input-container ic2">
           {% render_field userForm.email|attr:'required:true'  class="form-control input" placeholder=" " %}
           <div class="cut"></div>
@@ -385,11 +215,8 @@ margin: 20px 0;
 
 
     <button type="submit" class="button-signup">Sign Up</button>
-    <button type="submit" class="button-signup">Sign Up</button>
 
     <div class="old-user">
-      <a href="{% url 'organizationlogin' %}" style="color: white;">Already have an account? Login here</a>
-      <a href="{% url 'organizationlogin' %}" style="color: white;">Already have an account? Login here</a>
       <a href="{% url 'organizationlogin' %}" style="color: white;">Already have an account? Login here</a>
     </div>
   </form>

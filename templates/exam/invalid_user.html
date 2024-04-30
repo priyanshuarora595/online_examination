@@ -1,4 +1,5 @@
 {%load static%}
+{% include "exam/navbar.html" %}
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
@@ -6,15 +7,45 @@
     <title></title>
   </head>
   <body>
-    {% include "exam/navbar.html" %}
     <br><br><br><br><br>
 <!-- <img src="{% static "image/logout_img.png" %}"  style="width:800px; height:100px; padding-left:400px;"> -->
 
-<h2 class="text-center">Invalid Account. <br> Please try again!</h2>
 
-<br><br><br><br><br>
-<br><br><br><br><br>
-<br><br>
+{% block content %}
+
+<style>
+  .content-box {
+    margin-top: 3rem;
+    max-width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+  }
+</style>
+
+<div
+  class="mt-20 p-4 rounded bg-white max-w-sm text-center border-t-4 border-red-600 mx-auto text-gray-700 pt-0"
+>
+  <div class="alert alert-info content-box">
+    <br />
+    <h3 class="font-bold text-2xl text-black mb-2">Ahh ohh! Something happened!</h3>
+    <hr>
+
+    <span>
+      Looks like you tried you access the page you weren't supposed to!
+    </span>
+    <br />
+
+    <p>
+      Go back to 
+      <a class="text-decoration-none" href="{% url '' %}"> homepage. </a>
+    </p>
+    <p>
+      In case, you faced any problems while accessing the page, please let us 
+        <a class="text-decoration-none" href="{% url 'contact-us-view' %}"> know!</a> 
+    </p>
+  </div>
+</div>
+{% endblock content %}
 {% include "exam/footer.html" %}
 
   </body>

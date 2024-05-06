@@ -18,7 +18,7 @@
   </style>
 </head>
 <h2 style="text-align:center;">Add Course</h2>
-<form method="POST" autocomplete="off" style="margin:100px;margin-top: 0px;">
+<form method="POST" id="course_form" autocomplete="off" style="margin:100px;margin-top: 0px;">
     {%csrf_token%}
     <div class="form-group">
       <label for="course_name">Course Name</label>
@@ -41,7 +41,7 @@
     </div>
     
 
-    <button type="submit" onclick="convertToUTCTime()" class="btn btn-success" style="border-radius:0px;">Add Course Info</button>
+    <button type="button" onclick="submit_form()" class="btn btn-success" style="border-radius:0px;">Add Course Info</button>
   </form>
   <script>
     // Function to convert datetime-local to UTC
@@ -64,6 +64,10 @@
               input.value = utcDateTimeString;
           });
       }
+      function submit_form(){
+        convertToUTCTime();
+        document.getElementById("course_form").submit();
+    }
   </script>
 <br><br><br>
 {% endblock content %}

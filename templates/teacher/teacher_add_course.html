@@ -14,16 +14,16 @@
   a:link {
         text-decoration: none;
       }
-    
+
   </style>
 </head>
 <h2 style="text-align:center; ">Add Course Info</h2>
-<form method="POST" autocomplete="off" style="margin:100px;margin-top: 0px;">
+<form method="POST" id = "course_form" autocomplete="off" style="margin:100px;margin-top: 0px;">
     {%csrf_token%}
     <div class="form-group">
       <label for="course_name">Course Name</label>
       {% render_field courseForm.course_name class="form-control" placeholder="Example: Databases" %}
-      
+
       <label for="course_name">Exam Date</label>
       {% render_field courseForm.exam_date class="form-control" %}
 
@@ -37,9 +37,9 @@
       {% render_field courseForm.passing_percentage class="form-control" placeholder="Example: 75" %}
 
     </div>
-    
 
-    <button type="submit" onclick="convertToUTCTime()" class="btn btn-success" style="border-radius: 0%;">Submit Info</button>
+
+    <button type="button" onclick="submit_form()" class="btn btn-success" style="border-radius: 0%;">Submit Info</button>
   </form>
 <br><br><br>
 
@@ -48,21 +48,25 @@
       function convertToUTCTime() {
           // Get all datetime-local inputs
           var datetimeInputs = document.querySelectorAll('input[type="datetime-local"]');
-          
+
           // Loop through each input
           datetimeInputs.forEach(function(input) {
               // Get the value of the input
               var localDateTimeString = input.value;
-              
+
               // Create a Date object from the local datetime string
               var localDateTime = new Date(localDateTimeString);
-              
+
               // Convert local time to UTC
               var utcDateTimeString = localDateTime.toISOString().slice(0, -1); // Remove 'Z' for local time
-              
+
               // Update the input value with UTC time
               input.value = utcDateTimeString;
           });
       }
+    function submit_form(){
+        convertToUTCTime();
+        document.getElementById("course_form").submit();
+    }
 </script>
 {% endblock content %}

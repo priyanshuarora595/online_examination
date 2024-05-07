@@ -3,7 +3,7 @@ from django.db.models import Sum
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.conf import settings
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMultiAlternatives
 from teacher import models as TMODEL
 from student import models as SMODEL
 from organization import models as OMODEL
@@ -719,13 +719,15 @@ def contactus_view(request):
             email = sub.cleaned_data["Email"]
             name = sub.cleaned_data["Name"]
             message = sub.cleaned_data["Message"]
-            send_mail(
-                str(name) + " || " + str(email),
-                message,
-                settings.EMAIL_HOST_USER,
-                settings.EMAIL_RECEIVING_USER,
-                fail_silently=False,
+
+            mail = EmailMultiAlternatives(
+                subject =  f"{name} || {email} sent a message from Online Examination Portal",
+                body= f"Message : {message}",
+                from_email=settings.EMAIL_HOST_USER,
+                bcc=[email],
+                to=list(settings.EMAIL_RECEIVING_USER)
             )
+            mail.send(fail_silently=False)
             return render(request, "exam/contactussuccess.html")
     return render(request, "exam/contactus.html", {"form": sub})
 

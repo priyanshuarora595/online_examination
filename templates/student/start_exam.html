@@ -2,13 +2,23 @@
 {% block sidebar %}
 {% endblock sidebar %}
 {% block content %}
-  {% load static %}
+{% load static %}
   <head>
-    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"
-          rel="stylesheet"
-          id="bootstrap-css">
-    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
-    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+      <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+      integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+      crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
+      integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+      crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
+      integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+      crossorigin="anonymous"></script>
     <script type="text/javascript">
     function getRemainingTime() {
         var remaining_time = null;
@@ -57,17 +67,13 @@
             }
         }
     
-
     function expireTimer() {
-        
-            document.cookie = "remaining_time=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-        
-        clearInterval(intervalId);
+      document.cookie = "remaining_time=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      clearInterval(intervalId);  
     }
 
     var intervalId = setInterval(updateTimer, 1000);
 
-    
     </script>
     <style>
     .grid-container {
@@ -84,90 +90,243 @@
       height: 100vh;
       transition: 0s;
     }
+    .section-2{
+      width: 100%;
+    }
+
+    .course-name{
+      text-decoration: underline 1px;
+      text-align: center;
+      text-underline-offset: 2px;
+      font-size: xx-large;
+    }
+    .question_area{
+      display: flex;
+      gap: 1rem;
+      margin-left: auto;
+      font-size: large;
+    }
+    .question-number{
+      font-size: medium;
+      text-align: left;
+      font-weight: 500;
+    }
+    .question-text{
+      font-size: medium;
+      text-align: left;
+      font-weight: 500;
+    }
+    .marks-area{
+      display: flex;
+      flex-flow: row-reverse;
+    }
+    .side-text{
+      color:gray;
+      font-size: medium; 
+    }
+
+    .page-content{
+      display: flex;
+      gap: 1rem;
+      margin-left: auto;
+      width: 100%;
+    }
+
+    .option-info-text{
+      text-align: left;
+      font-size: medium;
+      font-weight: 390;
+    }
+    .option-row{
+      display: flex;
+      /* gap:1rem; */
+      margin-left:1.6rem;
+    }
+    .option-radiobutton-area{
+      padding:0.5rem;
+      padding-left: 0px;
+    }
+    .option-text-area{
+      padding:.5rem;
+    }
+
+    .option-text{
+      font-weight: normal;
+    }
+
+    .button-area-row-1{
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      gap:1rem;
+      margin-top:1rem;
+    }
+    .button-area-row-2{
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+
+    .green-bg-color{
+      background-color:rgb(0, 149, 0);
+    }
+    .link-hover:hover{
+      text-decoration: none;
+    }
+
+    .no-page-button{
+      background-color: rgb(0, 113, 0);
+      opacity: 50%;
+      cursor: default;
+    }
+
+    .no-page-button:hover{
+      background-color: rgb(0, 113, 0);
+      opacity: 50%;
+      cursor: default;
+    }
     </style>
   </head>
-  <div class="jumbotron my-4">
-    <div>
-      Time Left : <span id="timer"></span>
-    </div>
-    <form class="form"
-          autocomplete="off"
-          id="form"
-          onSubmit
-          action="/student/calculate-marks"
-          method="POST">
-      {% csrf_token %}
-      <h2 style="text-align: center;">Course: {{ course.course_name }}</h2>
-      {% for q in questions %}
-        <h3 class="text-danger">{{ questions.number }}. {{ q.question }}</h3>
-        <h4 style="text-align: right;">[{{ q.marks }} Marks]</h4>
-        {% if q.question_image %}
-          <img src="{% static '' %}{{ q.question_image }} " width="350" height="250">
-        {% endif %}
-        <input type="hidden"
-               name="csrfmiddlewaretoken"
-               value="C24rUotmdHawVQJL3KrqiWxvti8UffOFYUc8TRbZtLt36AVLdP3jbkzUVe3beRAa">
-        <input type= "hidden" name="question_id" value="{{ q.id }}" id="question_id">
-        {% for option in options %}
-          <div class="form-check mx-4">
-            <input class="form-check-input" type="radio" name="{{ questions.number }}"  value={{ option.option }}>
-            <label class="form-check-label" for="option">{{ option.option }}</label>
-            {% comment %} {{q.option1}} {% endcomment %}
-          </label>
-        </div>
-      {% endfor %}
-    {% endfor %}
-    <div class="grid-container">
-      <div>
-        {% if questions.has_previous %}
-          <a type="button"
-             class="btn btn-success btn-lg"
-             style="border-radius: 0%"
-             onclick="save()"
-             href="{% url 'start-exam' course.id  %}?page={{ questions.previous_page_number }}">Previous</a>
-        {% endif %}
+  <div class="jumbotron">
+    <div class="text-center">
+      <span class="course-name">
+        {{ course.course_name}}
+      </span>
+      
+      <div class="side-text">
+         Time left : <span id="timer"></span>
       </div>
+    </div>
+    <br/>
+    <form class="form" autocomplete="off" id="form" onSubmit action="/student/calculate-marks" method="POST">
+      {% csrf_token %}
+      <div>
+        <div style="float:right">
+          <input class="w-1/2 ml-1 border border-red-600 text-white border-gray-500 py-2 px-4 rounded font-medium green-bg-color"
+                 style="border-radius: 0%;
+                        display:block"
+                 onclick="save()"
+                 type="submit"
+                 value="Submit Exam">
+        </div>
+        <div style="float:right">
+          <input class="w-1/2 ml-1 border border-red-600 text-white border-gray-500 py-2 px-4 rounded font-medium green-bg-color "
+                 style="border-radius: 0%;
+                        display:block"
+                 onclick="cancel()"
+                 type="button"
+                 value="Leave Exam">
+        </div>
+          <br/>
+      </div>
+      {% for q in questions %}
+
+      <div class="page-content">
+        <div>
+          <span class="question-number">  {{ questions.number }}. </span> 
+        </div>
+        <div class="section-2">
+
+          <div class="question-box">
+            <p class="question-text">
+              {{ q.question }}
+            </p>
+            <div class="marks-area">
+              <p class="side-text"> ({{ q.marks }} Marks)</p>
+            </div>
+  
+            {% if q.question_image %}
+              <div class="question_area">
+                <img src="{% static '' %}{{ q.question_image }} " width="350" height="250" alt="Question's image">
+              </div>
+            {% endif %}
+          </div>
+
+          <div clas="option-box">
+            <input type="hidden" name="csrfmiddlewaretoken" value="C24rUotmdHawVQJL3KrqiWxvti8UffOFYUc8TRbZtLt36AVLdP3jbkzUVe3beRAa">
+            
+            <input type= "hidden" name="question_id" value="{{ q.id }}" id="question_id">
+            <div class="options-area">
+              <br>
+              <p class="option-info-text">Select the options below for giving answer to the above question</p>
+              {% for option in options %}
+                <div class="option-row">
+                  <div class="option-radiobutton-area">
+                    <input class="form-check-input" type="radio" name="{{ questions.number }}"  value={{ option.option }}>
+                  </div>
+                  <div class="option-text-area">
+                    <label class="form-check-label option-text" for="option">{{ option.option }}</label>
+                    {% comment %} {{q.option1}} {% endcomment %}
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+          <br>
+        </div>
+      </div>
+    {% endfor %}
+    <div class="button-area-row-1"> 
       <div>
         <a type="button"
-           class="btn btn-success btn-lg"
+           class="w-1/2 ml-1 border border-red-600 text-white border-gray-500 hover:bg-red-700 py-2 px-4 rounded font-medium green-bg-color"
            style="border-radius: 0%; color:white;"
-           onclick="save()">Save</a>
+           onclick="save()">
+           Save
+        </a>
       </div>
       <div>
         <button type="button"
-                class="btn btn-success btn-lg"
-                style="border-radius: 0%"
-                onclick="clear_selection({{ questions.0.id}})">Clear</button>
+                class="w-1/2 ml-1 border border-red-600 text-white border-gray-500 py-2 px-4 rounded font-medium green-bg-color"
+                style="border-radius: 0%;"
+                onclick="clear_selection({{ questions.0.id}})">
+          Clear
+        </button>
       </div>
-      <div>
-        {% if questions.has_next %}
+    </div>
+    <div class="button-area-row-2">
+      {% if questions.has_previous %}
+        <div>
           <a type="button"
-             class="btn btn-success btn-lg"
+             class="w-1/2 ml-1 border border-red-600 text-white border-gray-500 py-2 px-4 rounded font-medium link-hover
+             link-hover green-bg-color"
+             style="border-radius: 0%"
+             onclick="save()"
+             href="{% url 'start-exam' course.id  %}?page={{ questions.previous_page_number }}">
+              Previous
+          </a>
+        </div>
+        {% else %}
+        <div>
+          <a type="button"
+            class="w-1/2 ml-1 text-white border-gray-500 py-2 px-4 rounded font-medium no-page-button link-hover "
+             style="border-radius: 0%"
+             href="#">Previous</a>
+        </div>
+      {% endif %}
+      {% if questions.has_next %}
+        <div>
+          <a type="button"
+            class="w-1/2 ml-1 border border-red-600 text-white border-gray-500 py-2 px-4 rounded font-medium green-bg-color  link-hover"
              onclick="save()"
              style="border-radius: 0%"
              href="{% url 'start-exam' course.id  %}?page={{ questions.next_page_number }}">Next</a>
-        {% endif %}
-      </div>
+        </div>
+        {% else %}
+        <div>
+          <a type="button"
+            class="w-1/2 ml-1 text-white border-gray-500 py-2 px-4 rounded font-medium no-page-button link-hover "
+             style="border-radius: 0%"
+             href="#">Next</a>
+        </div>
+      {% endif %}
     </ul>
   </div>
-  <div style="float:left">
-    <input class="btn btn-success btn-lg"
-           style="border-radius: 0%;
-                  display:block"
-           onclick="cancel()"
-           type="button"
-           value="Cancel">
-  </div>
-    <div style="float:right">
-      <input class="btn btn-success btn-lg"
-             style="border-radius: 0%;
-                    display:block"
-             onclick="save()"
-             type="submit"
-             value="Submit Answers">
-    </div>
+
 </form>
 </div>
+
+
 <script> 
   document.getElementById("form").addEventListener("submit", function(event) {
     expireTimer();
@@ -338,10 +497,5 @@ document.addEventListener("visibilitychange", (event) => {
   };
 
 </script>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
+
 {% endblock content %}

@@ -175,6 +175,8 @@ EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")  # host email password re
 # https://myaccount.google.com/lesssecureapps
 # otherwise you will get SMTPAuthenticationError at /contactus
 # this process is required because google blocks apps authentication by default
-EMAIL_RECEIVING_USER = os.getenv(
+EMAIL_RECEIVING_USER = eval(os.getenv(
     "EMAIL_RECEIVING_USER"
-)  # email on which you will receive messages sent from website
+))  # email on which you will receive messages sent from website
+
+# print(EMAIL_RECEIVING_USER)

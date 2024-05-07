@@ -3,26 +3,31 @@
 {%load static%}
 
 <head>
-  <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-  <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
-  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
 
-
+    
 </head>
-<br><br>
+<body>
+    <br><br>
 <div class="container my-4">
-    <div class="jumbotron">
+    <h4 style="text-align: center;">Examimation Instructions</h4>
+    <div class="jumbotron" style="margin-top: 50px;">
 
-        <div class="row">
+        <div class="row justify-content-center">
 
-            <div class="card border-info mx-4 my-4">
+            <div class="card border-info mx-4 my-4"" style="padding: 20px; width: 1040px;">
                 <div class="card-body text-default">
 
-                    <h4 class="card-title">Exam Details :</h4>
+                    <h5 class="card-title">Exam Details :</h5>
                     <p class="card-text">
-                        </p><ul style="list-style:decimal;">
+                        </p><ul>
                             <li>Course : {{course.course_name}}</li>
                             <li > Scheduled at : <span class="exam_date">{{course.exam_date|safe}}</span></li>
                             <li>Total Question : {{course.question_number}}</li>
@@ -34,9 +39,9 @@
 
 
 
-                    <h4 class="card-title">Rules :</h4>
+                    <h5 class="card-title">Rules :</h5>
                     <p class="card-text">
-                        <ul style="list-style:decimal;">
+                        <ul>
                             <li>All questions are MCQ (multiple choice question)</li>
                             <li><span class="text-danger">Only one choice is correct among the given.</span></li>
                             <li>Every question may carry different marks.</li>
@@ -56,9 +61,9 @@
                         </button>
                     </div>
                     {% endfor %}
-                    <label for="access_code">Please Enter Access Code for the Exam</label>
+                    <label for="access_code" style="margin-top: 50px;">Please Enter Access Code for the Exam</label>
                     <input class="form-control" type="text" name="access_code" id="course_access_id">
-                    <button type="button" class="btn btn-success" onclick="startExam()" >Start Exam</button>
+                    <button type="button" class="btn btn-success" onclick="startExam()" style="margin-top: 15px;">Start Exam</button>
                     {% comment %} <a href="{% url 'start-exam' pk=course.id access_code='d2057ae5-c8d9-483d-a540-2f071023fa29' %}?page=1" class="btn btn-success" style="border-radius:0px;">Enter Examination</a> {% endcomment %}
                 </div>  
                 <div class="card-footer">Best Of Luck, Students!</div>  
@@ -67,8 +72,6 @@
 
     </div>
 </div>
-
-<br><br><br><br><br><br>
 <script>
     // Function to convert exam_time to local time string
   function convertToLocalTime() {
@@ -144,4 +147,5 @@ convertToLocalTime();
     }
 
 </script>
+</body>
 {% endblock content %}

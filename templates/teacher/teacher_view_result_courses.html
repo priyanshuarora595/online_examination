@@ -3,37 +3,41 @@
 {%load static%}
 
 <head>
-  <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-  <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
-  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+  <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
 
   <style media="screen">
     a:link {
       text-decoration: none;
     }
 
-    h6 {
+    .heading {
       text-align: center;
     }
 
-    .row {
-      margin: 100px;
+    .table-head{
+      background-color: rgb(36, 218, 212);
     }
   </style>
 </head>
-<br><br>
-<div class="container">
+<div class="container" style="min-height: 55.5vh;">
   <div class="panel panel-primary">
     <div class="panel-heading">
-      <h6 class="panel-title">Exams</h6>
+      <h4 class="panel-title heading">Exams</h4>
     </div>
-    <table class="table table-hover table-bordered" id="dev-table">
-      <thead>
+    <table class="table table-hover table-bordered" id="dev-table" style="margin-top: 50px;">
+      <thead class="table-head">
         <tr>
 
-          <th>Exam Name</th>
+          <th class="heading">Exam Name</th>
           
-          <th>Action</th>
+          <th class="heading">Action</th>
         </tr>
       </thead>
       {% for t in courses %}
@@ -42,12 +46,10 @@
         <td> {{t.course_name}}</td>
         
         
-        <td><a class="btn btn-danger btn-sm" style="border-radius: 0%;" href="{% url 'teacher-check-marks' t.id  %}"><span class="glyphicon glyphicon-eye-open"></span> View Marks</a></td>
+        <td class="heading"><a class="btn btn-danger btn-sm" style="border-radius: 0%;" href="{% url 'teacher-check-marks' t.id  %}"><span class="glyphicon glyphicon-eye-open"></span> View Marks</a></td>
       </tr>
       {% endfor %}
     </table>
   </div>
 </div>
-
-<br><br><br><br><br><br>
 {% endblock content %}

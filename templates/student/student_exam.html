@@ -3,23 +3,25 @@
 {%load static%}
 
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <link href="http://netdna.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
-    
-    
+
   <style media="screen">
     a:link {
       text-decoration: none;
     }
 
-    h6 {
+    .heading {
       text-align: center;
     }
 
-    .row {
+    .row-m {
       margin: 100px;
     }
         
@@ -28,23 +30,26 @@
       text-align: center;
       font-size: medium;
     }
+    .table-head{
+      background-color: rgb(36, 218, 212);
+    }
   </style>
 </head>
 <br><br>
-<div class="container">
+<div class="container" style="min-height: 70vh;">
   <div class="panel panel-primary">
     <div class="panel-heading">
-      <h6 class="panel-title">Available Courses</h6>
+      <h4 class="panel-title heading">Available Courses</h4>
     </div>
     
     {% if courses|length >= 1 %}
-    <table class="table table-hover table-bordered" id="dev-table">
-      <thead>
+    <table class="table table-hover table-bordered" id="dev-table" style="margin-top: 50px;">
+      <thead class="table-head">
         <tr>
 
-          <th>Exam Name</th>
-          <th>Exam Date</th>
-          <th>Action</th>
+          <th class="heading">Exam Name</th>
+          <th class="heading">Exam Date</th>
+          <th class="heading">Action</th>
         </tr>
       </thead>
       {% for t in courses %}
@@ -52,7 +57,7 @@
 
         <td> {{t.course_name}}</td>
         <td class="exam_date">{{ t.exam_date|safe }}</td>
-        <td><a class="btn btn-success btn-sm" style="border-radius:0px;" href="{% url 'take-exam' t.id  %}"><span class="glyphicon glyphicon-check"></span> Attend Exam</a></td>
+        <td class="heading"><a class="btn btn-success btn-sm" style="border-radius:0px;" href="{% url 'take-exam' t.id  %}"><span class="glyphicon glyphicon-check"></span> Attend Exam</a></td>
       </tr>
       {% endfor %}
     </table>
@@ -65,7 +70,6 @@
   </div>
 </div>
 
-<br><br><br><br><br><br>
 <script>
   // Function to convert exam_time to local time string
   function convertToLocalTime() {

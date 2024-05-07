@@ -3,56 +3,60 @@
 {%load static%}
 
 <head>
-  <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-  <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
-  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-
+  <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
   <style media="screen">
     a:link {
       text-decoration: none;
     }
 
-    h6 {
+    .heading {
       text-align: center;
     }
 
-    .row {
-      margin: 100px;
+    .table-head{
+      background-color: rgb(36, 218, 212);
     }
   </style>
 </head>
 <br><br>
-<div class="container">
+<div class="container" style="min-height: 65vh;">
   <div class="panel panel-primary">
     <div class="panel-heading">
-      <h6 class="panel-title">My Marks</h6>
+      <h4 class="panel-title heading">My Marks</h4>
     </div>
-    <table class="table table-hover table-bordered" id="dev-table">
-      <thead>
+    <table class="table table-hover table-bordered" id="dev-table" style="margin-top: 50px;">
+      <thead  class="table-head">
         <tr>
 
-          <th>Course</th>
-          <th>Total Marks</th>
-          <th>correct answers</th>
+          <th class="heading">Course</th>
+          <th class="heading">Total Marks</th>
+          <th class="heading">correct answers</th>
           {% comment %} <th>Number of Attempts</th> {% endcomment %}
-          <th>Exam Date</th>
-          <th>Status</th>
+          <th class="heading">Exam Date</th>
+          <th class="heading">Status</th>
         </tr>
       </thead>
       {% for t in results %}
       <tr>
 
         <td> {{t.exam}}</td>
-        <td> {{t.marks}}</td>
-        <td> {{t.correct_answers}}</td>
+        <td class="heading"> {{t.marks}}</td>
+        <td class="heading"> {{t.correct_answers}}</td>
         {% comment %} <td>Attempt {{ forloop.counter }}</td> {% endcomment %}
         <td class = "exam_date"> {{t.date|safe}}</td>
-        <td> {{t.percentage}}%</td>
+        <td class="heading"> {{t.percentage}}%</td>
         {% comment %} <td> {{t.status}}</td> {% endcomment %}
         {% if t.status == "Pass" %}
-        <td style="background-color:green"> Pass</td>
+        <td style="background-color:lightgreen; text-align: center;"> Pass</td>
         {% else %}
-        <td style="background-color:Red"> Fail</td>
+        <td style="background-color:#da5349; text-align: center;"> Fail</td>
         {% endif %} 
         
         
@@ -62,7 +66,6 @@
   </div>
 </div>
 
-<br><br><br><br><br><br>
 <script>
   // Function to convert exam_time to local time string
 function convertToLocalTime() {

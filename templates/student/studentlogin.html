@@ -9,6 +9,7 @@
 form{
   margin: 50px;          
 }
+
 body{
   background: #304352;  /* fallback for old browsers */
     background: -webkit-linear-gradient(to right, #d7d2cc, #304352);  /* Chrome 10-25, Safari 5.1-6 */
@@ -80,12 +81,12 @@ body{
   position: absolute;
   transform-origin: 0 50%;
   transition: transform 200ms, color 200ms;
-  top: 10px;
+  top: 13px;
 }
 
 .input:focus ~ .placeholder,
 .input:not(:placeholder-shown) ~ .placeholder {
-  transform: translateY(-28px) translateX(1px) scale(1);
+  transform: translateY(-30px) translateX(1px) scale(1);
 }
 
 .input:not(:placeholder-shown) ~ .placeholder {
@@ -127,14 +128,21 @@ body{
     color: red;
 } 
 
-.links{
+.forget-password-link{
     text-decoration: none;
-    color: grey;
 }
-.links:hover{
-  text-decoration: none;
-  color : white;
+.forget-password-link:hover{
+    color : white;
 }
+
+.links{
+            text-decoration: none;
+            color: grey;
+        }
+        .links:hover{
+          text-decoration: none;
+          color : white;
+        }
 
     </style>
   </head>
@@ -172,7 +180,7 @@ body{
                      <input type="submit" name="" value="Login" class="button-login" style="margin-top: 25px;">
 
                      <div style="margin-top: 30px;">
-                        <a class="new-user links" style="color:white;" href="{% url 'studentsignup' %}">Don't have an account? Sign Up</a>
+                        <a class="new-user" style="color:white;" href="{% url 'studentsignup' %}">Don't have an account? Sign Up</a>
                     </div>
                 </form>
 </div>

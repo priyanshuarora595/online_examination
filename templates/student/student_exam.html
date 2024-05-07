@@ -3,20 +3,25 @@
 {%load static%}
 
 <head>
-  <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-  <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
-  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+  <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
 
   <style media="screen">
     a:link {
       text-decoration: none;
     }
 
-    h6 {
+    .heading {
       text-align: center;
     }
 
-    .row {
+    .row-m {
       margin: 100px;
     }
         
@@ -25,23 +30,26 @@
       text-align: center;
       font-size: medium;
     }
+    .table-head{
+      background-color: rgb(36, 218, 212);
+    }
   </style>
 </head>
 <br><br>
-<div class="container">
+<div class="container" style="min-height: 70vh;">
   <div class="panel panel-primary">
     <div class="panel-heading">
-      <h6 class="panel-title">Available Courses</h6>
+      <h4 class="panel-title heading">Available Courses</h4>
     </div>
     
     {% if courses|length >= 1 %}
-    <table class="table table-hover table-bordered" id="dev-table">
-      <thead>
+    <table class="table table-hover table-bordered" id="dev-table" style="margin-top: 50px;">
+      <thead class="table-head">
         <tr>
 
-          <th>Exam Name</th>
-          <th>Exam Date</th>
-          <th>Action</th>
+          <th class="heading">Exam Name</th>
+          <th class="heading">Exam Date</th>
+          <th class="heading">Action</th>
         </tr>
       </thead>
       {% for t in courses %}
@@ -49,7 +57,7 @@
 
         <td> {{t.course_name}}</td>
         <td class="exam_date">{{ t.exam_date|safe }}</td>
-        <td><a class="btn btn-success btn-sm" style="border-radius:0px;" href="{% url 'take-exam' t.id  %}"><span class="glyphicon glyphicon-check"></span> Attend Exam</a></td>
+        <td class="heading"><a class="btn btn-success btn-sm" style="border-radius:0px;" href="{% url 'take-exam' t.id  %}"><span class="glyphicon glyphicon-check"></span> Attend Exam</a></td>
       </tr>
       {% endfor %}
     </table>
@@ -62,7 +70,6 @@
   </div>
 </div>
 
-<br><br><br><br><br><br>
 <script>
   // Function to convert exam_time to local time string
   function convertToLocalTime() {
@@ -101,5 +108,52 @@
   // Call the function to convert exam_time to local time
   convertToLocalTime();
   
+</script>
+
+
+
+<script>
+  var btn = document.querySelector( '.btn' );
+
+var btnFront = btn.querySelector( '.btn-front' ),
+  btnYes = btn.querySelector( '.btn-back .yes' ),
+  btnNo = btn.querySelector( '.btn-back .no' );
+
+btnFront.addEventListener( 'click', function( event ) {
+var mx = event.clientX - btn.offsetLeft,
+    my = event.clientY - btn.offsetTop;
+
+var w = btn.offsetWidth,
+    h = btn.offsetHeight;
+
+var directions = [
+  { id: 'top', x: w/2, y: 0 },
+  { id: 'right', x: w, y: h/2 },
+  { id: 'bottom', x: w/2, y: h },
+  { id: 'left', x: 0, y: h/2 }
+];
+
+directions.sort( function( a, b ) {
+  return distance( mx, my, a.x, a.y ) - distance( mx, my, b.x, b.y );
+} );
+
+btn.setAttribute( 'data-direction', directions.shift().id );
+btn.classList.add( 'is-open' );
+
+} );
+
+btnYes.addEventListener( 'click', function( event ) { 
+btn.classList.remove( 'is-open' );
+} );
+
+btnNo.addEventListener( 'click', function( event ) {
+btn.classList.remove( 'is-open' );
+} );
+
+function distance( x1, y1, x2, y2 ) {
+var dx = x1-x2;
+var dy = y1-y2;
+return Math.sqrt( dx*dx + dy*dy );
+}
 </script>
 {% endblock content %}

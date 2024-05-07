@@ -4,17 +4,17 @@
   <head>
     <meta charset="utf-8">
     <style>
-      body{
-  background: #304352;  /* fallback for old browsers */
-    background: -webkit-linear-gradient(to right, #d7d2cc, #304352);  /* Chrome 10-25, Safari 5.1-6 */
-    background: linear-gradient(to right, #d7d2cc, #304352); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-}
-
 
       form{
          margin: 50px; 
         
       }
+
+      body{
+  background: #304352;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #d7d2cc, #304352);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #d7d2cc, #304352); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
 
 .container-form {
 background-color: #15172b;
@@ -90,12 +90,12 @@ pointer-events: none;
 position: absolute;
 transform-origin: 0 50%;
 transition: transform 200ms, color 200ms;
-top: 10px;
+top: 13px;
 }
 
 .input:focus ~ .placeholder,
 .input:not(:placeholder-shown) ~ .placeholder {
-transform: translateY(-28px) translateX(1px) scale(1);
+transform: translateY(-30px) translateX(1px) scale(1);
 }
 
 .input:not(:placeholder-shown) ~ .placeholder {
@@ -146,7 +146,7 @@ margin: 20px 0;
   <div style="text-align: center;" class="title">Teacher Signup Form</div>
   <div style="text-align: center;" class="subtitle">Let's create your account!</div>
   {% for message in messages %}
-  <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+  <div class="alert alert-{{ message.tags }} alert-dismissible fade show" style="z-index:1" role="alert">
     <strong>Message: </strong>{{ message }}
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
       <span aria-hidden="true">&times;</span>
@@ -214,10 +214,10 @@ margin: 20px 0;
       </div>
 
 
-    <button type="submit" class="btn btn-success button-signup"  style="border-radius:0px;">Sign Up</button>
+    <button type="submit" class="button-signup">Sign Up</button>
 
     <div class="old-user">
-      <a href="{% url 'teacherlogin' %}" >Already have an account? Login here</a>
+      <a href="{% url 'teacherlogin' %}" style="color: white;">Already have an account? Login here</a>
     </div>
   </form>
 </div>

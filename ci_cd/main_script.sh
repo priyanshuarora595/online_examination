@@ -1,4 +1,5 @@
 # cd ..
+pwd
 source ~/.virtualenvs/online-exam/bin/activate
 git stash -u
 git pull origin main

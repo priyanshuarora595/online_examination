@@ -71,7 +71,6 @@ def student_profile_view(request):
 
     # making the username field read only    
     user_form.fields['username'].widget.attrs['readonly'] = True
-    # user_form.fields['email'].widget.attrs['readonly'] = True
 
     page_context  = {
         "userForm": user_form,
@@ -118,11 +117,6 @@ def student_exam_view(request):
 @login_required(login_url='studentlogin')
 @user_passes_test(is_student)
 def take_exam_view(request,pk):
-    # print(request.session.keys())
-    # if 'filtered' in request.session:
-    #     del request.session['filtered']
-    #     del request.session['start_time']
-    #     del request.session['remaining_time']
     course=QuestionModel.Course.objects.get(id=pk)
     student = StudentModel.Student.objects.get(user=request.user.id)
     
@@ -225,24 +219,13 @@ def start_exam_view(request,pk):
 @login_required(login_url='studentlogin')
 @user_passes_test(is_student)
 def calculate_marks_view(request):
-    # print(request.COOKIES.get('course_id'))
     if request.COOKIES.get('course_id') is not None:
         course_id = request.COOKIES.get('course_id')
         course=QuestionModel.Course.objects.get(id=course_id)
         answers=json.loads(request.COOKIES.get("data"))
-        # print(answers)
-        # question_ids = request.session['question_id_list']
-        # question_ids = list(map(lambda x: int(x) -1,question_ids))
-        # answers = list(answers.values())
-        # print(question_ids)
-        # questions_ = QuestionModel.Question.get_from_list(course=course,id_list=question_ids)
-        # print(questions_)
         
         correct_answers=0
         scored_marks=0
-        # questions=QuestionModel.Question.objects.all().filter(course=course)
-        # attempted_questions = len(answers.values())
-        # total_marks=attempted_questions
         for k,v in answers.items():
             q = QuestionModel.Question.objects.all().filter(id=k)[0]
             selected_ans = v
@@ -258,20 +241,6 @@ def calculate_marks_view(request):
         result.exam=course
         result.student=student
         
-        # if attempted_questions>=75:
-        #     result.status="Pass"
-        #     if correct_answers>=75:
-        #         result.correct_answers = correct_answers
-        #         result.percentage = correct_answers
-        #     else:
-        #         # print("actual correct answers = ",correct_answers)
-        #         correct_answers = random.randint(75,80)
-        #         result.correct_answers = correct_answers
-        #         result.percentage = correct_answers
-        # elif attempted_questions<75:
-        #     result.status="Fail"
-        #     result.correct_answers = correct_answers
-        #     result.percentage = correct_answers
 
         correct_answers_percentage = (scored_marks/course.total_marks)*100
         if correct_answers_percentage>=course.passing_percentage:

@@ -3,7 +3,7 @@ from django.db.models import Sum
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.conf import settings
-from django.core.mail import send_mail, EmailMultiAlternatives
+from django.core.mail import EmailMultiAlternatives
 from teacher import models as TMODEL
 from student import models as SMODEL
 from organization import models as OMODEL
@@ -153,9 +153,6 @@ def admin_teacher_view(request):
     dict = {
         "total_teacher": TMODEL.Teacher.objects.all().filter(status=True).count(),
         "pending_teacher": TMODEL.Teacher.objects.all().filter(status=False).count(),
-        # "salary": TMODEL.Teacher.objects.all()
-        # .filter(status=True)
-        # .aggregate(Sum("salary"))["salary__sum"],
     }
     return render(request, "exam/admin_teacher.html", context=dict)
 
@@ -298,15 +295,6 @@ def reject_teacher_view(request, pk):
     user.delete()
     teacher.delete()
     return HttpResponseRedirect("/admin-view-pending-teacher")
-
-
-# @login_required(login_url="adminlogin")
-# @user_passes_test(is_admin)
-# def admin_view_teacher_salary_view(request):
-#     teachers = TMODEL.Teacher.objects.all().filter(status=True)
-#     return render(
-#         request, "exam/admin_view_teacher_salary.html", {"teachers": teachers}
-#     )
 
 
 @login_required(login_url="adminlogin")
@@ -526,13 +514,6 @@ def admin_upload_questions_file(request):
         sheet = pxl_doc["Sheet1"]
         image_loader = SheetImageLoader(sheet)
         last_row = sheet.max_row
-        # course_name = df_list[0][0]
-        # # return redirect(request.META.get("HTTP_REFERER"))
-        # # return None
-        # course_obj = Course.objects.filter(course_name=course_name).first()
-        # if not course_obj:
-        #     messages.error(request, "No course with the provided name")
-        #     return redirect(request.META.get("HTTP_REFERER"))
 
         for row_number in range(1, last_row + 1):
             course_name = df_list[row_number-1][0]

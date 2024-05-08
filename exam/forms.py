@@ -146,12 +146,6 @@ class OptionForm(forms.ModelForm):
         fields = ["option"]
 
 
-# class AnswerForm(forms.ModelForm):
-#     class Meta:
-#         model = EMODEL.Answer
-#         fields = ['answer']
-
-
 class UserUpdateForm(forms.ModelForm):
     class Meta:
         model = User

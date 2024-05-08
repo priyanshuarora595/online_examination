@@ -11,7 +11,6 @@
     textarea {
       width: 100%;
       padding: 12px 20px;
-      margin: 8px 0;
       display: inline-block;
       border: 1px solid #ccc;
       border-radius: 4px;
@@ -32,6 +31,10 @@
     input[type="submit"]:hover {
       background-color: #45a049;
     }
+
+    .space{
+      margin-top: 30px;
+    }
   </style>
 </head>
 
@@ -48,33 +51,33 @@
     </label>
     {% render_field userForm.username|attr:"readonly:True" class="form-control" placeholder="Username" %}
     
-    <label for="first_name">
+    <label for="first_name" class="space">
       First Name
     </label>
     {% render_field userForm.first_name class="form-control" placeholder="First Name" %}
 
-    <label for="last_name">
+    <label for="last_name" class="space">
       Last Name
     </label>
     {% render_field userForm.last_name class="form-control" placeholder="Last Name" %}
 
-    <label for="mobile">
+    <label for="mobile" class="space">
       Contact
     </label>
     {% render_field studentForm.mobile class="form-control" placeholder="Mobile" type="tel" pattern="[0-9]{10}" %}
 
-    <label for="address">
+    <label for="address" class="space">
       Address
     </label>
     {% render_field studentForm.address class="form-control" placeholder="Address" %}
 
-    <label for="email">
+    <label for="email" class="space">
       Email
     </label>
     {% render_field userForm.email class="form-control" placeholder="Email" %}
     
     {% comment %} 
-      <label for="password">
+      <label for="password" class="space">
         Password
       </label>
       {% render_field userForm.password class="form-control" placeholder="Password" %} 

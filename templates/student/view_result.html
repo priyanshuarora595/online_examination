@@ -17,29 +17,30 @@
       text-decoration: none;
     }
 
-    h6 {
+    .heading {
       text-align: center;
     }
-
-    .row {
-      margin: 100px;
+    
+    .table-head{
+      background-color: #00c5bb;
     }
+
   </style>
 </head>
 <br>
 <br>
-<div class="container">
+<div class="container" style="min-height: 70vh;">
   <div class="panel panel-primary">
     <div class="panel-heading">
-      <h6 class="panel-title">View Marks</h6>
+      <h4 class="panel-title">View Marks</h4>
     </div>
-    <table class="table table-hover table-bordered" id="dev-table">
+    <table class="table table-hover table-bordered table-head" id="dev-table">
       <thead>
         <tr>
 
-          <th>Exam Name</th>
+          <th class="heading">Exam Name</th>
           
-          <th>Action</th>
+          <th class="heading">Action</th>
         </tr>
       </thead>
       {% for t in courses %}
@@ -47,12 +48,10 @@
 
         <td> {{t.course_name}}</td>
         
-        <td><a class="btn btn-success btn-sm" style="border-radius: 0%;" href="{% url 'check-marks' t.id  %}"><span class="glyphicon glyphicon-eye-open"></span> View Marks</a></td>
+        <td class="heading"><a class="btn btn-success btn-sm" style="border-radius: 0%;" href="{% url 'check-marks' t.id  %}"><span class="glyphicon glyphicon-eye-open"></span> View Marks</a></td>
       </tr>
       {% endfor %}
     </table>
   </div>
 </div>
-
-<br><br><br><br><br><br>
 {% endblock content %}

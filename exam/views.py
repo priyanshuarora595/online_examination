@@ -91,6 +91,10 @@ def delete_account(request):
     """
     username = request.user.username
     user_obj = User.objects.filter(Q(username=username)).first()
+    
+    if is_admin(request.user):
+        messages.error(request, "Can not delete Admin account")
+        return redirect(request.META.get("HTTP_REFERER"))
 
     if is_organization(request.user):
         org = OMODEL.Organization.objects.filter(user_id=request.user.id).first()

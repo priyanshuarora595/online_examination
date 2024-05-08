@@ -1,6 +1,5 @@
 from django.shortcuts import render, redirect
 from . import forms
-from django.db.models import Sum
 from django.contrib.auth.models import Group
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -11,8 +10,6 @@ from teacher import models as TeacherModel
 from exam import forms as ExamForms
 from teacher import forms as TeacherForms
 from django.contrib import messages
-import hashlib
-from datetime import datetime
 
 import uuid
 
@@ -76,15 +73,11 @@ def teacher_profile_view(request):
 
     # making the username field read only
     user_form.fields["username"].widget.attrs["readonly"] = True
-    # user_form.fields["email"].widget.attrs["readonly"] = True
-
-    # teacherForm.fields["salary"].widget.attrs["readonly"] = True
     mydict = {"userForm": user_form, "teacherForm": teacherForm}
 
     if request.method == "POST":
         request.POST._mutable = True
         request.POST["organizationID"] = teacher.organization_id
-        # request.POST["salary"] = teacher.salary
         request.POST._mutable = False
         user_form = ExamForms.UserUpdateForm(request.POST, instance=user)
         teacherForm = TeacherForms.TeacherForm(request.POST, instance=teacher)
@@ -269,8 +262,7 @@ def teacher_upload_questions_file(request):
         image_loader = SheetImageLoader(sheet)
         last_row = sheet.max_row
         course_name = df_list[0][0]
-        # return redirect(request.META.get("HTTP_REFERER"))
-        # return None
+
         course_obj = Course.objects.filter(course_name=course_name).first()
         if not course_obj:
             messages.error(request, "No course with the provided name")
@@ -330,13 +322,6 @@ def teacher_view_question_view(request, pk):
     return render(
         request, "teacher/teacher_view_question.html", {"questions": questions}
     )
-
-
-# @login_required(login_url="teacherlogin")
-# @user_passes_test(is_teacher)
-# def see_question_view(request, pk):
-#     questions = ExamModel.Question.objects.all().filter(course_id=pk)
-#     return render(request, "teacher/see_question.html", {"questions": questions})
 
 
 @login_required(login_url="teacherlogin")
@@ -438,12 +423,8 @@ def teacher_view_results_courses(request):
 @user_passes_test(is_teacher)
 def teacher_view_marks(request,pk):
     organization = TeacherModel.Teacher.objects.get(user=request.user.id).organization
-    # courses = ExamModel.Course.objects.filter(organization=organization,created_by=request.user)
-    # students = StudentModel.Student.objects.filter(organization=organization,)
-    results = ExamModel.Result.objects.filter(exam__id=pk)
+    results = ExamModel.Result.objects.filter(exam__id=pk,exam__organization=organization)
     response = render(
         request, "teacher/teacher_check_marks.html", {"results": results}
     )
-    print(results)
-    # response.set_cookie("student_id", str(pk))
     return response

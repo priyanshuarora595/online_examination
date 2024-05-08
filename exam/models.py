@@ -50,7 +50,6 @@ class Question(models.Model):
         for each in selection:
             selected_objects.append(cls.objects.all().filter(course=course)[each])
             selected_ids.append(selected_objects[-1].id)
-        # print(selected_ids)
         return selected_objects, selection, selected_ids
 
     @classmethod
@@ -59,7 +58,6 @@ class Question(models.Model):
         for each in id_list:
             # selected_objects.append(cls.objects.all().filter(course=course).filter(id=each))
             selected_objects.append(cls.objects.all().filter(course=course)[each])
-        # print(selected_objects)
         return selected_objects
     
     def delete(self,using=None, keep_parents=False):

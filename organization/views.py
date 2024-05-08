@@ -12,7 +12,6 @@ from student import forms as SFORM
 from organization import forms as OFORM
 from exam import forms as EFORM
 from django.contrib.auth.models import User
-from django.db.models import Sum
 from django.contrib import messages
 
 
@@ -149,10 +148,7 @@ def organization_teacher_view(request):
         .count(),
         "pending_teacher": TMODEL.Teacher.objects.all()
         .filter(organization_id=organization_id, status=False)
-        .count(),
-        # "salary": TMODEL.Teacher.objects.all()
-        # .filter(organization_id=organization_id, status=True)
-        # .aggregate(Sum("salary"))["salary__sum"],
+        .count()
     }
     return render(request, "organization/organization_teacher.html", context=response)
 
@@ -238,19 +234,6 @@ def delete_teacher_view(request, pk):
     else:
         return render(request, "exam/unauthorized.html")
 
-
-# @login_required(login_url="organizationlogin")
-# @user_passes_test(is_organization)
-# def organization_view_teacher_salary_view(request):
-#     organization_id = OMODEL.Organization.objects.get(user=request.user).id
-#     teachers = TMODEL.Teacher.objects.all().filter(
-#         status=True, organization_id=organization_id
-#     )
-#     return render(
-#         request,
-#         "organization/organization_view_teacher_salary.html",
-#         {"teachers": teachers},
-#     )
 
 
 @login_required(login_url="organizationlogin")
@@ -485,8 +468,6 @@ def organization_upload_questions_file(request):
         image_loader = SheetImageLoader(sheet)
         last_row = sheet.max_row
         course_name = df_list[0][0]
-        # return redirect(request.META.get("HTTP_REFERER"))
-        # return None
         course_obj = Course.objects.filter(course_name=course_name).first()
         if not course_obj:
             messages.error(request, "No course with the provided name")

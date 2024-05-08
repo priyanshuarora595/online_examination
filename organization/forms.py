@@ -9,22 +9,6 @@ class OrganizationUserForm(forms.ModelForm):
         fields = ["first_name", "last_name", "username", "password", "email"]
         widgets = {"password": forms.PasswordInput()}
 
-    # def __init__(self, *args, **kwargs):
-    #     super(OrganizationUserForm, self).__init__(*args, **kwargs)
-    #     self.fields["password"].required = False
-
-    # def save(self, commit=True):
-    #     user = super(OrganizationUserForm, self).save(commit=False)
-    #     print(f"{user.password = }")
-    #     password = self.cleaned_data["password"]
-    #     print(f"{password = }")
-    #     if password!="":
-    #         print("updating password")
-    #         user.set_password(password)
-    #         if commit:
-    #             user.save()
-    #     return user
-
 
 
 class OrganizationForm(forms.ModelForm):

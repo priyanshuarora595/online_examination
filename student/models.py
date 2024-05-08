@@ -6,7 +6,6 @@ from django.core.validators import MinLengthValidator, MaxLengthValidator, Regex
 
 class Student(models.Model):
     user=models.OneToOneField(User,on_delete=models.CASCADE)
-    # profile_pic= models.ImageField(upload_to='profile_pic/Student/',null=True,blank=True)
     address = models.CharField(max_length=40)
     mobile = models.CharField(
         max_length = 12,

@@ -3,40 +3,57 @@
 {%load static%}
 
 <head>
-  <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-  <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
-  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  <link href="http://netdna.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
   <style media="screen">
     a:link {
       text-decoration: none;
     }
 
-    h6 {
+    .heading {
       text-align: center;
     }
     
+    .font{
+      font-size: 15px;
+      padding: 4px !important;
+      vertical-align: middle !important;
+    }
+    .font-heading{
+      font-size: 15px;
+      padding: 15px !important;
+      text-align: center;
+    }
+    .table-head{
+      background-color: #00c5bb;
+    }
   </style>
 </head>
-<br><br>
-<div class="container">
+<br>
+<div class="container" style="min-height: 65vh;">
   <div class="panel panel-primary">
     <div class="panel-heading">
-      <h6 class="panel-title">View Marks</h6>
+      <h4 class="panel-title heading">View Marks</h4>
     </div>
-    <table class="table table-hover table-bordered" id="dev-table">
-      <thead>
+    <table class="table table-hover table-bordered" id="dev-table" style="margin-top: 50px;">
+      <thead class="table-head">
         <tr>
 
-          <th>Student</th>
-          <th>Course</th>
-          <th>Total Marks</th>
-          <th>correct answers</th>
-          <th>Number of Attempt</th>
-          <th>Exam Date</th>
-          <th>Percentage</th>
-          <th>Status</th>
-          <th>Delete</th>
+          <th class="font-heading">Student</th>
+          <th class="font-heading">Course</th>
+          <th class="font-heading">Total Marks</th>
+          <th class="font-heading">Correct Answers</th>
+          <th class="font-heading">Number of Attempt</th>
+          <th class="font-heading">Exam Date</th>
+          <th class="font-heading">Percentage</th>
+          <th class="font-heading">Status</th>
+          <th class="font-heading">Delete</th>
         </tr>
       </thead>
       
@@ -45,27 +62,25 @@
       
       <tr>
 
-        <td> {{t.student.get_name}}</td>
-        <td> {{t.exam}}</td>
-        <td> {{t.marks}}</td>
-        <td> {{t.correct_answers}}</td>
-        <td>Attempt {{ forloop.counter }}</td>
-        <td class = "exam_date"> {{t.date|safe}}</td>
-        <td> {{t.percentage}}%</td>
+        <td class="font"> {{t.student.get_name}}</td>
+        <td class="font"> {{t.exam}}</td>
+        <td class="font heading"> {{t.marks}}</td>
+        <td class="font heading"> {{t.correct_answers}}</td>
+        <td class="font heading">Attempt {{ forloop.counter }}</td>
+        <td class = "exam_date font"> {{t.date|safe}}</td>
+        <td class="font heading"> {{t.percentage}}%</td>
         {% comment %} <td> {{t.status}}</td> {% endcomment %}
         {% if t.status == "Pass" %}
-        <td style="background-color:green"> Pass</td>
+        <td  class="font heading" style="background-color:green"> Pass</td>
         {% else %}
-        <td style="background-color:Red"> Fail</td>
+        <td  class="font heading" style="background-color:#F9584C"> Fail</td>
         {% endif %} 
-        <td><a class="btn btn-danger btn-xs" style="border-radius: 0%;" href="{% url 'delete-result' t.id  %}"><span class="glyphicon glyphicon-trash"></span></a></td>
+        <td  class="font heading"><a style="border-radius: 0%;" href="{% url 'delete-result' t.id  %}"><i class='far fa-trash-alt' style="font-size: 14px; padding: 0px; color: rgb(0, 0, 0); margin-left: 5px;"></i></a></td>
       </tr>
       {% endfor %}
     </table>
   </div>
 </div>
-
-<br><br><br><br><br><br>
 <script>
   // Function to convert exam_time to local time string
   function convertToLocalTime() {

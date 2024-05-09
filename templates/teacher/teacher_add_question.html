@@ -2,45 +2,76 @@
 {% load widget_tweaks %}
 {% block content %}
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-  <style>
+  
        <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script> -->
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  <link href="http://netdna.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+  <style>
   a:link {
         text-decoration: none;
       }
-    
+    .head-style{
+      font-size: 18px;
+      margin-top: 15px;
+    }
+    .head-style2{
+      font-size: 18px;
+      margin-top: 40px;
+    }
+    .head-style3{
+      font-size: 15px;
+      margin-top: 5px;
+    }
+    .dropdown-style{
+      width: 300px;
+      margin-left: 20px;
+    }
+    .delete-btn{
+      background-color: rgb(246, 75, 75);
+      color: white;
+      margin-top: 10px;
+      width: 70px;
+      font-size: medium;
+      border-radius: 3px;
+    }
   </style>
 </head>
 <h2 style="text-align:center;">Add Question</h2>
 <form method="POST" id="add_question_form" autocomplete="off" style="margin:100px;margin-top: 0px;" enctype="multipart/form-data">
     {%csrf_token%}
-    <div class="form-group">
-        <label for="question">Course</label>
+    <div class="form-group" style="margin-top: 30px;">
+        <label for="question" class="head-style">Course</label>
       {% render_field questionForm.courseID|attr:'required:true' class="form-control"  %}
-        <br>
 
-      <label for="question">Question</label>
+      <label for="question" class="head-style">Question</label>
       {% render_field questionForm.question|attr:'required:true' class="form-control" placeholder="Example: Which one of the following is not a phase of Prototyping Model?" %}
-        <br>
-      <label for="question_image">Image</label>
-      {% render_field questionForm.question_image class="form-control" %}
-        <br>
-      <label for="question_number">Marks</label>
-      {% render_field questionForm.marks|attr:'required:true' class="form-control" placeholder="Example: 5" %}
-        <br>
 
-      <div id="options">
-        <h4> Options</h4>
+      <label for="question_image" class="head-style">Image</label>
+      {% render_field questionForm.question_image class="form-control" %}
+      
+      <label for="question_number" class="head-style">Marks</label>
+      {% render_field questionForm.marks|attr:'required:true' class="form-control" placeholder="Example: 5" %}
+      
+      <div id="options" class="head-style">
+        <span class="head-style"> Options</span>
       </div>
         
-      <label for="answer" onload="createDropdown()">Correct Answer</label>
-      <select id='dropdown' name="answer" required>
+      <label for="answer" class="head-style2" onload="createDropdown()">Correct Answer</label>
+      <select id='dropdown' class="dropdown-style" name="answer" required>
         <option>Select an option</option>
       </select>
 
@@ -48,19 +79,22 @@
       {% comment %} {% render_field questionForm.answer|attr:'required:true' class="form-control" %} {% endcomment %}
     </div>
     
-    <button type ="button" class="btn btn-primary" style="border-radius:0px;"onclick="addCodeToForm()">Add Option</button>
-    <button type="submit" class="btn btn-success" style="border-radius:0px;">Submit Question</button>
+    <button type ="button" class="btn btn-primary" style="border-radius:0px; margin-top: 20px; width: 150px;" onclick="addCodeToForm()">Add Option</button>
+    <button type="submit" class="btn btn-success" style="border-radius:0px; margin-top: 20px; width: 150px;">Submit Question</button>
   </form>
 
   
 
   <script>
+    var optionNumber = 0;
     function addCodeToForm() {
         // Append the new input element to the form
        // form.innerHTML += elem;
+      optionNumber++;
       const div = document.createElement('div');
       const label = document.createElement('label');
-      label.innerHTML = "OPTION";
+      label.className="head-style3";
+      label.innerHTML = "Option "+optionNumber;
       div.appendChild(label);
 
       var inputElem = document.createElement('input');
@@ -78,7 +112,8 @@
       div.appendChild(inputElem);
 
       var btn = document.createElement('button');
-      btn.innerHTML = "DELETE";
+      btn.className="delete-btn"
+      btn.innerHTML = "Delete";
       btn.addEventListener('click',function(event){deleteCodeFromForm(this)})
 
       div.appendChild(btn)

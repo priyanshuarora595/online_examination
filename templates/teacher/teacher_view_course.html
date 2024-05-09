@@ -3,24 +3,32 @@
 {%load static%}
 
 <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  <link href="http://netdna.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+
+
+
+<!-- 
   <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
   <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
-  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script> -->
 
   <style media="screen">
     a:link {
       text-decoration: none;
     }
 
-    h6 {
+    .heading {
       text-align: center;
     }
-
-    .row {
-      margin: 100px;
-    }
     .access-width {
-      width: 275px;
+      width: 280px;
       display: inline-block;
     }
     .exam-link-td {
@@ -37,49 +45,62 @@
       filter: blur(0);
       color:red;
     }
+    .font{
+      font-size: 14px;
+      padding: 4px !important;
+      vertical-align: middle !important;
+    }
+    .font-heading{
+      font-size: 15px;
+      padding: 6px !important;
+      text-align: center;
+    }
+    .table-head{
+      background-color: #00c5bb;
+    }
   </style>
 </head>
-<br><br>
-<div class="container">
+<br>
+<div class="container" style="min-height: 65vh;">
   <div class="panel panel-primary">
     <div class="panel-heading">
-      <h6 class="panel-title">Available Courses</h6>
+      <h3 class="panel-title heading">Available Courses</h3>
     </div>
-    <table class="table table-hover table-bordered" id="dev-table">
-      <thead>
+    <table class="table table-hover table-bordered" id="dev-table" style="margin-top: 50px;">
+      <thead class="table-head">
         <tr>
 
-          <th>Course</th>
-          <th>Total Question</th>
-          <th>Total Marks</th>
-          <th>Exam Date</th>
-          <th>Access Code</th>
-          <th>Exam link</th>
-          <th>Action</th>
+          <th class="font-heading">Course</th>
+          <th class="font-heading">Total Question</th>
+          <th class="font-heading">Total Marks</th>
+          <th class="font-heading">Exam Date</th>
+          <th class="font-heading">Access Code</th>
+          <th class="font-heading">Exam link</th>
+          <th class="font-heading">Action</th>
         </tr>
       </thead>
       {% for t in courses %}
       <tr>
 
-        <td> {{t.course_name}}</td>
-        <td>{{t.question_number}}</td>
-        <td>{{t.total_marks}}</td>
-        <td class="exam_date"  >{{t.exam_date|safe}}</td>
+        <td class="font"> {{t.course_name}}</td>
+        <td  class="font heading">{{t.question_number}}</td>
+        <td  class="font heading">{{t.total_marks}}</td>
+        <td class="exam_date font">{{t.exam_date|safe}}</td>
         
         {% if t.created_by == user  %}
-        <td><span class="access-width" id="access_code_{{ t.id }}">{{ t.access_code }}</span>
+        <td  class="font"><span class="access-width" id="access_code_{{ t.id }}">{{ t.access_code }}</span>
           <button class="btn btn-xs copy-button" data-clipboard-target="#access_code_{{ t.id }}">
             <img src="{% static "image/copyToClipboard.png" %}" alt="Copy" style="width: 16px; height: 16px;">
         </button></td>
         {% else %}
-          <td>
+          <td  class="font">
             <span class="access-code-absent">
               You do not have proper access !
             </span>
           </td>
         {% endif  %}
         
-        <td class="exam-link-td"> 
+        <td class="exam-link-td font"> 
         
           <button class="btn btn-xs copy-button"  onclick="navigator.clipboard.writeText(`${window.location.host}{%  url 'take-exam' pk=t.id %}`)">
             {% url 'take-exam' pk=t.id as the_url %}
@@ -90,10 +111,10 @@
         </button>
         </td>
 
-        <td>
+        <td class="font">
           {% if t.created_by == user  %}
-          <a class="btn btn-primary btn-xs" style="border-radius: 0%;" href="{% url 'teacher-update-course' t.id  %}"><span class="glyphicon glyphicon-edit"></span></a>
-          <a class="btn btn-danger btn-xs" style="border-radius: 0%;" href="{% url 'teacher-delete-course' t.id  %}"><span class="glyphicon glyphicon-trash"></span></a>
+          <a style="border-radius: 0%;" href="{% url 'teacher-update-course' t.id  %}"><i class='far fa-edit' style="font-size: 14px; padding: 0px; margin-left: 4px;"></i></a>
+          <a style="border-radius: 0%;" href="{% url 'teacher-delete-course' t.id  %}"><i class='far fa-trash-alt' style="font-size: 14px; padding: 0px; color: red; margin-left: 5px;"></i></a>
           {% endif  %}
         </td>
       </tr>
@@ -101,21 +122,19 @@
     </table>
   </div>
 </div>
-
-<br><br><br><br><br><br>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
 <script>
   // Initialize Clipboard.js
   var clipboard = new ClipboardJS('.copy-button');
 
   // Display success message on successful copy
-  clipboard.on('success', function (e) {
-    alert("Access code copied to clipboard!");
-  });
+  // clipboard.on('success', function (e) {
+  //   alert("Access code copied to clipboard!");
+  // });
 
   // Display error message on error
   clipboard.on('error', function (e) {
-    alert("Failed to copy access code. Please try again manually.");
+    alert("Failed to copy access code. Please try again.");
   });
 </script>
 

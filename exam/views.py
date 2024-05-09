@@ -225,7 +225,7 @@ def delete_teacher_view(request, pk):
     user = User.objects.get(id=teacher.user_id)
     user.delete()
     teacher.delete()
-    return HttpResponseRedirect("/admin-view-teacher")
+    return HttpResponseRedirect("admin-view-teacher")
 
 
 @login_required(login_url="adminlogin")
@@ -255,7 +255,7 @@ def delete_organization_view(request, pk):
     user = User.objects.get(id=organization.user_id)
     user.delete()
     organization.delete()
-    return HttpResponseRedirect("/admin-view-organization")
+    return HttpResponseRedirect("admin-view-organization")
 
 
 @login_required(login_url="adminlogin")
@@ -287,7 +287,7 @@ def approve_teacher_view(request, pk):
         teacher.save()
     else:
         print("Not a valid request type")
-        return HttpResponseRedirect("/admin-view-pending-teacher")
+        return HttpResponseRedirect("admin-view-pending-teacher")
     return redirect('approve-teacher', pk = pk)
 
 
@@ -298,7 +298,7 @@ def reject_teacher_view(request, pk):
     user = User.objects.get(id=teacher.user_id)
     user.delete()
     teacher.delete()
-    return HttpResponseRedirect("/admin-view-pending-teacher")
+    return HttpResponseRedirect("admin-view-pending-teacher")
 
 
 @login_required(login_url="adminlogin")
@@ -331,7 +331,7 @@ def reject_organization_view(request, pk):
     user = User.objects.get(id=teacher.user_id)
     user.delete()
     teacher.delete()
-    return HttpResponseRedirect("/admin-view-pending-organization")
+    return HttpResponseRedirect("admin-view-pending-organization")
 
 
 @login_required(login_url="adminlogin")
@@ -380,7 +380,7 @@ def delete_student_view(request, pk):
     user = User.objects.get(id=student.user_id)
     user.delete()
     student.delete()
-    return HttpResponseRedirect("/admin-view-student")
+    return HttpResponseRedirect("admin-view-student")
 
 
 @login_required(login_url="adminlogin")
@@ -409,7 +409,7 @@ def admin_add_course_view(request):
             print(f"{courseForm.errors = }")
             messages.error(request, courseForm.errors)
             return render(request, "exam/admin_add_course.html", {"courseForm": courseForm})
-        return HttpResponseRedirect("/admin-view-course")
+        return HttpResponseRedirect("admin-view-course")
     return render(request, "exam/admin_add_course.html", {"courseForm": courseForm})
 
 
@@ -425,7 +425,7 @@ def admin_view_course_view(request):
 def delete_course_view(request, pk):
     course = EMODEL.Course.objects.get(id=pk)
     course.delete()
-    return HttpResponseRedirect("/admin-view-course")
+    return HttpResponseRedirect("admin-view-course")
 
 
 @login_required(login_url="adminlogin")

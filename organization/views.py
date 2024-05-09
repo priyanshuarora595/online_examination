@@ -283,7 +283,7 @@ def delete_student_view(request, pk):
     user = User.objects.get(id=student.user_id)
     user.delete()
     student.delete()
-    return HttpResponseRedirect("/organization-view-student")
+    return redirect("organization-view-student")
 
 
 @login_required(login_url="organizationlogin")

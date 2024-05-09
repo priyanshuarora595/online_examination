@@ -3,21 +3,21 @@
 {%load static%}
 
 <head>
-  <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-  <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
-  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  <link href="http://netdna.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
   <style media="screen">
     a:link {
       text-decoration: none;
     }
 
-    h6 {
+    .heading {
       text-align: center;
-    }
-
-    .row {
-      margin: 100px;
     }
    
     .empty-result{
@@ -25,36 +25,40 @@
       text-align: center;
       font-size: medium;
     }
+    
+    .table-head{
+      background-color: #00c5bb;
+    }
   </style>
 </head>
-<br><br>
-<div class="container">
+<br>
+<div class="container" style="min-height: 60vh;">
   <div class="panel panel-primary">
     <div class="panel-heading">
-      <h6 class="panel-title">Marks for Registered Students</h6>
+      <h4 class="panel-title heading">Marks for Registered Students</h4>
     </div>
     
     {% if students|length >= 1 %}
-    <table class="table table-hover table-bordered" id="dev-table">
-      <thead>
+    <table class="table table-hover table-bordered" id="dev-table" style="margin-top: 50px;">
+      <thead class="table-head">
         <tr>
 
-          <th>Name</th>
+          <th class="heading">Name</th>
           <!-- <th>Photo</th> -->
           
          
-          <th>Action</th>
+          <th class="heading">Action</th>
           
         </tr>
       </thead>
       {% for t in students %}
       <tr>
 
-        <td> {{t.get_name}}</td>
+        <td class="heading"> {{t.get_name}}</td>
         <!-- <td> <img src="{% static t.profile_pic.url %}" alt="Profile Pic" height="40px" width="40px" /></td> -->
         
         
-        <td><a class="btn btn-primary btn-sm" style="border-radius: 0%;" href="{% url 'organization-view-marks' t.user_id  %}"><span class="glyphicon glyphicon-eye-open"></span> View Marks</a></td>
+        <td class="heading"><a class="btn btn-primary btn-sm" style="border-radius: 0%;" href="{% url 'organization-view-marks' t.user_id  %}"><span class="glyphicon glyphicon-eye-open"></span> View Marks</a></td>
         
       </tr>
       {% endfor %}
@@ -67,6 +71,4 @@
     {% endif %}
   </div>
 </div>
-
-<br><br><br><br><br><br>
 {% endblock content %}

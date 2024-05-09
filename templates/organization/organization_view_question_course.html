@@ -3,55 +3,60 @@
 {%load static%}
 
 <head>
-  <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-  <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
-  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  <link href="http://netdna.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
 
   <style media="screen">
     a:link {
       text-decoration: none;
     }
 
-    h6 {
+    .heading {
       text-align: center;
-    }
-
-    .row {
-      margin: 100px;
     }
 
     .empty-result{
       padding: 2rem;
       text-align: center;
       font-size: medium;
-    }
+    }    
+
+.table-head{
+  background-color: #00c5bb;
+}
   </style>
 </head>
-<br><br>
-<div class="container">
+<br>
+<div class="container" style="min-height: 60vh;">
   <div class="panel panel-primary">
     <div class="panel-heading">
-      <h6 class="panel-title">Available Question Sets</h6>
+      <h4 class="panel-title heading">Available Question Sets</h4>
     </div>
 
     {% if courses|length >= 1 %}
-    <table class="table table-hover table-bordered" id="dev-table">
-      <thead>
+    <table class="table table-hover table-bordered" id="dev-table" style="margin-top: 50px;">
+      <thead class="table-head">
         <tr>
 
-          <th>Course Name</th>
-          <th>Total Question</th>
-          <th>Total Marks</th>
-          <th>View</th>
+          <th class="heading">Course Name</th>
+          <th class="heading">Total Question</th>
+          <th class="heading">Total Marks</th>
+          <th class="heading">View</th>
         </tr>
       </thead>
       {% for c in courses %}
       <tr>
 
         <td> {{c.course_name}}</td>
-        <td>{{c.question_number}}</td>
-        <td>{{c.total_marks}}</td>
-        <td><a class="btn btn-primary btn-xs" style="border-radius: 0%;" href="{% url 'organization-view-question' c.id  %}"><span class="glyphicon glyphicon-eye-open"></span></a></td>
+        <td class="heading">{{c.question_number}}</td>
+        <td class="heading">{{c.total_marks}}</td>
+        <td class="heading"><a class="btn btn-primary btn-xs" style="border-radius: 0%;" href="{% url 'organization-view-question' c.id  %}"><span class="glyphicon glyphicon-eye-open"></span>View Questions</a></td>
         
       </tr>
       {% endfor %}
@@ -69,6 +74,4 @@
     {% endif %}
   </div>
 </div>
-
-<br><br><br><br><br><br>
 {% endblock content %}

@@ -86,15 +86,13 @@
   
 
   <script>
-    var optionNumber = 0;
     function addCodeToForm() {
         // Append the new input element to the form
        // form.innerHTML += elem;
-      optionNumber++;
       const div = document.createElement('div');
       const label = document.createElement('label');
       label.className="head-style3";
-      label.innerHTML = "Option "+optionNumber;
+      label.innerHTML = "Option";
       div.appendChild(label);
 
       var inputElem = document.createElement('input');

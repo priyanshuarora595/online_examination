@@ -37,7 +37,7 @@
           <!-- <th>Photo</th> -->
           <th>Contact</th>
           <th>Address</th>
-          <th>Last Login</th>
+          <!-- <th>Last Login</th> -->
           <th>Action</th>
         </tr>
       </thead>
@@ -50,7 +50,7 @@
         <!-- <td> <img src="{% static t.profile_pic.url %}" alt="Profile Pic" height="40px" width="40px" /></td> -->
         <td>{{t.mobile}}</td>
         <td>{{t.address}}</td>
-        <td>{{t.user.last_login}}</td>
+        <!-- <td>{{t.user.last_login}}</td> -->
         
         <td><a class="btn btn-success btn-xs" style="border-radius: 0%;" href="{% url 'update-teacher' t.id  %}"><span class="glyphicon glyphicon-edit"></span></a>
         <a class="btn btn-danger btn-xs" style="border-radius: 0%;" href="{% url 'delete-teacher' t.id  %}"><span class="glyphicon glyphicon-trash"></span></a></td>

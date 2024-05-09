@@ -9,4 +9,4 @@ fi
 git stash -u
 git pull origin main
 git stash drop
-pip install -r requirements.txt
+# pip install -r requirements.txt

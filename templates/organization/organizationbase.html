@@ -23,6 +23,7 @@
     
 
   <style media="screen">
+    @import url(https://fonts.googleapis.com/css?family=Roboto:400,700);
     a:link {
       text-decoration: none;
     }
@@ -41,35 +42,16 @@
       z-index: 1;
     }
 
-    .left_area h3 {
+    .left_area h4 {
       color: #fff;
       margin: 0px;
       text-transform: uppercase;
-      font-size: 22px;
-      font-weight: 900;
+      font-size: 25px;
+      font-weight: 600;
     }
 
     .left_area span {
       color: #19B3D3;
-    }
-
-    .logout_btn {
-      padding: 5px;
-      background:#ef5350;
-      text-decoration: none;
-      float: right;
-      margin-top: -30px;
-      margin-right: 40px;
-      border-radius: 2px;
-      font-size: 15px;
-      font-weight: 600;
-      color: #fff;
-      transition: 0.5s;
-
-    }
-
-    .logout_btn:hover {
-      background: #bb403e;
     }
 
     .sidebar {
@@ -78,7 +60,7 @@
       padding-top: 30px;
       position: fixed;
       left: 0;
-      width: 250px;
+      width: 270px;
       height: 100%;
       transition: 0.5s;
       transition-property: left;
@@ -94,7 +76,7 @@
     .sidebar h4 {
       color: #ccc;
       margin-top: 0;
-      
+      font-size: 30px;
     }
 
     .sidebar a {
@@ -163,11 +145,34 @@
     #check {
       display: none;
     }
+
+.gap{
+  margin-top: 50px;
+}
+
+.org-details-1{
+  color: white;
+  font-size: 16px;
+  font-weight: 500;
+  margin-top: 5px;
+}
+
+.navbar-d{
+  background-color: #22242A;
+  margin-right: 50px;
+  justify-items: center;
+  text-align: center;
+  justify-self: center;
+}
+
+.navabar-dropdown{
+  margin-right: 30px;
+}
     
   </style>
 
-
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
 
 
 </head>
@@ -177,14 +182,12 @@
   <input type="checkbox" id="check">
   <!--header area start-->
   <header>
-    <label for="check">
-      <i style="left: 200px;margin-top: 17px;"class="fas fa-bars" id="sidebar_btn"></i>
-    </label>
-    <div class="left_area">
-      <h3>Online Exam</h3>
+    <div class="row">
+    <div class="col-md-5 left_area">
+      <h4 style="color: white; padding-top: 12px;">Online Exam</h4>
     </div>
-    <div class="d-flex flex-row justify-content-end">
-      <div class="">
+    <div class="col-md-7 d-flex flex-row justify-content-end">
+      <!-- <div class="">
         <a href="/password-reset" class="logout_btn" style="border-radius:0px;">Change Password</a>
       </div>
       <div class="">
@@ -192,9 +195,28 @@
       </div>
       <div class="">
         <a href="/logout" class="logout_btn" style="border-radius:0px;">Logout</a>
-      </div>
+      </div> -->
 
     <!-- </div> -->
+    <nav class="navbar navbar-expand-lg navbar-light navbar-d">
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+              <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                      data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white;">
+                      Account
+                  </a>
+                  <div class="dropdown-menu navabar-dropdown" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="/password-reset">Change Password</a>
+                    <a class="dropdown-item" href="/delete-account">Delete Account</a>
+                      <a class="dropdown-item" href="/logout">Logout</a>
+                  </div>
+              </li>
+          </ul>
+      </div>
+  </nav> 
+</div>
+  </div>
   </header>
   <!--header area end-->
   {% for message in messages %}
@@ -207,6 +229,10 @@
   {% endfor %}
   <!--sidebar start-->
   <div class="sidebar">
+    <label for="check">
+      <i style="left: 200px;margin-top: 17px; margin-left: 20px;"class="fas fa-bars slide" id="sidebar_btn"></i>
+    </label>
+    <div>
     <center>
 
       <img src="{% static "image/teacher.png" %}" class="profile_image" alt="">
@@ -218,16 +244,17 @@
         {% endif %}
       {% endwith %}
     
-      <h6 style="color: rgb(255, 255, 255);">( Organization )</h6>
+      <div class="org-details-1"> Organization </div>
 
     </center>
-
+    <div class="gap"></div>
     <a href="/organization/organization-dashboard"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
     <a href="/organization/organization-teacher"><i class="fas fa-tachometer-alt"></i><span>Manage Teachers</span></a>
     <a href="/organization/organization-student"><i class="fas fa-tachometer-alt"></i><span>Manage Students</span></a>
     <a href="/organization/organization-view-course"><i class="fas fa-book"></i><span>Manage Courses</span></a>
     <a href="/organization/organization-question"><i class="fas fa-question-circle"></i><span>Manage Questions</span></a>
     <a href="/organization/organization-profile"><i class="fas fa-book"></i><span>Manage Profile</span></a>
+  </div>
   </div>
   <!--sidebar end-->
 

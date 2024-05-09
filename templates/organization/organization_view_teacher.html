@@ -3,21 +3,21 @@
 {%load static%}
 
 <head>
-  <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-  <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
-  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  <link href="http://netdna.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
   <style media="screen">
     a:link {
       text-decoration: none;
     }
 
-    h6 {
+    .heading {
       text-align: center;
-    }
-
-    .row {
-      margin: 100px;
     }
 
     .empty-result{
@@ -25,47 +25,52 @@
       text-align: center;
       font-size: medium;
     }
+    
+
+.table-head{
+  background-color: #00c5bb;
+}
   </style>
 </head>
-<br><br>
-<div class="container">
+<br>
+<div class="container" style="min-height: 60vh;">
   <div class="panel panel-primary">
     <div class="panel-heading">
-      <h6 class="panel-title">Teachers</h6>
+      <h4 class="panel-title heading">Teachers</h4>
     </div>
     {% if teachers|length >= 1 %}
-    <table class="table table-hover table-bordered" id="dev-table">
-      <thead>
+    <table class="table table-hover table-bordered" id="dev-table" style="margin-top: 50px;">
+      <thead class="table-head">
         <tr>
 
-          <th>Name</th>
-          <th>Organization</th>
+          <th class="heading">Name</th>
+          <th class="heading">Organization</th>
           <!-- <th>Photo</th> -->
-          <th>Contact</th>
-          <th>Address</th>
-          <th>Last Login</th>
-          <th>Action</th>
+          <th class="heading">Contact</th>
+          <th class="heading">Address</th>
+          <!-- <th class="heading">Last Login</th> -->
+          <th class="heading">Action</th>
         </tr>
       </thead>
       {% for t in teachers %}
       <tr>
 
         <td> {{t.get_name}}</td>
-        <td> {{t.organization}}</td>
+        <td class="heading"> {{t.organization}}</td>
         <!-- <td> <img src="{% static t.profile_pic.url %}" alt="Profile Pic" height="40px" width="40px" /></td> -->
         <td>{{t.mobile}}</td>
         <td>{{t.address}}</td>
         
-        <td>{{t.user.last_login}}</td>
+        <!-- <td>{{t.user.last_login}}</td> -->
         
-        <td><a class="btn btn-success btn-xs" style="border-radius: 0%;" href="{% url 'organization-update-teacher' t.id  %}"><span class="glyphicon glyphicon-edit"></span></a>
-        <a class="btn btn-danger btn-xs" style="border-radius: 0%;" href="{% url 'organization-delete-teacher' t.id  %}"><span class="glyphicon glyphicon-trash"></span></a></td>
+        <td class="heading"><a style="border-radius: 0%;" href="{% url 'organization-update-teacher' t.id  %}"><i class='far fa-edit' style="font-size: 14px; padding: 0px; margin-left: 4px;"></i></a>
+        <a style="border-radius: 0%;" href="{% url 'organization-delete-teacher' t.id  %}"><i class='far fa-trash-alt' style="font-size: 14px; padding: 0px; color: red; margin-left: 20px;"></i></a></td>
       </tr>
       {% endfor %}
     </table>
     {% else %}
     <div class="empty-result">
-      <span> You do not have any teachers added to your organization! </span>
+      <span style="font-size: 18px;"> You do not have any teachers added to your organization! </span>
       <br>
       <span> Share this
         <a href='{% url 'teachersignup' %}'> 
@@ -76,6 +81,4 @@
     {% endif %}
   </div>
 </div>
-
-<br><br><br><br><br><br>
 {% endblock content %}

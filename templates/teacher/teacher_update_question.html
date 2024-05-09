@@ -37,8 +37,8 @@
     .btn-color{
       background-color: rgb(246, 75, 75);
       color: white;
-      margin-top: 5px;
-      width: 130px;
+      margin-top: 10px;
+      width: 70px;
       font-size: medium;
       border-radius: 3px;
     }
@@ -100,7 +100,7 @@
       <label class="head-style3">{{option.option.label}} </label>
        {% render_field option.option|attr:'required:true' class="form-control" placeholder="Example: Quick Design" oninput="createDropdown()" %}
        
-       <button  onclick="deleteCodeFromForm(this)" class="btn-color">Delete Option</button>
+       <button  onclick="deleteCodeFromForm(this)" class="btn-color">Delete</button>
       
       </div>
       {% endfor %}
@@ -134,7 +134,7 @@
     // Create a new input element
     var elem = `<div ><label style="font-size: 15px; margin-top: 5px;">Option</label>
       {% render_field newOption.option|attr:'required:true' class="form-control" placeholder="Example: Coding" oninput="createDropdown()"  %}
-      <button style="background-color: rgb(246, 75, 75); color: white; margin-top: 5px; width: 130px; font-size: medium; border-radius: 3px;" onclick="deleteCodeFromForm(this)">Delete Option</button>
+      <button style="background-color: rgb(246, 75, 75); color: white; margin-top: 10px; width: 70px; font-size: medium; border-radius: 3px;" onclick="deleteCodeFromForm(this)">Delete</button>
       <br/><br/>
     </div>`
 

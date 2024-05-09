@@ -124,7 +124,7 @@ def delete_account_view(request):
     elif is_teacher(request.user):
         context['base_template'] = 'teacher/teacherbase.html'
     elif is_organization(request.user):
-        context['base_template'] = 'organization/organization.html'
+        context['base_template'] = 'organization/organizationbase.html'
     elif is_admin(request.user):
         context['base_template'] = 'exam/adminbase.html'
 

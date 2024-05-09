@@ -22,11 +22,11 @@
     }
 
     .table-head{
-      background-color: rgb(36, 218, 212);
+      background-color: #00c5bb;
     }
   </style>
 </head>
-<div class="container" style="min-height: 55.5vh;">
+<div class="container" style="min-height: 60vh;">
   <div class="panel panel-primary">
     <div class="panel-heading">
       <h4 class="panel-title heading">Exams</h4>
@@ -46,7 +46,7 @@
         <td> {{t.course_name}}</td>
         
         
-        <td class="heading"><a class="btn btn-danger btn-sm" style="border-radius: 0%;" href="{% url 'teacher-check-marks' t.id  %}"><span class="glyphicon glyphicon-eye-open"></span> View Marks</a></td>
+        <td class="heading"><a class="btn btn-sm" style="border-radius: 0%; background-color: #c34d59; color: white;" href="{% url 'teacher-check-marks' t.id  %}"><span class="glyphicon glyphicon-eye-open"></span> View Marks</a></td>
       </tr>
       {% endfor %}
     </table>

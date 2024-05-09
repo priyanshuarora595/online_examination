@@ -16,12 +16,12 @@
       margin: 0px;
     }
   </style>
-  <body>
+  <body style="background-color: #e9ecef;">
     {% include "exam/navbar.html" %}
 
-      <div class="jumbotron" style="margin-top: 0px;
+      <div class="jumbotron" style="margin-top: 0px; height: 100%;
         margin-bottom: 0px;">
-        <h1 class="display-4">Hello {{request.user.first_name}},</h1>
+        <h1 class="display-4" style="margin-top: 50px;">Hello {{request.user.first_name}},</h1>
         <p class="lead">Your Account has not been <b>ACTIVATED</b> yet! <br><br>Waiting for approval from the administrator <br><br>and Soon you'll be able to access your Account after approval</p>
         <hr class="my-4">
        

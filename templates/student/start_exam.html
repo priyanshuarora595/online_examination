@@ -83,6 +83,10 @@
       gap: 10px;
       padding: 10px;
     }
+
+    body{
+      background-color: #e9ecef;
+    }
     .content {
       margin-left: 0px;
       background-position: center;
@@ -123,6 +127,12 @@
     .side-text{
       color:gray;
       font-size: medium; 
+    }
+    .time-text{
+      color:brown;
+      font-size: large; 
+      font-weight: bold;
+      
     }
 
     .page-content{
@@ -175,25 +185,29 @@
     }
 
     .no-page-button{
-      background-color: rgb(0, 113, 0);
+      background-color: transparent !important; 
       opacity: 50%;
       cursor: default;
+      color: black !important;
+      font-size: larger;
     }
 
     .no-page-button:hover{
-      background-color: rgb(0, 113, 0);
+      background-color: transparent !important;
       opacity: 50%;
+      font-size: larger;
       cursor: default;
     }
     </style>
   </head>
+  <body>
   <div class="jumbotron">
     <div class="text-center">
       <span class="course-name">
         {{ course.course_name}}
       </span>
       
-      <div class="side-text">
+      <div class="time-text">
          Time left : <span id="timer"></span>
       </div>
     </div>
@@ -210,7 +224,7 @@
                  value="Submit Exam">
         </div>
         <div style="float:right">
-          <input class="w-1/2 ml-1 border border-red-600 text-white border-gray-500 py-2 px-4 rounded font-medium green-bg-color "
+          <input class="w-1/2 ml-1 border border-red-600 text-white border-gray-500 py-2 px-4 rounded font-medium bg-danger "
                  style="border-radius: 0%;
                         display:block"
                  onclick="cancel()"
@@ -277,7 +291,7 @@
       </div>
       <div>
         <button type="button"
-                class="w-1/2 ml-1 border border-red-600 text-white border-gray-500 py-2 px-4 rounded font-medium green-bg-color"
+                class="w-1/2 ml-1 border border-red-600 text-white border-gray-500 py-2 px-4 rounded font-medium bg-danger"
                 style="border-radius: 0%;"
                 onclick="clear_selection({{ questions.0.id}})">
           Clear
@@ -293,7 +307,7 @@
              style="border-radius: 0%"
              onclick="save()"
              href="{% url 'start-exam' course.id  %}?page={{ questions.previous_page_number }}">
-              Previous
+              < Previous
           </a>
         </div>
         {% else %}
@@ -301,7 +315,7 @@
           <a type="button"
             class="w-1/2 ml-1 text-white border-gray-500 py-2 px-4 rounded font-medium no-page-button link-hover "
              style="border-radius: 0%"
-             href="#">Previous</a>
+             href="#"> < Previous</a>
         </div>
       {% endif %}
       {% if questions.has_next %}
@@ -310,14 +324,16 @@
             class="w-1/2 ml-1 border border-red-600 text-white border-gray-500 py-2 px-4 rounded font-medium green-bg-color  link-hover"
              onclick="save()"
              style="border-radius: 0%"
-             href="{% url 'start-exam' course.id  %}?page={{ questions.next_page_number }}">Next</a>
+             href="{% url 'start-exam' course.id  %}?page={{ questions.next_page_number }}">Next > </a>
         </div>
         {% else %}
         <div>
           <a type="button"
-            class="w-1/2 ml-1 text-white border-gray-500 py-2 px-4 rounded font-medium no-page-button link-hover "
-             style="border-radius: 0%"
-             href="#">Next</a>
+            class="w-1/2 ml-1 text-white py-2 px-4 rounded font-medium no-page-button link-hover "
+             style="border-radius: 0%;"
+             href="#">
+             Next > 
+          </a>
         </div>
       {% endif %}
     </ul>
@@ -325,7 +341,7 @@
 
 </form>
 </div>
-
+</body>
 
 <script> 
   document.getElementById("form").addEventListener("submit", function(event) {

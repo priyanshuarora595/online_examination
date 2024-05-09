@@ -6,7 +6,6 @@
     input[type=text], select,input[type=number] ,input[type=password], input[type='email'], textarea{
     width: 100%;
     padding: 12px 20px;
-    margin: 3px 0;
     display: inline-block;
     border: 1px solid #ccc;
     border-radius: 4px;
@@ -28,15 +27,17 @@
     background-color: #45a049;
   }
 
-
+.space{
+  margin-top: 30px;
+}
   </style>
 
 
 </head>
 
-<br><br>
+<br>
 <h2 style="text-align:center;">Update Teacher</h2>
-<div>
+<div style="margin-top: 50px;">
   <form method="post"  autocomplete="off" enctype="multipart/form-data" style="margin-left:200px;margin-right:200px;">
       {% csrf_token %}
                   
@@ -45,38 +46,38 @@
         </label>
         {% render_field userForm.username|attr:"readonly:True" class="form-control" placeholder="Username" %}
 
-        <label for="first_name">
+        <label for="first_name" class="space">
           First Name
         </label>
         {% render_field userForm.first_name class="form-control" placeholder="First Name" %}
 
-        <label for="last_name">
+        <label for="last_name" class="space">
           Last Name
         </label>
         {% render_field userForm.last_name class="form-control" placeholder="Last Name" %}
         
-        <label for="mobile">
+        <label for="mobile" class="space">
           Contact
         </label>
         {% render_field teacherForm.mobile class="form-control" placeholder="Mobile" type="tel" pattern="[0-9]{10}" %}
         
-        <label for="address">
+        <label for="address" class="space">
           Address
         </label>
         {% render_field teacherForm.address class="form-control" placeholder="Address" %}
 
-        <!-- <label for="address">
+        <!-- <label for="address" class="space">
           Salary
         </label>
         {% render_field teacherForm.salary class="form-control" placeholder="Address"|add_attr:"disabled" %} -->
     
-        <label for="email">
+        <label for="email" class="space">
           Email
         </label>
         {% render_field userForm.email class="form-control" placeholder="Email" %}
         
         {% comment %}
-          <label for="password">
+          <label for="password" class="space">
             Password
           </label>
           {% render_field userForm.password class="form-control" placeholder="Password" %} 
@@ -84,7 +85,7 @@
         {% endcomment %}
         
         {% comment %} 
-          <label for="profile_pic">
+          <label for="profile_pic" class="space">
             Profile Picture
           </label>
           {% render_field teacherForm.profile_pic class="form-control" placeholder="Profile Picture" %}
@@ -93,8 +94,4 @@
     <input type="submit" value="Update" style="border-radius:0px;">
   </form>
 </div>
-
-
-
-<br><br><br><br><br><br><br><br>
 {% endblock content %}

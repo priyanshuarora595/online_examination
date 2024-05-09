@@ -2,46 +2,52 @@
 {% load widget_tweaks %}
 {% block content %}
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  <link href="http://netdna.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
   <style>
-       <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
   a:link {
         text-decoration: none;
       }
 
+  .space{
+    margin-top: 20px;
+  }
+  .button-style{
+    border-radius: 0%; width: 150px; height: 40px; font-size: large; margin-top: 20px;
+  }
   </style>
 </head>
+<br>
 <h2 style="text-align:center; ">Add Course Info</h2>
 <form method="POST" id = "course_form" autocomplete="off" style="margin:100px;margin-top: 0px;">
     {%csrf_token%}
     <div class="form-group">
-      <label for="course_name">Course Name</label>
+      <label for="course_name" class="space">Course Name</label>
       {% render_field courseForm.course_name class="form-control" placeholder="Example: Databases" %}
 
-      <label for="course_name">Exam Date</label>
+      <label for="course_name"  class="space">Exam Date</label>
       {% render_field courseForm.exam_date class="form-control" %}
 
-      <label for="course_name">Exam Time ( in minutes )</label>
+      <label for="course_name"  class="space">Exam Time ( in minutes )</label>
       {% render_field courseForm.duration class="form-control" placeholder="Example: 180" %}
 
-      <label for="course_name">Entry Time ( in minutes )</label>
+      <label for="course_name"  class="space">Entry Time ( in minutes )</label>
       {% render_field courseForm.entry_time class="form-control" placeholder="How long to allow participants to start exam" %}
 
-      <label for="course_name">Passing Percentage ( without %)</label>
+      <label for="course_name"  class="space">Passing Percentage ( without %)</label>
       {% render_field courseForm.passing_percentage class="form-control" placeholder="Example: 75" %}
 
     </div>
 
 
-    <button type="button" onclick="submit_form()" class="btn btn-success" style="border-radius: 0%;">Submit Info</button>
+    <button type="button" onclick="submit_form()" class="btn btn-success button-style">Submit Info</button>
   </form>
-<br><br><br>
 
 <script>
     // Function to convert datetime-local to UTC

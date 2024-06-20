@@ -46,7 +46,7 @@
       {% render_field courseForm.course_name class="form-control" placeholder="Example: Software Engineering" %}
 
       <label for="course_name" class="space">Exam Date</label>
-      {% render_field courseForm.exam_date class="form-control" %}
+      {% render_field courseForm.exam_date class="form-control" id="exam_date" %}
 
       <label for="course_name" class="space">Exam Time ( in minutes )</label>
       {% render_field courseForm.duration class="form-control" placeholder="Example: 180" %}
@@ -86,5 +86,26 @@
       convertToUTCTime();
       document.getElementById("course_form").submit();
   }
+  function convertIncomingValueToLocal(){
+    let isoString = document.getElementById("exam_date").value ;
+    isoString+=":00Z";
+
+    // Create a Date object from the ISO string
+    let date = new Date(isoString);
+
+    // Get the local date and time components
+    let year = date.getFullYear();
+    let month = (date.getMonth() + 1).toString().padStart(2, '0');
+    let day = date.getDate().toString().padStart(2, '0');
+    let hours = date.getHours().toString().padStart(2, '0');
+    let minutes = date.getMinutes().toString().padStart(2, '0');
+    let seconds = date.getSeconds().toString().padStart(2, '0');
+
+    // Format the local date and time as a string
+    let localString = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+
+    document.getElementById("exam_date").value = localString;
+  }
+  convertIncomingValueToLocal();
 </script>
 {% endblock content %}

@@ -19,3 +19,4 @@ You need `Python 3.11.5` to run this project.
     `python manage.py runserver`
 
 > Note: For creating admin accounts, create django superuser with `python manage.py createsuperuser`
+> Note: Existing admin account creds : admin:admin

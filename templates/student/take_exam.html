@@ -115,36 +115,50 @@ convertToLocalTime();
     localStorage.setItem('switchTabCount', 3);
  
     function startExam() {
-        Notification.requestPermission().then(function (permission) {
-            if (permission === "granted") {
-                console.log("Notification permission granted.");
-                var accessCode = document.getElementById("course_access_id").value;
-                var courseId = {{course.id}};
-
-                var url = "{% url 'verify-exam' pk=course.id access_code='d2057ae5-c8d9-483d-a540-2f071023fa29' %}?page=1"
-                if(accessCode!=""){
-                    url = url.replace("d2057ae5-c8d9-483d-a540-2f071023fa29",accessCode)
-                }
-
-                //const resp = fetch(url).then(resp => {console.log(resp);if(resp.status==400){
-                //    resp.status=302;
-                //}});
-
-                //console.log(accessCode);
-                //console.log(courseId);
-                //console.log(window.location.pathname)
-                //window.location.pathname='student/start-exam/'+courseId+'/'+accessCode;
-                document.location.href=url;
+        var proceedToExam = function() {
+            var accessCode = document.getElementById("course_access_id").value;
+            var url = "{% url 'verify-exam' pk=course.id access_code='d2057ae5-c8d9-483d-a540-2f071023fa29' %}?page=1";
+            if(accessCode != ""){
+                url = url.replace("d2057ae5-c8d9-483d-a540-2f071023fa29", accessCode);
             }
-            else {
-                // request for notification permission
-                Notification.requestPermission().then(function (permission) {
-                    if (permission === "granted") {
-                        console.log("Notification permission granted.");
-                    }
+            document.location.href = url;
+        };
+
+        if (!("Notification" in window)) {
+            alert("This browser does not support desktop notifications. Proceeding to exam...");
+            proceedToExam();
+            return;
+        }
+
+        var handlePermission = function(permission) {
+            if (permission === "granted") {
+                proceedToExam();
+            } else {
+                alert("You need to enable notification permissions in your browser settings to take the exam.");
+            }
+        };
+
+        if (Notification.permission === "granted") {
+            handlePermission(Notification.permission);
+            return;
+        }
+
+        try {
+            var promise = Notification.requestPermission(function(permission) {
+                if(!promise) handlePermission(permission);
+            });
+            if (promise) {
+                promise.then(function(permission) {
+                    handlePermission(permission);
+                }).catch(function(error) {
+                    console.error(error);
+                    proceedToExam();
                 });
             }
-        });
+        } catch (e) {
+            console.error(e);
+            proceedToExam();
+        }
     }
 
 </script>

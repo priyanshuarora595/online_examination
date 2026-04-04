@@ -76,7 +76,7 @@
 
     </script>
     <style>
-    .grid-container {
+.grid-container {
       display: grid;
       justify-content: space-evenly;
       grid-template-columns: 100px 100px 100px 100px; 
@@ -251,7 +251,7 @@
   
             {% if q.question_image %}
               <div class="question_area">
-                <img src="{% static '' %}{{ q.question_image }} " width="350" height="250" alt="Question's image">
+                <img src="{% if q.question_image %}{{ q.question_image.url }}{% endif %}" width="350" height="250" alt="Question's image">
               </div>
             {% endif %}
           </div>
@@ -266,7 +266,7 @@
               {% for option in options %}
                 <div class="option-row">
                   <div class="option-radiobutton-area">
-                    <input class="form-check-input" type="radio" name="{{ questions.number }}"  value={{ option.option }}>
+                    <input class="form-check-input" type="radio" name="{{ questions.number }}"  value="{{ option.option }}">
                   </div>
                   <div class="option-text-area">
                     <label class="form-check-label option-text" for="option">{{ option.option }}</label>
@@ -282,12 +282,22 @@
     {% endfor %}
     <div class="button-area-row-1"> 
       <div>
+        {% if questions.has_next %}
         <a type="button"
            class="w-1/2 ml-1 border border-red-600 text-white border-gray-500 hover:bg-red-700 py-2 px-4 rounded font-medium green-bg-color"
            style="border-radius: 0%; color:white;"
+           href="{% url 'start-exam' course.id  %}?page={{ questions.next_page_number }}"
            onclick="save()">
            Save
         </a>
+        {% else %}
+        <a type="button"
+           class="w-1/2 ml-1 border border-red-600 text-white border-gray-500 hover:bg-red-700 py-2 px-4 rounded font-medium green-bg-color"
+           style="border-radius: 0%; color:white;"
+           onclick="save(); alert('Answer saved! This is the last question.');">
+           Save
+        </a>
+        {% endif %}
       </div>
       <div>
         <button type="button"

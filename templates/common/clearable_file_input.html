@@ -1,6 +1,6 @@
 {% load static %}
 <style>
-    .image-options{
+.image-options{
         padding: 0.5rem;
         padding-left: 0;
     }
@@ -8,7 +8,7 @@
 </style>
 {% if widget.is_initial %}
     <div class="image-options">
-        <a class="image-options" target="_blank"  href="{% static '' %}{{ widget.value.url }}"> Open in new tab </a>
+        <a class="image-options" target="_blank"  href="{{ widget.value.url }}"> Open in new tab </a>
         
         {% if not widget.required %}
         <input class="image-options" type="checkbox" name="{{ widget.checkbox_name }}" id="{{ widget.checkbox_id }}"

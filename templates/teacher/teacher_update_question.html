@@ -22,7 +22,7 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
   <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
   <style>
-    a:link {
+a:link {
       text-decoration: none;
     }
 
@@ -71,7 +71,7 @@
   {%csrf_token%}
   <div class="form-group" style="margin-top: 30px;">
     <label for="question" class="head-style">Course</label>
-    {% render_field questionForm.courseID|attr:'required:true' class="form-control" %}
+    {% render_field questionForm.courseID|attr:'required:true' class="form-control" style="height: max-content; padding: 6px;" %}
     
 
     <label for="question" class="head-style">Question</label>
@@ -79,11 +79,14 @@
     
     <label for="question_image" class="head-style">Image</label> 
     
-    {% if questionForm.question_image.value %}
-    <div class="image-section head-style">
-      <img src="{% static '' %}{{ questionForm.question_image.value }}" alt="Image not present" width="350" height="250">
-    </div>
-    {% endif %}
+    {% if questionForm.instance.question_image %}
+        <div class="image-section head-style">
+          <img src="{{ questionForm.instance.question_image.url }}"
+               alt="Image not present"
+               width="350"
+               height="250" />
+        </div>
+      {% endif %}
  
     {% render_field questionForm.question_image class="form-control" %}
     

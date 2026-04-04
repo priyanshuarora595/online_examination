@@ -1,4 +1,5 @@
-{% extends 'exam/adminbase.html' %} {% load widget_tweaks %} 
+{% extends 'exam/adminbase.html' %} 
+{% load widget_tweaks %} 
 {% load static %}
 {% block content %}
 <head>
@@ -14,7 +15,7 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
   <style>
-    a:link {
+a:link {
       text-decoration: none;
     }
 
@@ -39,7 +40,7 @@
   {%csrf_token%}
   <div class="form-group">
     <label for="question">Course</label>
-    {% render_field questionForm.courseID|attr:'required:true' class="form-control" %}
+    {% render_field questionForm.courseID|attr:'required:true' class="form-control" style="height: max-content; padding: 6px;" %}
     <br />
 
     <label for="question">Question</label>
@@ -49,7 +50,7 @@
     <br />
     {% if questionForm.question_image.value %}
     <div class="image-section">
-      <img src="{% static '' %}{{ questionForm.question_image.value }}" alt="Image not present" width="350" height="250">
+      <img src="{% if questionForm.instance.question_image %}{{ questionForm.instance.question_image.url }}{% endif %}" alt="Image not present" width="350" height="250">
     </div>
     {% endif %}
  

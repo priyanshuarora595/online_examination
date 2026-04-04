@@ -1,0 +1,37 @@
+{% extends 'teacher/teacherbase.html' %}
+{% block content %}
+  {% load static %}
+  <div class="container" style="margin-top: 100px; padding: 0 100px;">
+    <div style="margin-bottom: 20px; background-color: #fff; border: 1px solid #337ab7; border-radius: 4px; box-shadow: 0 1px 1px rgba(0,0,0,.05); overflow: hidden;">
+      <div style="color: #fff; background-color: #337ab7; padding: 10px 15px; border-bottom: 1px solid transparent;">
+        <h6 style="margin: 0; font-size: 16px; font-weight: 500; text-align: center;">Students</h6>
+      </div>
+      <table class="table table-hover table-bordered m-0" id="dev-table" style="margin-bottom: 0; border: none; background-color: #fff;">
+        <thead>
+          <tr>
+            <th style="border-top: none;">Name</th>
+            <th style="border-top: none;">Username</th>
+            <th style="border-top: none;">Contact</th>
+            <th style="border-top: none;">Address</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in students %}
+          <tr>
+            <td>{{ t.get_name }}</td>
+            <td>{{ t.user.username }}</td>
+            <td>{{ t.mobile }}</td>
+            <td>{{ t.address }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+{% endblock content %}

@@ -21,7 +21,7 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
   <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
   <style>
-  a:link {
+a:link {
         text-decoration: none;
       }
     .head-style{
@@ -56,7 +56,7 @@
     {%csrf_token%}
     <div class="form-group" style="margin-top: 30px;">
         <label for="question" class="head-style">Course</label>
-      {% render_field questionForm.courseID|attr:'required:true' class="form-control"  %}
+      {% render_field questionForm.courseID|attr:'required:true' class="form-control" style="height: max-content; padding: 6px;"  %}
 
       <label for="question" class="head-style">Question</label>
       {% render_field questionForm.question|attr:'required:true' class="form-control" placeholder="Example: Which one of the following is not a phase of Prototyping Model?" %}

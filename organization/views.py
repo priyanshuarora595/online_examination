@@ -1,19 +1,18 @@
-from django.shortcuts import render, redirect
-from exam import forms
-from django.contrib.auth.models import Group
-from django.http import HttpResponseRedirect
-from django.contrib.auth.decorators import login_required, user_passes_test
-from teacher import models as TMODEL
-from student import models as SMODEL
-from exam import models as EMODEL
-from organization import models as OMODEL
-from teacher import forms as TFORM
-from student import forms as SFORM
-from organization import forms as OFORM
-from exam import forms as EFORM
-from django.contrib.auth.models import User
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.models import Group, User
+from django.http import HttpResponseRedirect
+from django.shortcuts import redirect, render
 
+from exam import forms
+from exam import forms as EFORM
+from exam import models as EMODEL
+from organization import forms as OFORM
+from organization import models as OMODEL
+from student import forms as SFORM
+from student import models as SMODEL
+from teacher import forms as TFORM
+from teacher import models as TMODEL
 
 # Create your views here.
 
@@ -148,7 +147,7 @@ def organization_teacher_view(request):
         .count(),
         "pending_teacher": TMODEL.Teacher.objects.all()
         .filter(organization_id=organization_id, status=False)
-        .count()
+        .count(),
     }
     return render(request, "organization/organization_teacher.html", context=response)
 
@@ -233,7 +232,6 @@ def delete_teacher_view(request, pk):
         return redirect("organization-view-teacher")
     else:
         return render(request, "exam/unauthorized.html")
-
 
 
 @login_required(login_url="organizationlogin")
@@ -444,15 +442,22 @@ def organization_add_question_view(request):
 @user_passes_test(is_organization)
 def organization_upload_questions_file(request):
     if request.method == "POST":
-        import pandas as pd
-        import openpyxl
         import uuid
-        from openpyxl_image_loader import SheetImageLoader
-        from exam.models import Course, Question, Option, Answer
-        from django.core.files.base import ContentFile
         from io import BytesIO
 
+        import openpyxl
+        import pandas as pd
+        from django.core.files.base import ContentFile
+        from openpyxl_image_loader import SheetImageLoader
+
+        from exam.models import Answer, Course, Option, Question
+
         file_obj = request.FILES.get("uploadFile")
+
+        if not file_obj:
+            messages.error(request, "No file uploaded")
+            return redirect(request.META.get("HTTP_REFERER"))
+
         if (
             file_obj.content_type
             != "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -460,20 +465,30 @@ def organization_upload_questions_file(request):
             messages.error(request, "Only xlsx files allowed")
             return redirect(request.META.get("HTTP_REFERER"))
 
+        # ✅ reset pointer before reading
+        file_obj.seek(0)
         df = pd.read_excel(file_obj, header=None, engine="openpyxl")
         df_list = df.values.tolist()
-        # Load the Excel workbook and sheet
+
+        if not df_list:
+            messages.error(request, "Excel file is empty")
+            return redirect(request.META.get("HTTP_REFERER"))
+
+        # ✅ reset again for openpyxl
+        file_obj.seek(0)
         pxl_doc = openpyxl.load_workbook(file_obj)
-        sheet = pxl_doc["Sheet1"]
+        sheet = pxl_doc.active
         image_loader = SheetImageLoader(sheet)
-        last_row = sheet.max_row
+
         course_name = df_list[0][0]
+
         course_obj = Course.objects.filter(course_name=course_name).first()
         if not course_obj:
             messages.error(request, "No course with the provided name")
             return redirect(request.META.get("HTTP_REFERER"))
 
         self_organization = OMODEL.Organization.objects.get(user=request.user)
+
         if self_organization != course_obj.organization:
             messages.error(
                 request,
@@ -481,37 +496,53 @@ def organization_upload_questions_file(request):
             )
             return redirect(request.META.get("HTTP_REFERER"))
 
-        for row_number in range(1, last_row + 1):
-            question = Question()
-            row = df_list[row_number - 1]
-            question.question = row[1]
-            question.marks = row[2]
-            question.course = course_obj
+        # ✅ FIXED LOOP (no IndexError)
+        for row_number, row in enumerate(df_list, start=1):
+
+            # skip invalid rows
+            if len(row) < 5 or not row[1]:
+                continue
+
+            question = Question(question=row[1], marks=row[2], course=course_obj)
+
+            # image handling
             try:
                 image = image_loader.get("D" + str(row_number))
-            except Exception as e:
+            except Exception:
                 image = None
+
             if image:
                 image_rgb = image.convert("RGB")
                 output = BytesIO()
                 image_rgb.save(output, format="JPEG")
                 image_data = output.getvalue()
+
                 question.question_image.save(
-                    f"{uuid.uuid4().hex}.jpg", ContentFile(image_data)
+                    f"{uuid.uuid4().hex}.jpg", ContentFile(image_data), save=False
                 )
+
             question.save()
+
             course_obj.question_number += 1
             course_obj.total_marks += question.marks
-            course_obj.save()
+
             answer = row[-1]
+
             for option in row[4:-1]:
+                if not option:
+                    continue
+
                 op = Option.objects.create(option=option, question=question)
-                op.save()
-                if answer == option:
-                    ans = Answer.objects.create(answer=op, question=question)
-                    ans.save()
-        messages.success(request, f"questions added in course {course_name}")
+
+                if str(answer).strip() == str(option).strip():
+                    Answer.objects.create(answer=op, question=question)
+
+        # ✅ save once (performance fix)
+        course_obj.save()
+
+        messages.success(request, f"Questions added in course {course_name}")
         return redirect(request.META.get("HTTP_REFERER"))
+
     else:
         return render(request, "organization/organization_upload_question_file.html")
 

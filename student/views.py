@@ -231,7 +231,7 @@ def calculate_marks_view(request):
             selected_ans = v
             actual_answer = QuestionModel.Answer.objects.filter(question=q)[0].answer.option
             
-            if selected_ans == actual_answer:
+            if str(selected_ans).strip() == str(actual_answer).strip():
                 correct_answers+=1
                 scored_marks +=q.marks
 

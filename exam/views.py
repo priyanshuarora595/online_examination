@@ -1,21 +1,21 @@
-from django.shortcuts import render, redirect
-from django.db.models import Sum
-from django.http import HttpResponseRedirect, HttpResponse
-from django.contrib.auth.decorators import login_required, user_passes_test
 from django.conf import settings
-from django.core.mail import EmailMultiAlternatives
-from teacher import models as TMODEL
-from student import models as SMODEL
-from organization import models as OMODEL
-from exam import models as EMODEL
-from teacher import forms as TFORM
-from student import forms as SFORM
-from organization import forms as OFORM
-from exam import forms as EFORM
-from django.contrib.auth.models import User
-from django.db.models import Q
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.models import User
+from django.core.mail import EmailMultiAlternatives
+from django.db.models import Q, Sum
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import redirect, render
+
+from exam import forms as EFORM
+from exam import models as EMODEL
 from onlinexam.settings import STATIC_DIR
+from organization import forms as OFORM
+from organization import models as OMODEL
+from student import forms as SFORM
+from student import models as SMODEL
+from teacher import forms as TFORM
+from teacher import models as TMODEL
 
 
 def home_view(request):
@@ -39,8 +39,14 @@ def is_organization(user):
 def is_admin(user):
     return user.is_superuser
 
+
 def is_admin_is_teacher_is_organization(user):
-    return user.groups.filter(name="TEACHER").exists() or user.groups.filter(name="ORGANIZATION").exists() or user.is_superuser
+    return (
+        user.groups.filter(name="TEACHER").exists()
+        or user.groups.filter(name="ORGANIZATION").exists()
+        or user.is_superuser
+    )
+
 
 def afterlogin_view(request):
     if is_student(request.user):
@@ -91,7 +97,7 @@ def delete_account(request):
     """
     username = request.user.username
     user_obj = User.objects.filter(Q(username=username)).first()
-    
+
     if is_admin(request.user):
         messages.error(request, "Can not delete Admin account")
         return redirect(request.META.get("HTTP_REFERER"))
@@ -113,27 +119,27 @@ def delete_account(request):
             # student.delete()
     user_obj.delete()
 
+
 @login_required(login_url="afterlogin")
 def delete_account_view(request):
     """
-    view for confirming the user's account deletion 
+    view for confirming the user's account deletion
     """
     context = {}
     if is_student(request.user):
-        context['base_template'] = 'student/studentbase.html'
+        context["base_template"] = "student/studentbase.html"
     elif is_teacher(request.user):
-        context['base_template'] = 'teacher/teacherbase.html'
+        context["base_template"] = "teacher/teacherbase.html"
     elif is_organization(request.user):
-        context['base_template'] = 'organization/organizationbase.html'
+        context["base_template"] = "organization/organizationbase.html"
     elif is_admin(request.user):
-        context['base_template'] = 'exam/adminbase.html'
+        context["base_template"] = "exam/adminbase.html"
 
     if request.method == "POST":
         # delete the user's account, after confirmation
         delete_account(request)
-        return redirect('')
-    return render(request, 'common/delete_account_view.html', context=context)
-
+        return redirect("")
+    return render(request, "common/delete_account_view.html", context=context)
 
 
 @login_required(login_url="adminlogin")
@@ -255,7 +261,7 @@ def delete_organization_view(request, pk):
     user = User.objects.get(id=organization.user_id)
     user.delete()
     organization.delete()
-    return HttpResponseRedirect("admin-view-organization")
+    return redirect("admin-view-organization")
 
 
 @login_required(login_url="adminlogin")
@@ -287,8 +293,8 @@ def approve_teacher_view(request, pk):
         teacher.save()
     else:
         print("Not a valid request type")
-        return HttpResponseRedirect("admin-view-pending-teacher")
-    return redirect('approve-teacher', pk = pk)
+        return redirect("admin-view-pending-teacher")
+    return redirect("approve-teacher", pk=pk)
 
 
 @login_required(login_url="adminlogin")
@@ -298,7 +304,7 @@ def reject_teacher_view(request, pk):
     user = User.objects.get(id=teacher.user_id)
     user.delete()
     teacher.delete()
-    return HttpResponseRedirect("admin-view-pending-teacher")
+    return redirect("admin-view-pending-teacher")
 
 
 @login_required(login_url="adminlogin")
@@ -321,7 +327,7 @@ def approve_organization_view(request, pk):
         organization.save()
     except Exception as e:
         print("Error on approving organization from admin {e}")
-    return redirect('admin-view-pending-organization')
+    return redirect("admin-view-pending-organization")
 
 
 @login_required(login_url="adminlogin")
@@ -331,7 +337,7 @@ def reject_organization_view(request, pk):
     user = User.objects.get(id=teacher.user_id)
     user.delete()
     teacher.delete()
-    return HttpResponseRedirect("admin-view-pending-organization")
+    return redirect("admin-view-pending-organization")
 
 
 @login_required(login_url="adminlogin")
@@ -380,7 +386,7 @@ def delete_student_view(request, pk):
     user = User.objects.get(id=student.user_id)
     user.delete()
     student.delete()
-    return HttpResponseRedirect("admin-view-student")
+    return redirect("admin-view-student")
 
 
 @login_required(login_url="adminlogin")
@@ -408,8 +414,10 @@ def admin_add_course_view(request):
             print("form is invalid")
             print(f"{courseForm.errors = }")
             messages.error(request, courseForm.errors)
-            return render(request, "exam/admin_add_course.html", {"courseForm": courseForm})
-        return HttpResponseRedirect("admin-view-course")
+            return render(
+                request, "exam/admin_add_course.html", {"courseForm": courseForm}
+            )
+        return redirect("admin-view-course")
     return render(request, "exam/admin_add_course.html", {"courseForm": courseForm})
 
 
@@ -425,7 +433,7 @@ def admin_view_course_view(request):
 def delete_course_view(request, pk):
     course = EMODEL.Course.objects.get(id=pk)
     course.delete()
-    return HttpResponseRedirect("admin-view-course")
+    return redirect("admin-view-course")
 
 
 @login_required(login_url="adminlogin")
@@ -495,15 +503,22 @@ def admin_add_question_view(request):
 @user_passes_test(is_admin)
 def admin_upload_questions_file(request):
     if request.method == "POST":
-        import pandas as pd
-        import openpyxl
         import uuid
-        from openpyxl_image_loader import SheetImageLoader
-        from exam.models import Course, Question, Option, Answer
-        from django.core.files.base import ContentFile
         from io import BytesIO
 
+        import openpyxl
+        import pandas as pd
+        from django.core.files.base import ContentFile
+        from openpyxl_image_loader import SheetImageLoader
+
+        from exam.models import Answer, Course, Option, Question
+
         file_obj = request.FILES.get("uploadFile")
+
+        if not file_obj:
+            messages.error(request, "No file uploaded")
+            return redirect(request.META.get("HTTP_REFERER"))
+
         if (
             file_obj.content_type
             != "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -511,49 +526,78 @@ def admin_upload_questions_file(request):
             messages.error(request, "Only xlsx files allowed")
             return redirect(request.META.get("HTTP_REFERER"))
 
+        # ✅ reset pointer
+        file_obj.seek(0)
         df = pd.read_excel(file_obj, header=None, engine="openpyxl")
         df_list = df.values.tolist()
-        # Load the Excel workbook and sheet
-        pxl_doc = openpyxl.load_workbook(file_obj)
-        sheet = pxl_doc["Sheet1"]
-        image_loader = SheetImageLoader(sheet)
-        last_row = sheet.max_row
 
-        for row_number in range(1, last_row + 1):
-            course_name = df_list[row_number-1][0]
+        if not df_list:
+            messages.error(request, "Excel file is empty")
+            return redirect(request.META.get("HTTP_REFERER"))
+
+        # ✅ reset again
+        file_obj.seek(0)
+        pxl_doc = openpyxl.load_workbook(file_obj)
+        sheet = pxl_doc.active
+        image_loader = SheetImageLoader(sheet)
+
+        updated_courses = set()  # track courses to update later
+
+        # ✅ FIXED LOOP
+        for row_number, row in enumerate(df_list, start=1):
+
+            if len(row) < 5 or not row[0] or not row[1]:
+                continue
+
+            course_name = row[0]
             course_obj = Course.objects.filter(course_name=course_name).first()
+
             if not course_obj:
                 continue
-            question = Question()
-            row = df_list[row_number - 1]
-            question.question = row[1]
-            question.marks = row[2]
-            question.course = course_obj
+
+            question = Question(question=row[1], marks=row[2], course=course_obj)
+
+            # image handling
             try:
                 image = image_loader.get("D" + str(row_number))
-            except Exception as e:
+            except Exception:
                 image = None
+
             if image:
                 image_rgb = image.convert("RGB")
                 output = BytesIO()
                 image_rgb.save(output, format="JPEG")
                 image_data = output.getvalue()
+
                 question.question_image.save(
-                    f"{uuid.uuid4().hex}.jpg", ContentFile(image_data)
+                    f"{uuid.uuid4().hex}.jpg", ContentFile(image_data), save=False
                 )
+
             question.save()
+
+            # track updates (don't save each time)
             course_obj.question_number += 1
             course_obj.total_marks += question.marks
-            course_obj.save()
+            updated_courses.add(course_obj)
+
             answer = row[-1]
+
             for option in row[4:-1]:
+                if not option:
+                    continue
+
                 op = Option.objects.create(option=option, question=question)
-                op.save()
-                if answer == option:
-                    ans = Answer.objects.create(answer=op, question=question)
-                    ans.save()
-        messages.success(request, f"questions added in course {course_name}")
+
+                if str(answer).strip() == str(option).strip():
+                    Answer.objects.create(answer=op, question=question)
+
+        # ✅ save all updated courses once
+        for course in updated_courses:
+            course.save()
+
+        messages.success(request, "Questions uploaded successfully")
         return redirect(request.META.get("HTTP_REFERER"))
+
     else:
         return render(request, "exam/admin_upload_question_file.html")
 
@@ -564,8 +608,8 @@ def admin_update_question_view(request, pk):
     question = EMODEL.Question.objects.get(id=pk)
     question.organization = question.course.organization
     question_image = question.question_image.name
-    if question_image=="":
-        question_image=False
+    if question_image == "":
+        question_image = False
     questionForm = EFORM.QuestionForm(instance=question)
     options = EMODEL.Option.objects.filter(question=question)
     optionForms = []
@@ -582,7 +626,7 @@ def admin_update_question_view(request, pk):
         questionForm = EFORM.QuestionForm(
             request.POST, request.FILES, instance=question
         )
-        
+
         if not questionForm.is_valid():
             return render(
                 request,
@@ -592,7 +636,7 @@ def admin_update_question_view(request, pk):
                     "optionForm": optionForms,
                     "answerForm": answer.answer.option,
                     "newOption": newOption,
-                    "question_image": question_image
+                    "question_image": question_image,
                 },
             )
         question = questionForm.save(commit=False)
@@ -625,7 +669,7 @@ def admin_update_question_view(request, pk):
             "optionForm": optionForms,
             "answerForm": answer.answer.option,
             "newOption": newOption,
-            "question_image": question_image
+            "question_image": question_image,
         },
     )
 
@@ -683,13 +727,13 @@ def admin_check_marks_view(request, pk):
 
     return render(request, "exam/admin_check_marks.html", {"results": results})
 
+
 @login_required(login_url="afterlogin")
 @user_passes_test(is_admin_is_teacher_is_organization)
-def delete_result(request,pk):
+def delete_result(request, pk):
     result_obj = EMODEL.Result.objects.get(id=pk)
     result_obj.delete()
     return redirect(request.META.get("HTTP_REFERER"))
-
 
 
 def aboutus_view(request):
@@ -706,11 +750,11 @@ def contactus_view(request):
             message = sub.cleaned_data["Message"]
 
             mail = EmailMultiAlternatives(
-                subject =  f"{name} || {email} sent a message from Online Examination Portal",
-                body= f"Message : {message}",
+                subject=f"{name} || {email} sent a message from Online Examination Portal",
+                body=f"Message : {message}",
                 from_email=settings.EMAIL_HOST_USER,
                 bcc=[email],
-                to=list(settings.EMAIL_RECEIVING_USER)
+                to=list(settings.EMAIL_RECEIVING_USER),
             )
             mail.send(fail_silently=False)
             return render(request, "exam/contactussuccess.html")
@@ -737,5 +781,7 @@ def download_sample_question_file(request):
         response["Content-Type"] = (
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
-        response["Content-Disposition"] = "attachment;filename=sample_question_file.xlsx"
+        response["Content-Disposition"] = (
+            "attachment;filename=sample_question_file.xlsx"
+        )
         return response

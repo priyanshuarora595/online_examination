@@ -57,10 +57,10 @@
     .sidebar {
       background: #2f323a;
       margin-top: 70px;
-      padding-top: 30px;
+      padding-top: 50px;
       position: fixed;
       left: 0;
-      width: 270px;
+      width: 250px;
       height: 100%;
       transition: 0.5s;
       transition-property: left;
@@ -181,6 +181,9 @@
   <input type="checkbox" id="check">
   <!--header area start-->
   <header>
+    <label for="check">
+      <i style="left: 200px;margin-top: 17px;" class="fas fa-bars" id="sidebar_btn"></i>
+    </label>
     <div class="row">
     <div class="col-md-5 left_area">
       <h4 style="color: white; padding-top: 12px;">Online Exam</h4>
@@ -228,9 +231,6 @@
   {% endfor %}
   <!--sidebar start-->
   <div class="sidebar">
-    <label for="check">
-      <i style="left: 200px;margin-top: 17px; margin-left: 20px;"class="fas fa-bars slide" id="sidebar_btn"></i>
-    </label>
     <div>
     <center>
 
